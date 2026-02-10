@@ -1,7 +1,13 @@
-[ {
+[ 
+        {
         "id": 4,
         "name": "Smart Mock Test 4",
         "file": "tests/4.json"
+    },
+     {
+        "id": 3,
+        "name": "Smart Mock Test 3",
+        "file": "tests/3.json"
     },
     {
         "id": 2,
@@ -12,11 +18,5 @@
         "id": 1,
         "name": "Smart Mock Test 1",
         "file": "tests/1.json"
-    },
-     {
-        "id": 3,
-        "name": "Smart Mock Test 3",
-        "file": "tests/3.json"
     }
 ]
-
