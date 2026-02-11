@@ -1,0 +1,573 @@
+[
+  {
+    "id": 1,
+    "q": "Which type of roller is most suitable for the compaction of cohesive soils like clay?",
+    "o": [
+      "Smooth wheel roller",
+      "Pneumatic tyred roller",
+      "Sheep’s foot roller",
+      "Vibratory roller"
+    ],
+    "a": 2,
+    "e": "Sheep’s foot rollers compact soil by kneading action, which is effective for breaking the bond of cohesive soils (clays). Vibratory is for sand, and smooth wheel is for finishing. "
+  },
+  {
+    "id": 2,
+    "q": "Which type of failure occurs in a shallow foundation on dense sand or stiff clay?",
+    "o": [
+      "Local shear failure",
+      "General shear failure",
+      "Punching shear failure",
+      "Flexural failure"
+    ],
+    "a": 1,
+    "e": "General shear failure is characterized by a well-defined failure surface extending to the ground and sudden collapse. It happens in soils with low compressibility (dense sand). "
+  },
+  {
+    "id": 3,
+    "q": "What is the effect on the bearing capacity of soil if the water table rises to the ground level?",
+    "o": [
+      "It increases by 50%",
+      "It reduces to approximately 50%",
+      "It remains effective",
+      "It increases by 100%"
+    ],
+    "a": 1,
+    "e": "When the water table rises to the ground surface, the submerged unit weight is used instead of bulk unit weight, which roughly halves the bearing capacity of the soil."
+  },
+  {
+    "id": 4,
+    "q": "\"Quick Sand\" is not a type of sand but a flow condition occurring in:",
+    "o": [
+      "Clayey soils",
+      "Cohesive soils",
+      "Cohesionless soils",
+      "Rock"
+    ],
+    "a": 2,
+    "e": "Quick sand is a hydraulic condition occurring in cohesionless soils (fine sand/silt) when the upward seepage pressure equals the effective stress, causing the soil to lose all shear strength."
+  },
+  {
+    "id": 5,
+    "q": "In a public building, the tread of a staircase should not be less than:",
+    "o": [
+      "20 cm",
+      "25 cm",
+      "30 cm",
+      "15 cm"
+    ],
+    "a": 1,
+    "e": "For public buildings, comfort and safety are specific priorities. A tread of 25 cm (10 inches) to 30 cm is standard to accommodate the foot fully. "
+  },
+  {
+    "id": 6,
+    "q": "Which constituent of concrete is primarily responsible for its strength?",
+    "o": [
+      "Water",
+      "Aggregate",
+      "Cement",
+      "Admixtures"
+    ],
+    "a": 2,
+    "e": "Cement is the binding material. While water initiates the reaction (hydration), cement is the source of the gel structures (C-S-H) that provide strength. Excess water actually reduces strength."
+  },
+  {
+    "id": 7,
+    "q": "The temporary structure used to support an unsafe wall during the repair or alteration of a building is called:",
+    "o": [
+      "Scaffolding",
+      "Shoring",
+      "Underpinning",
+      "Jacking"
+    ],
+    "a": 1,
+    "e": "Shoring is used to support unsafe structures temporarily. Scaffolding is a working platform for workers. Underpinning is for strengthening foundations. "
+  },
+  {
+    "id": 8,
+    "q": "The process of keeping concrete moist for a specific period after casting to ensure complete hydration is called:",
+    "o": [
+      "Flooding",
+      "Curing",
+      "Ponding",
+      "Finishing"
+    ],
+    "a": 1,
+    "e": "Curing prevents the loss of moisture from concrete, allowing the chemical action of hydration to continue, which is vital for gaining strength and durability."
+  },
+  {
+    "id": 9,
+    "q": "Which valve is installed in a pipeline to isolate a section of the pipe for repair or maintenance?",
+    "o": [
+      "Air valve",
+      "Sluice (Gate) valve",
+      "Non-return valve",
+      "Scour valve"
+    ],
+    "a": 1,
+    "e": "Sluice valves (or Gate valves) are used to completely stop or allow the flow of water. They are the primary valves used for isolation in distribution networks. "
+  },
+  {
+    "id": 10,
+    "q": "Which discharge measuring device has the highest Coefficient of Discharge (C_d)?",
+    "o": [
+      "Orifice meter",
+      "Venturimeter",
+      "Broad crested weir",
+      "Sharp crested weir"
+    ],
+    "a": 1,
+    "e": "A Venturimeter has a streamlined shape which minimizes energy loss, resulting in a C_d value very close to 1 (approx 0.98). Orifices have high losses (C_d approx 0.62). "
+  },
+  {
+    "id": 11,
+    "q": "An ideal fluid is defined as a fluid which is:",
+    "o": [
+      "Compressible and viscous",
+      "Incompressible and viscous",
+      "Compressible and inviscid (non-viscous)",
+      "Incompressible and inviscid"
+    ],
+    "a": 3,
+    "e": "An ideal fluid is a theoretical fluid that has zero viscosity (no friction) and is incompressible (density does not change with pressure)."
+  },
+  {
+    "id": 12,
+    "q": "To prevent the formation of air locks in water supply pipelines, which valve is provided at the summit (highest point)?",
+    "o": [
+      "Sluice valve",
+      "Scour valve",
+      "Air valve",
+      "Reflux valve"
+    ],
+    "a": 2,
+    "e": "Air accumulates at high points in a pipeline, blocking flow. An Air Valve is installed at summits to automatically release this accumulated air."
+  },
+  {
+    "id": 13,
+    "q": "The self-cleaning velocity in a sewer line is the minimum velocity required to:",
+    "o": [
+      "Prevent settlement of solids",
+      "Scour the bottom of the sewer",
+      "Generate electricity",
+      "Prevent the flow of water"
+    ],
+    "a": 0,
+    "e": "Self-cleaning velocity (approx 0.75 m/s) is necessary to keep solid particles in suspension so they do not settle and block the pipe."
+  },
+  {
+    "id": 14,
+    "q": "In a Slow Sand Filter, the primary mechanism for removing bacteria and impurities is:",
+    "o": [
+      "Mechanical straining only",
+      "Sedimentation",
+      "Formation of a biological layer",
+      "Chemical coagulation"
+    ],
+    "a": 2,
+    "e": "While straining happens, the formation of the \"Schmutzdecke\" (a dirty skin of algae and bacteria) on the top layer is the most critical process for biological purification in slow sand filters. "
+  },
+  {
+    "id": 15,
+    "q": "सुशासन कायम गर्ने मुख्य निकाय कुन हो ?",
+    "o": [
+      "स्थानीय सरकार",
+      "प्रदेश सेवा आयोग",
+      "मुख्यमन्त्री तथा मन्त्रिपरिषद्को कार्यालय",
+      "राष्ट्रिय योजना आयोग"
+    ],
+    "a": 2
+  },
+  {
+    "id": 16,
+    "q": "प्रदेश सुशासन ऐन मुख्यतया कुन उद्देश्यका लागि बनाइएको हो ?",
+    "o": [
+      "विदेशी लगानी भित्र्याउन",
+      "प्रशासनिक सुशासन कायम गर्न",
+      "कर संकलन गर्न",
+      "कानूनी कार्यवाही गर्न"
+    ],
+    "a": 1
+  },
+  {
+    "id": 17,
+    "q": "आन्तरिक लेखापरीक्षण गर्दा के कुरामा ध्यान दिनुपर्छ ?",
+    "o": [
+      "कार्यालयको भौतिक संरचना",
+      "कारोबारको नियमितता, मितव्ययिता, कार्यदक्षता र प्रभावकारिता",
+      "कर्मचारीको व्यक्तिगत जीवन",
+      "कार्यालयको राजनीतिक सम्बन्ध"
+    ],
+    "a": 1
+  },
+  {
+    "id": 18,
+    "q": "\"आर्थिक वर्ष\" भन्नाले कुन अवधिलाई जनाउँछ ?",
+    "o": [
+      "वैशाख १ देखि चैत मसान्त",
+      "साउन १ देखि असार मसान्त",
+      "माघ १ देखि पौष मसान्त",
+      "पुस १ देखि चैत मसान्त"
+    ],
+    "a": 1
+  },
+  {
+    "id": 19,
+    "q": "\"अनुदान क्षेत्र\" को अर्थ के हो ?",
+    "o": [
+      "विदेशबाट प्राप्त रकम",
+      "मन्त्रालय, आयोग र अन्य निकायको कार्यक्षेत्र",
+      "बजेट निकासा",
+      "लेखा परीक्षण क्षेत्र"
+    ],
+    "a": 1
+  },
+  {
+    "id": 20,
+    "q": "\"महालेखा नियन्त्रक कार्यालय\" कुन सरकार अन्तर्गत पर्छ ?",
+    "o": [
+      "संघीय सरकार",
+      "प्रदेश सरकार",
+      "स्थानीय तह",
+      "निजामती सेवा आयोग"
+    ],
+    "a": 0
+  },
+  {
+    "id": 21,
+    "q": "प्रत्येक कार्यालयले अन्तिम लेखापरीक्षणको लागि कसलाई वित्तीय विवरण पेश गर्नुपर्छ ?",
+    "o": [
+      "प्रदेश लेखा नियन्त्रक कार्यालय",
+      "आर्थिक मामिला तथा योजना मन्त्रालय",
+      "महालेखापरीक्षकको कार्यालय",
+      "मुख्यमन्त्री कार्यालय"
+    ],
+    "a": 2
+  },
+  {
+    "id": 22,
+    "q": "लेखापरीक्षणको प्रारम्भिक प्रतिवेदनमा औंल्याइएको बेरुजु कति दिनभित्र फछ्र्यौट गर्नुपर्छ ?",
+    "o": [
+      "१५ दिन",
+      "५५ दिन",
+      "३५ दिन",
+      "५५ दिन"
+    ],
+    "a": 2
+  },
+  {
+    "id": 23,
+    "q": "कोशी प्रदेशको नियमावलीको नाम के हो ?",
+    "o": [
+      "प्रदेश निजामती सेवा नियमहरु, २०८०",
+      "प्रदेश निजामती सेवा नियमावली, २०८१",
+      "प्रदेश निजामती सेवा ऐन, २०७९",
+      "प्रदेश निजामती सेवा ऐन, २०८१"
+    ],
+    "a": 1
+  },
+  {
+    "id": 24,
+    "q": "प्रदेश निजामति सेवाका प्राविधिक र अप्राविधिक पदहरु र न्यूनतम शैक्षिक योग्यता कहाँ सूचीकृत छन् ?",
+    "o": [
+      "अनुसूची-१",
+      "अनुसूची-२",
+      "अनुसूची-३",
+      "अनुसूची-४"
+    ],
+    "a": 3
+  },
+  {
+    "id": 25,
+    "q": "The width of a dowla is generally kept between 30 to 60 cm and its height above the road level should invariably be more than...",
+    "o": [
+      "10 cm",
+      "20 cm",
+      "30 cm",
+      "40 cm"
+    ],
+    "a": 2
+  },
+  {
+    "id": 26,
+    "q": "To hold hydraulic jumps, baffle walls are provided in...",
+    "o": [
+      "Sarda type falls",
+      "English type falls",
+      "Montague type falls",
+      "Vertical type falls"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 27,
+    "q": "A river is said to be of...",
+    "o": [
+      "aggrading type if it builds up its bed to a certain slope",
+      "degrading type if it cuts its bed to a certain slope",
+      "meandering type if it flows in sinuous curve",
+      "all the above"
+    ],
+    "a": 3,
+    "e": "[attachment_0](attachment)"
+  },
+  {
+    "id": 28,
+    "q": "The traffic volume is equal to ............",
+    "o": [
+      "traffic density / traffic speed",
+      "traffic speed / traffic density",
+      "traffic density × traffic speed",
+      "none of these"
+    ],
+    "a": 2
+  },
+  {
+    "id": 29,
+    "q": "Highway density is defined as the total number of vehicles ............",
+    "o": [
+      "that can be accommodated on a unit length of the road",
+      "that can pass a given point in a unit period of time",
+      "that can pass given point in a specified period of time",
+      "none of the above"
+    ],
+    "a": 0
+  },
+  {
+    "id": 30,
+    "q": "If the traffic detectors are used on all the approaches to the intersection, the control signal is known as ............",
+    "o": [
+      "full traffic-actuated signal",
+      "semi-traffic actuated signal",
+      "speed control signal",
+      "all of these"
+    ],
+    "a": 0
+  },
+  {
+    "id": 31,
+    "q": "The expected out turn of cement concrete 1:2:4 per mason per day is ............",
+    "o": [
+      "1.5m³",
+      "2.5m³",
+      "3.5m³",
+      "5.0m³"
+    ],
+    "a": 3
+  },
+  {
+    "id": 32,
+    "q": "The continued payment of annuity for indefinite period is known as ............",
+    "o": [
+      "deferred annuity",
+      "annuity due",
+      "annuity certain",
+      "perpetual annuity"
+    ],
+    "a": 3
+  },
+  {
+    "id": 33,
+    "q": "The major principle of an organization is ............",
+    "o": [
+      "span of management",
+      "unity of command",
+      "delegation of authority",
+      "all of the above"
+    ],
+    "a": 3
+  },
+  {
+    "id": 34,
+    "q": "The authority to conduct the monitoring of public procurement in Nepal lies with ............",
+    "o": [
+      "National Vigilance Center",
+      "PPMO",
+      "N.E.A.",
+      "Office of Auditorial General"
+    ],
+    "a": 1
+  },
+  {
+    "id": 35,
+    "q": "The time by which a particular activity can be delayed without affecting the preceding and succeeding activities is known as ............",
+    "o": [
+      "total float",
+      "free float",
+      "interfering float",
+      "independent float"
+    ],
+    "a": 3
+  },
+  {
+    "id": 36,
+    "q": "Castor angle is defined as the angle ...",
+    "o": [
+      "formed by the longitudinal axis of the aircraft and the direction of movement of the nose gear",
+      "between the direction of wind and the longitudinal axis of the runway",
+      "between the true speed of the aircraft and the crosswind component",
+      "between the horizontal and the fuselage axis"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 37,
+    "q": "The height of the pilot's eye above the runway surface is assumed ...",
+    "o": [
+      "1 m",
+      "3 m",
+      "4 m",
+      "5 m"
+    ],
+    "a": 1
+  },
+  {
+    "id": 38,
+    "q": "A diagonal scale is used to read",
+    "o": [
+      "two dimensional",
+      "three dimensional",
+      "four dimensional",
+      "all of the above"
+    ],
+    "a": 1
+  },
+  {
+    "id": 39,
+    "q": "What is the term for error that occurs due to faulty adjustment of devices such as chain may be too long or too short?",
+    "o": [
+      "natural error",
+      "personal error",
+      "Artificial error",
+      "Instrumental error"
+    ],
+    "a": 3
+  },
+  {
+    "id": 40,
+    "q": "Which type of surveying is used for exploring mineral wealth?",
+    "o": [
+      "Military surveying",
+      "Mine surveying",
+      "Engineering surveying",
+      "Topographical surveying"
+    ],
+    "a": 1
+  },
+  {
+    "id": 41,
+    "q": "The orthographical projection of a traverse leg upon the reference meridian is",
+    "o": [
+      "departure of leg",
+      "coordinates of the leg",
+      "latitude of leg",
+      "bearing of the leg"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 42,
+    "q": "Impurities on aggregate should not be more than",
+    "o": [
+      "5% by its volume.",
+      "5% by its weight.",
+      "10% by its volume.",
+      "10% by its weight."
+    ],
+    "a": 1
+  },
+  {
+    "id": 43,
+    "q": "The good clay for making bricks is",
+    "o": [
+      "un-weathered clay",
+      "weathered clay",
+      "silted soil",
+      "black cotton soil"
+    ],
+    "a": 1
+  },
+  {
+    "id": 44,
+    "q": "The most commonly used base for timber painting, is",
+    "o": [
+      "red lead",
+      "zinc white",
+      "white lead",
+      "titanium white."
+    ],
+    "a": 2
+  },
+  {
+    "id": 45,
+    "q": "Brass is an alloy of",
+    "o": [
+      "copper and zinc",
+      "zinc and lead",
+      "tin and silver",
+      "zinc and nickel"
+    ],
+    "a": 0
+  },
+  {
+    "id": 46,
+    "q": "When a load on the free end of a cantilever beam is increased, failure will occur",
+    "o": [
+      "at the free end",
+      "in the middle of the beam",
+      "at the fixed end",
+      "at a distance 21/3 from free end"
+    ],
+    "a": 2,
+    "e": "[attachment_1](attachment)"
+  },
+  {
+    "id": 47,
+    "q": "The shear force diagram of a cantilever beam of length I and carrying a uniform distributed load of w per unit length will be",
+    "o": [
+      "a right angled triangle",
+      "an issosclestriabgle",
+      "an equilateral triangle",
+      "a rectangle"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 48,
+    "q": "The width of the flange of a L-beam, should be less than",
+    "o": [
+      "one-sixth of the effective span",
+      "breadth of the rib + four times thickness of the slab",
+      "breadth of the rib + half clear distance between ribs",
+      "least of the above."
+    ],
+    "a": 3
+  },
+  {
+    "id": 49,
+    "q": "The angle of repose of a soil is the maximum angle which the outer face of the mass makes",
+    "o": [
+      "with the horizontal",
+      "with the vertical",
+      "with the perpendicular to the inclined plane of the soil",
+      "none of these"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 50,
+    "q": "The percentage of minimum reinforcement of the gross sectional area in slabs, is",
+    "o": [
+      "0.10%",
+      "0.12%",
+      "0.15%",
+      "0.18%"
+    ],
+    "a": 2
+  }
+]
