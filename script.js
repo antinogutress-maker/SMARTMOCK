@@ -15,64 +15,6 @@ window.App = {
     save: (k, v) => localStorage.setItem(k, v),
     load: (k) => localStorage.getItem(k),
 
-    // 1. LOGIN SYSTEM (FIXED)
-    verifyAndLogin: () => {
-        const n = document.getElementById('inp-name').value.trim();
-        const q = document.getElementById('inp-qual').value;
-        const c = document.getElementById('inp-code').value.trim();
-        const msg = document.getElementById('auth-msg');
-        const btn = document.getElementById('btn-verify');
-
-        // Check if empty
-        if(!n || !c) { 
-            alert("Please enter both Name and Unique Code.");
-            return; 
-        }
-
-        // UI Feedback
-        btn.disabled = true; 
-        btn.innerText = "Verifying..."; 
-        msg.style.display = 'block';
-        msg.innerText = "Connecting to server...";
-        msg.style.color = "#ccc";
-
-        // Use encodeURIComponent to handle spaces/special characters in names
-        const url = `${API.authScript}?code=${encodeURIComponent(c)}&name=${encodeURIComponent(n)}&qual=${encodeURIComponent(q)}`;
-
-        fetch(url)
-        .then(res => res.json())
-        .then(data => {
-            console.log("Server Response:", data); // Debugging line
-
-            if(data.status === 'success' || data.result === 'success') { // Handle both 'status' and 'result' just in case
-                // Success!
-                document.getElementById('inp-pass').value = "Verified!";
-                
-                // Save User Data
-                window.App.state.user = { name: n, qual: q, code: c };
-                window.App.save(KEYS.user, JSON.stringify(window.App.state.user));
-                
-                msg.innerText = "Success! Redirecting...";
-                msg.style.color = "#00f260";
-                
-                setTimeout(() => window.App.dash(), 1000);
-            } else {
-                // Logic Failure (Wrong code)
-                throw new Error(data.message || "Invalid Code or Code Expired");
-            }
-        })
-        .catch(err => {
-            // Network or Script Failure
-            console.error(err);
-            btn.disabled = false; 
-            btn.innerText = "Verify & Login";
-            msg.style.display = 'block'; 
-            msg.style.color = "#ff0055";
-            msg.innerText = "Error: " + err.message;
-            alert("Login Failed: " + err.message);
-        });
-    },
-
     // 2. DASHBOARD (LOADS list.json)
     dash: () => {
         // Hide others, show dash
@@ -279,3 +221,4 @@ window.onload = () => {
         window.App.dash();
     }
 };
+
