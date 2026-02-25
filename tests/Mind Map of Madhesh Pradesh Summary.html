@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Madhesh Pradesh Master Mind Map</title>
+    <style>
+        :root {
+            --primary: #d32f2f; /* Nepal Red */
+            --primary-light: #ffcdd2;
+            --secondary: #1976d2; /* Strong Blue */
+            --accent: #fbc02d; /* Gold/Amber */
+            --text: #263238;
+            --bg: #f0f2f5;
+            --line: #cfd8dc;
+            --card-bg: #ffffff;
+            --card-radius: 12px;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* --- Header --- */
+        header {
+            background: white;
+            padding: 1rem 1.5rem;
+            box-shadow: var(--shadow-sm);
+            z-index: 20;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            header {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                padding: 1rem 2rem;
+            }
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .header-top { width: auto; gap: 2rem; }
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            background: #f1f5f9;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--secondary);
+            transition: all 0.2s ease;
+        }
+        
+        .btn-icon:hover { 
+            background: #e2e8f0; 
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .search-wrap {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .search-wrap input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            border-radius: 50px;
+            border: 2px solid #e2e8f0;
+            background: #f8fafc;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .search-wrap input:focus {
+            border-color: var(--secondary);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        /* --- Main Container --- */
+        main {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 1rem;
+            position: relative;
+        }
+
+        @media (min-width: 768px) {
+            main { padding: 2rem; }
+        }
+
+        /* --- Tree / Grid Logic --- */
+
+        /* Root Container wrapper */
+        .node-group.root {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Root Card (Hero) */
+        .card.lvl-0 {
+            background: linear-gradient(135deg, #263238, #37474f);
+            color: white;
+            border: none;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-lg);
+            cursor: default; /* Root doesn't collapse */
+        }
+        
+        .card.lvl-0 h3 { color: white; font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .card.lvl-0 p { color: #cfd8dc; font-size: 1rem; }
+        .card.lvl-0 .toggle-indicator { display: none; }
+
+        /* Root Children Container (The Grid) */
+        .node-group.root > .children {
+            margin-left: 0;
+            padding-left: 0;
+            border-left: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .node-group.root > .children {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+                gap: 1.5rem;
+                align-items: start; /* Prevent stretching height */
+            }
+        }
+
+        /* Level 1 Groups (The Cards in the Grid) */
+        .node-group.lvl-1-group {
+            margin-left: 0; /* Reset indentation for grid items */
+        }
+
+        /* Remove connector lines for top-level grid items */
+        .node-group.lvl-1-group::before,
+        .node-group.lvl-1-group::after {
+            display: none;
+        }
+
+        /* Level 1 Cards (Headers of the grid items) */
+        .card.lvl-1 {
+            background: white;
+            border-left: 6px solid var(--primary);
+            padding: 1rem;
+            margin-bottom: 0; /* Remove margin because children are inside the flow */
+            border-radius: var(--card-radius);
+            box-shadow: var(--shadow-md);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Ensure Level 1 children (Level 2) look like list items inside the card area */
+        .lvl-1-group > .children {
+            background: white;
+            margin-left: 0;
+            padding: 0 1rem 1rem 1rem; /* Padding inside the "panel" */
+            border-radius: 0 0 var(--card-radius) var(--card-radius);
+            margin-top: -8px; /* Pull up to connect with header */
+            padding-top: 16px; 
+            box-shadow: var(--shadow-md);
+            border-left: none; /* Remove tree line for the container itself */
+        }
+        
+        /* Fix rounded corners when collapsed */
+        .card.lvl-1:not(.expanded) {
+            border-radius: var(--card-radius);
+            margin-bottom: 0;
+        }
+        .card.lvl-1.expanded {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            box-shadow: 0 4px 4px -2px rgba(0,0,0,0.05); /* Lighter shadow at bottom */
+        }
+
+        /* --- Internal Tree Structure (Level 2+) --- */
+        .node-group {
+            position: relative;
+            margin-left: 16px;
+        }
+        
+        /* Specific fix for internal tree lines inside the grid cards */
+        .lvl-1-group > .children .node-group {
+            margin-left: 12px;
+            margin-top: 8px;
+        }
+
+        /* Vertical line */
+        .node-group:not(.root):not(.lvl-1-group)::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: -12px;
+            width: 12px;
+            height: calc(100% + 12px);
+            border-left: 2px solid var(--line);
+            z-index: 0;
+        }
+
+        /* Horizontal line */
+        .node-group:not(.root):not(.lvl-1-group)::after {
+            content: '';
+            position: absolute;
+            top: 18px;
+            left: -12px;
+            width: 12px;
+            height: 0;
+            border-top: 2px solid var(--line);
+            z-index: 0;
+        }
+
+        /* L-Shape terminator */
+        .node-group:not(.root):not(.lvl-1-group):last-child::before {
+            height: 32px;
+            border-bottom-left-radius: 8px;
+        }
+
+        /* Internal Cards (Level 2, 3) */
+        .card {
+            background: var(--card-bg);
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            box-shadow: var(--shadow-sm);
+            border-left: 4px solid var(--line); /* Default neutral */
+            position: relative;
+            z-index: 1;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        /* Level Specific Colors (Internal) */
+        .card.lvl-2 { border-left-color: var(--secondary); background: #f8fbff; }
+        .card.lvl-3 { border-left-color: var(--accent); background: #fffdf5; }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .card.leaf { cursor: default; }
+
+        .card-content h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+
+        .card-content p {
+            font-size: 0.85rem;
+            color: #546e7a;
+            line-height: 1.4;
+        }
+
+        .toggle-indicator {
+            font-size: 1rem;
+            color: #90a4ae;
+            margin-left: 10px;
+            transition: transform 0.3s;
+            margin-top: 2px;
+        }
+
+        .card.expanded .toggle-indicator { transform: rotate(180deg); color: var(--secondary); }
+        .card.leaf .toggle-indicator { display: none; }
+
+        /* Children Visibility */
+        .children {
+            margin-left: 12px;
+            display: none;
+            padding-left: 0;
+        }
+        .children.open { display: block; }
+
+        /* Highlight */
+        .highlight {
+            background-color: #fff9c4 !important;
+            border: 2px solid #fbc02d !important;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(251, 192, 45, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(251, 192, 45, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(251, 192, 45, 0); }
+        }
+
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.85rem;
+            color: #90a4ae;
+            background: white;
+            border-top: 1px solid #eceff1;
+        }
+
+        /* --- Quiz Modal --- */
+        .modal-backdrop {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .modal-backdrop.active { opacity: 1; pointer-events: all; }
+
+        .modal {
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal-backdrop.active .modal { transform: scale(1); }
+
+        .q-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 1.5rem;
+            line-height: 1.4;
+        }
+
+        .opt-btn {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 10px;
+            border: 2px solid #f1f5f9;
+            background: #fff;
+            border-radius: 12px;
+            font-size: 1rem;
+            color: var(--text);
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        
+        .opt-btn:hover:not(:disabled) {
+            border-color: var(--secondary);
+            background: #f8fbff;
+        }
+
+        .opt-btn.correct { background: #e8f5e9; border-color: #4caf50; color: #1b5e20; }
+        .opt-btn.wrong { background: #ffebee; border-color: #ef5350; color: #b71c1c; }
+
+        .modal-actions {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .btn-text {
+            background: none;
+            border: none;
+            color: #78909c;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 4px 6px rgba(25, 118, 210, 0.2);
+            transition: transform 0.2s;
+        }
+        .btn-primary:active { transform: scale(0.95); }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-top">
+        <h1>
+            <!-- Icon -->
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--primary)"><path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/></svg>
+            Madhesh Pradesh
+        </h1>
+        <div class="actions">
+            <button class="btn-icon" onclick="mindmap.expandAll()" title="Expand All">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10l8 8 8-8"/></svg>
+            </button>
+            <button class="btn-icon" onclick="mindmap.collapseAll()" title="Collapse All">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14l8-8 8 8"/></svg>
+            </button>
+            <button class="btn-icon" onclick="quiz.open()" title="Brain Challenge">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </button>
+        </div>
+    </div>
+    <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Search districts, stats, facts..." onkeyup="mindmap.search(this.value)">
+    </div>
+</header>
+
+<main id="tree-container">
+    <!-- Tree generates here -->
+</main>
+
+<footer>
+    <p>Data Source: Government Documents 2078-2082 | Interactive Mind Map</p>
+</footer>
+
+<!-- Quiz Modal -->
+<div class="modal-backdrop" id="quizModal">
+    <div class="modal">
+        <h3 style="color:var(--primary); margin-bottom:8px; font-size: 1.5rem;">Brain Challenge</h3>
+        <p style="font-size:0.9rem; color:#78909c; margin-bottom:24px;">Test your knowledge of Madhesh Pradesh!</p>
+        
+        <div id="quizContent">
+            <!-- Question loads here -->
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-text" onclick="quiz.close()">Close</button>
+            <button class="btn-primary" id="nextBtn" style="display:none;" onclick="quiz.next()">Next Question ➜</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- DATA ---
+    const treeData = {
+        title: "Madhesh Pradesh Overview",
+        desc: "Smallest Area (6.56%), Largest Density (633/sq km)",
+        children: [
+            {
+                title: "General Intro & Geography",
+                desc: "100% Terai Region",
+                children: [
+                    { title: "Status", desc: "Smallest Area, Largest Density" },
+                    { title: "Area", desc: "9,661 sq. km (6.56% of Nepal)" },
+                    { title: "Capital", desc: "Janakpurdham (Declared 2078/10/03)" },
+                    { title: "Geography", desc: "Occupies 17% of Nepal's Terai land" },
+                    { title: "Coordinates", desc: "26°3' - 27°7' N | 84°1' - 87°1' E" },
+                    { title: "Lowest Point", desc: "Musaharnia, Dhanusha (59m ASL)" },
+                    { title: "Borders", desc: "E/N: Koshi, W/N: Bagmati, S: Bihar (India)" }
+                ]
+            },
+            {
+                title: "Administrative Divisions",
+                desc: "8 Districts, 136 Local Levels",
+                children: [
+                    { title: "Districts", desc: "8 (Parsa, Bara, Rautahat, Sarlahi, Mahottari, Dhanusha, Siraha, Saptari)" },
+                    { title: "District Records", desc: "Area Max: Saptari | Area Min: Mahottari | Pop Max: Dhanusha | Pop Min: Parsa" },
+                    { title: "Local Levels", desc: "1 Metro (Birgunj), 3 Sub-Metro, 73 Muni, 59 Rural" },
+                    { title: "Wards", desc: "1,271 Total" },
+                    { title: "Level Records", desc: "Max Units: Sarlahi (20) | Max Muni: Rautahat (16) | Max Rural: Parsa (10)" },
+                    { title: "Staffing (2082)", desc: "142 Bodies. 1,659 Filled, 2,442 Vacant" }
+                ]
+            },
+            {
+                title: "Demographics (2078)",
+                desc: "Pop: 6,114,600 (20.97%)",
+                children: [
+                    { title: "Density", desc: "633/sq km (Highest in Dhanusha)" },
+                    { title: "Sex Ratio", desc: "100.55" },
+                    { title: "Growth Rate", desc: "1.19%" },
+                    { title: "Languages", desc: "Maithili (45.3%), Bhojpuri (18.6%), Bajjika (14.6%)" },
+                    { title: "Religion", desc: "Hindu (84.7%), Islam (11.6%)" },
+                    { title: "Caste", desc: "Yadav (14.8%), Muslim (11.6%), Teli (5.3%)" }
+                ]
+            },
+            {
+                title: "Economy & Agriculture",
+                desc: "GDP: 13.16%, Growth: 4.5%",
+                children: [
+                    { title: "GDP Size", desc: "NPR 6 Kharba 4 Arba" },
+                    { title: "Per Capita", desc: "$932 (National Avg: $1,496)" },
+                    { title: "Sectors", desc: "Services (53.5%), Agri (36.1%), Industry (10.4%)" },
+                    { title: "Agri Hubs", desc: "Fish: Bara | Milk: Siraha | Veg: Mahottari | Meat: Parsa | Crops: Sarlahi" },
+                    { title: "Irrigation", desc: "46.5% Irrigated. Best: Rautahat (94%). Worst: Saptari (42%)" },
+                    { title: "Finance", desc: "1,763 Bank Branches. Best Access: Dhanusha. Worst: Sarlahi." },
+                    { title: "Industry", desc: "Only 7% of Nepal's companies registered here" }
+                ]
+            },
+            {
+                title: "District Highlights",
+                desc: "Tourism & Facts",
+                children: [
+                    { title: "Dhanusha", desc: "Janaki Temple, Railway, Lowest Point (Musaharnia)" },
+                    { title: "Parsa", desc: "Gateway to Nepal, NP, Industrial Loans (63%)" },
+                    { title: "Bara", desc: "Gadhimai, Simraungadh, Fish Hub" },
+                    { title: "Rautahat", desc: "Highest Muslim %, Barahwa Lake" },
+                    { title: "Sarlahi", desc: "Nadiman Lake, Bharat Lake" },
+                    { title: "Mahottari", desc: "Jaleshwarnath, One Village One Product (Potato)" },
+                    { title: "Saptari", desc: "Chinnamasta, Peda (Barmajhiya), Koshi Tappu" },
+                    { title: "Siraha", desc: "Sahalesh Durbar, Flower blooms on New Year" }
+                ]
+            },
+            {
+                title: "Infrastructure",
+                desc: "Roads, Energy, Projects",
+                children: [
+                    { title: "Energy", desc: "100% Electricity Access. 44% Fuel Storage (Rank 1)" },
+                    { title: "Roads (2080/81)", desc: "1,476 km Total. 115 km Blacktopped." },
+                    { title: "Highways", desc: "Postal Highway (Pride Project). Mahendra Hwy misses Parsa." },
+                    { title: "Projects", desc: "Kathmandu-Terai Fast Track, Railway (52km operational)" },
+                    { title: "Housing", desc: "Janta Aawas (115), Mahendra Narayan Nidhi (500)" }
+                ]
+            },
+            {
+                title: "Social & Env",
+                desc: "Health, Edu, Forest",
+                children: [
+                    { title: "Education", desc: "4,113 Schools. SEE: 53.1% NG. Class 11 Enrollment: 26.4%" },
+                    { title: "Health", desc: "Maternal Mortality: 140. Fertility: 2.7. 21 Hospitals." },
+                    { title: "Universities", desc: "Madhesh Uni (Parsa), Rajarshi (Dhanusha), Agri Uni (Saptari)" },
+                    { title: "Forests", desc: "Cover: 24.8% (3.72% of Nepal). Parsa NP." },
+                    { title: "Governance", desc: "64 Acts Passed. High Corruption Complaints (23.57%)" },
+                    { title: "Employment", desc: "Leading Foreign Employment. Dhanusha (20%), Parsa (5%)" }
+                ]
+            }
+        ]
+    };
+
+    // --- MIND MAP LOGIC ---
+    const mindmap = {
+        container: document.getElementById('tree-container'),
+        nodes: [],
+
+        init() {
+            this.render(treeData, this.container, 0);
+        },
+
+        render(data, parentEl, level) {
+            // Container for this node and its children
+            const group = document.createElement('div');
+            // Specific classes for styling
+            let groupClass = 'node-group';
+            if (level === 0) groupClass += ' root';
+            if (level === 1) groupClass += ' lvl-1-group';
+            
+            group.className = groupClass;
+            
+            // 1. Create Card
+            const card = document.createElement('div');
+            const isLeaf = !data.children || data.children.length === 0;
+            card.className = `card lvl-${level} ${isLeaf ? 'leaf' : ''}`;
+            
+            // Search metadata
+            const searchText = `${data.title} ${data.desc || ''}`.toLowerCase();
+            card.dataset.search = searchText;
+
+            let html = `
+                <div class="card-content">
+                    <h3>${data.title}</h3>
+                    ${data.desc ? `<p>${data.desc}</p>` : ''}
+                </div>
+            `;
+            if (!isLeaf) html += `<div class="toggle-indicator">▼</div>`;
+            
+            card.innerHTML = html;
+            group.appendChild(card);
+            this.nodes.push(card);
+
+            // 2. Create Children Container
+            if (!isLeaf) {
+                const childrenDiv = document.createElement('div');
+                childrenDiv.className = 'children'; // Hidden by default
+                
+                // Keep Level 0 (Root) and Level 1 (Grid Cards) open by default on larger screens
+                // But specifically, let's keep Level 0 open always.
+                if(level === 0) childrenDiv.classList.add('open');
+
+                // Click to Toggle
+                card.onclick = (e) => {
+                    e.stopPropagation();
+                    this.toggle(card, childrenDiv);
+                };
+
+                // Recursion
+                data.children.forEach(child => this.render(child, childrenDiv, level + 1));
+                group.appendChild(childrenDiv);
+            }
+
+            parentEl.appendChild(group);
+        },
+
+        toggle(card, childrenDiv) {
+            const isOpen = childrenDiv.classList.contains('open');
+            if (isOpen) {
+                childrenDiv.classList.remove('open');
+                card.classList.remove('expanded');
+            } else {
+                childrenDiv.classList.add('open');
+                card.classList.add('expanded');
+            }
+        },
+
+        expandAll() {
+            document.querySelectorAll('.children').forEach(el => el.classList.add('open'));
+            document.querySelectorAll('.card:not(.leaf)').forEach(el => el.classList.add('expanded'));
+        },
+
+        collapseAll() {
+            // Keep root open (the grid container), close everything inside the grid items
+            const rootChildren = document.querySelector('.node-group.root > .children');
+            
+            document.querySelectorAll('.children').forEach(el => {
+                if (el !== rootChildren) el.classList.remove('open');
+            });
+            document.querySelectorAll('.card.expanded').forEach(el => {
+                // Don't collapse the root card visuals if needed, but here it has no expander anyway
+                if(!el.classList.contains('lvl-0')) el.classList.remove('expanded');
+            });
+        },
+
+        search(query) {
+            query = query.toLowerCase().trim();
+            
+            // clear highlights
+            document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
+            
+            if (!query) return;
+
+            let found = false;
+            this.nodes.forEach(card => {
+                if (card.dataset.search.includes(query)) {
+                    card.classList.add('highlight');
+                    this.revealPath(card);
+                    if (!found) {
+                        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        found = true;
+                    }
+                }
+            });
+        },
+
+        revealPath(element) {
+            let parent = element.parentElement;
+            while (parent && parent.id !== 'tree-container') {
+                if (parent.classList.contains('children')) {
+                    parent.classList.add('open');
+                    // Toggle the card associated with this container
+                    const siblingCard = parent.parentElement.querySelector('.card');
+                    if (siblingCard) siblingCard.classList.add('expanded');
+                }
+                parent = parent.parentElement;
+            }
+        }
+    };
+
+    // --- QUIZ LOGIC ---
+    const quiz = {
+        questions: [
+            { q: "Which district has the lowest point in Nepal (Musaharnia)?", options: ["Dhanusha", "Parsa", "Saptari"], a: 0 },
+            { q: "What is the projected GDP growth of Madhesh for 2081/82?", options: ["3.74%", "4.50%", "5.1%"], a: 1 },
+            { q: "Which district is known as the 'Granary' for food crops?", options: ["Bara", "Siraha", "Sarlahi"], a: 2 },
+            { q: "What is the maternal mortality rate in Madhesh?", options: ["151", "140", "120"], a: 1 },
+            { q: "Which district has the highest irrigation (94.4%)?", options: ["Rautahat", "Saptari", "Dhanusha"], a: 0 },
+            { q: "Madhesh holds what % of Nepal's fuel storage capacity?", options: ["25%", "33%", "43.99%"], a: 2 },
+            { q: "Which is the smallest district by area?", options: ["Mahottari", "Parsa", "Bhaktapur"], a: 0 },
+            { q: "Percentage of 'Non-Graded' students in SEE 2080?", options: ["46.9%", "53.1%", "60%"], a: 1 },
+            { q: "Which district has the highest population density?", options: ["Dhanusha", "Sarlahi", "Rautahat"], a: 0 },
+            { q: "Which highway is the 'National Pride Project' of Madhesh?", options: ["Mahendra Hwy", "Postal Hwy", "Tribhuvan Hwy"], a: 1 }
+        ],
+        currentIdx: 0,
+
+        open() {
+            document.getElementById('quizModal').classList.add('active');
+            this.currentIdx = 0;
+            this.loadQ();
+        },
+
+        close() {
+            document.getElementById('quizModal').classList.remove('active');
+        },
+
+        loadQ() {
+            const data = this.questions[this.currentIdx];
+            const container = document.getElementById('quizContent');
+            const nextBtn = document.getElementById('nextBtn');
+            nextBtn.style.display = 'none';
+
+            let html = `<div class="q-text">${this.currentIdx + 1}. ${data.q}</div>`;
+            data.options.forEach((opt, idx) => {
+                html += `<button class="opt-btn" onclick="quiz.check(this, ${idx}, ${data.a})">${opt}</button>`;
+            });
+            container.innerHTML = html;
+        },
+
+        check(btn, choiceIdx, correctIdx) {
+            const btns = document.querySelectorAll('.opt-btn');
+            btns.forEach(b => b.disabled = true);
+
+            if (choiceIdx === correctIdx) {
+                btn.classList.add('correct');
+            } else {
+                btn.classList.add('wrong');
+                btns[correctIdx].classList.add('correct');
+            }
+            document.getElementById('nextBtn').style.display = 'block';
+        },
+
+        next() {
+            this.currentIdx++;
+            if (this.currentIdx < this.questions.length) {
+                this.loadQ();
+            } else {
+                document.getElementById('quizContent').innerHTML = `
+                    <div style="padding:20px;">
+                        <h3 style="color:var(--secondary); font-size:1.5rem; margin-bottom:10px;">Quiz Completed!</h3>
+                        <p style="color:#546e7a;">Great job reviewing the facts.</p>
+                        <button class="btn-primary" style="margin-top:20px;" onclick="quiz.open()">Restart</button>
+                    </div>
+                `;
+                document.getElementById('nextBtn').style.display = 'none';
+            }
+        }
+    };
+
+    // Initialize
+    mindmap.init();
+    
+    // Auto-expand Logic
+    // On Desktop, we want the grid cards (Level 1) to be expanded by default to show the content.
+    // On Mobile, keeping them collapsed is better for scrolling.
+    if (window.innerWidth >= 768) {
+        document.querySelectorAll('.lvl-1').forEach(card => card.classList.add('expanded'));
+        document.querySelectorAll('.lvl-1-group > .children').forEach(div => div.classList.add('open'));
+    }
+
+</script>
+
+</body>
+</html>
+
+

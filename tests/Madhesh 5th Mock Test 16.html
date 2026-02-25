@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Madhesh 5th Mock Test 16</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* [STYLES REMAIN EXACTLY THE SAME] */
+        :root { --primary: #00f260; --secondary: #0575e6; --accent: #ff00cc; --glass-bg: rgba(255, 255, 255, 0.1); --glass-border: rgba(255, 255, 255, 0.2); --text-color: #ffffff; --card-bg: rgba(20, 20, 40, 0.95); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: linear-gradient(135deg, #1a2980, #26d0ce); min-height: 100vh; display: flex; align-items: center; justify-content: center; color: var(--text-color); padding: 15px; overflow-x: hidden; }
+        .app-container { width: 100%; max-width: 650px; background: var(--card-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 24px; padding: 2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative; overflow: hidden; transition: all 0.4s ease; }
+        h1 { font-size: 2rem; font-weight: 800; background: linear-gradient(to right, #00f260, #0575e6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+        h2 { font-size: 1.5rem; margin-bottom: 20px; }
+        p { color: #ccc; font-size: 0.95rem; line-height: 1.6; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .label { display: block; font-size: 0.8rem; margin-bottom: 5px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+        .glass-input { width: 100%; padding: 15px; background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); border-radius: 12px; color: white; font-size: 1rem; outline: none; transition: 0.3s; }
+        .glass-input:focus { border-color: var(--primary); background: rgba(255,255,255,0.15); }
+        .glass-input:read-only { background: rgba(0,0,0,0.2); color: #888; cursor: not-allowed; }
+        select.glass-input option { background: #141428; color: white; }
+        .btn { background: linear-gradient(90deg, #00f260, #0575e6); border: none; color: white; padding: 16px; width: 100%; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-top: 20px; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 5px 20px rgba(0, 242, 96, 0.3); min-height: 50px; }
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { filter: grayscale(1); cursor: wait; }
+        .btn-outline { background: transparent; border: 2px solid var(--glass-border); box-shadow: none; margin-top: 10px; }
+        .personal-header { text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--glass-border); min-height: 50px; display: flex; align-items: center; justify-content: center; }
+        .animate-praise { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .info-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: rgba(255,255,255,0.05); padding: 10px 15px; border-radius: 10px; }
+        .timer-badge { font-family: monospace; font-weight: 700; color: var(--accent); font-size: 1.1rem; }
+        .question-text { font-size: 1.2rem; font-weight: 600; margin-bottom: 20px; line-height: 1.5; }
+        .option-btn { width: 100%; padding: 18px; margin-bottom: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 12px; text-align: left; color: #ddd; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; -webkit-user-select: none; user-select: none; }
+        .option-marker { width: 30px; height: 30px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-weight: 700; flex-shrink: 0; }
+        .correct { background: rgba(0, 242, 96, 0.2) !important; border-color: #00f260 !important; color: white !important; }
+        .correct .option-marker { background: #00f260; color: black; }
+        .wrong { background: rgba(255, 0, 85, 0.2) !important; border-color: #ff0055 !important; color: white !important; }
+        .wrong .option-marker { background: #ff0055; color: white; }
+        .explanation-box { margin-top: 20px; padding: 15px; background: rgba(5, 117, 230, 0.15); border-left: 4px solid var(--secondary); border-radius: 8px; font-size: 0.9rem; display: none; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .score-circle { width: 160px; height: 160px; border-radius: 50%; border: 5px solid var(--primary); margin: 0 auto 20px auto; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 0 30px rgba(0, 242, 96, 0.2); }
+        .score-val { font-size: 3.5rem; font-weight: 800; color: white; line-height: 1; }
+        .hidden { display: none !important; }
+        #opts-list { max-height: 50vh; overflow-y: auto; padding-right: 5px; }
+        #auth-msg { text-align: center; margin-top: 15px; font-weight: 600; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="app">
+    <div id="view-login">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h1 id="title-display">Madhesh 5th Mock Test 16</h1>
+            <p>5th Edition | Civil Engineering</p>
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Full Name</span>
+            <input type="text" id="inp-name" class="glass-input" placeholder="Enter your name">
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Qualification</span>
+            <select id="inp-qual" class="glass-input">
+                <option value="Engineer">Engineer</option>
+                <option value="Sub-Engineer">Sub-Engineer</option>
+                <option value="Asst. Sub-Engineer">Asst. Sub-Engineer</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <span class="label">Unique Code</span>
+            <input type="tel" id="inp-code" class="glass-input" placeholder="Enter 5-digit code">
+        </div>
+
+        <div class="input-group">
+            <span class="label">Password (Auto-Fill)</span>
+            <input type="password" id="inp-pass" class="glass-input" placeholder="Verifying..." readonly>
+        </div>
+
+        <button class="btn" id="btn-verify" onclick="App.verifyAndLogin()">Verify & Login</button>
+        <p id="auth-msg"></p>
+    </div>
+
+    <div id="view-dash" class="hidden">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2 id="greet-msg" style="color: var(--primary);">Welcome!</h2>
+            <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 16px; margin-bottom: 20px;">
+                <p style="text-transform: uppercase; font-size: 0.8rem; color: #aaa;">Active Session</p>
+                <h3 id="dash-topic-display" style="font-size: 1.5rem; margin: 10px 0;"></h3>
+                <p>50 Questions • 45 Minutes</p>
+            </div>
+        </div>
+        <button class="btn" id="btn-start" onclick="App.start(false)">Start New Quiz</button>
+        <p id="submitted-msg" style="color: var(--primary); text-align: center; margin-top: 15px; display: none;">✅ Score Submitted Successfully</p>
+        <button class="btn btn-outline" id="btn-review" onclick="App.start(true)" style="display: none;">Review Mistakes</button>
+    </div>
+
+    <div id="view-quiz" class="hidden">
+        <div class="personal-header">
+            <div id="praise-txt" style="font-size: 1.2rem; font-weight: 700; color: white;">Good Luck!</div>
+        </div>
+
+        <div class="info-bar">
+            <span>Q: <span id="q-idx">1</span> / <span id="q-total">50</span></span>
+            <span class="timer-badge" id="timer">45:00</span>
+        </div>
+
+        <div id="q-container">
+            <div class="question-text" id="q-text">Loading...</div>
+            <div id="opts-list"></div>
+            <div class="explanation-box" id="exp-box"></div>
+        </div>
+
+        <button class="btn hidden" id="btn-next" onclick="App.next()">Next Question</button>
+    </div>
+
+    <div id="view-result" class="hidden" style="text-align: center;">
+        <h2>Quiz Completed!</h2>
+        <div class="score-circle">
+            <span class="score-val" id="res-score">0</span>
+            <span style="font-size: 0.8rem; text-transform: uppercase; color: #aaa;">Correct</span>
+        </div>
+        <div style="margin-bottom: 30px;">
+            <h3 id="res-pct" style="color: var(--primary);">0% Accuracy</h3>
+            <p id="sync-status" style="font-size: 0.9rem; margin-top: 10px; opacity: 0.8;">Syncing score...</p>
+        </div>
+        <button class="btn" onclick="App.dash()">Back to Dashboard</button>
+    </div>
+</div>
+
+<script>
+/**
+ * ----------------------------------------------------
+ * CONFIGURATION - CHANGE ONLY THIS SECTION FOR NEW APPS
+ * ----------------------------------------------------
+ */
+const CFG = {
+    // UPDATED TOPIC NAME
+    topic: "Madhesh 5th Mock Test 16", 
+    
+    scoreScript: "https://script.google.com/macros/s/AKfycbztgOiYdZlPssBus6iXQ6LwokmA4LS2b7CzgcKS4gd1iv9lG7MB_N7SupsxSdYQedEZgA/exec",
+    authScript: "https://script.google.com/macros/s/AKfycbyUGMGXI7vml6jzJsCxhXvHgnq4V4Aq6sl6blkJkdfC8_haCxI__kx3EwFzZrW942E6/exec"
+};
+
+// --- AUTOMATIC KEY GENERATOR ---
+const _tid = CFG.topic.replace(/[^a-zA-Z0-9]/g, "_");
+const KEYS = {
+    user: "civil_eng_global_user",
+    mistakes: `mistakes_${_tid}`,
+    sent: `sent_status_${_tid}`,
+    pending: `pending_${_tid}`
+};
+
+// --- DATASET (Replace with your new MCQs here) ---
+const DB = [
+  {
+    "id": 1,
+    "q": "Determining the difference in elevation between two points on the surface of the earth is known as:",
+    "o": [
+      "levelling",
+      "simple levelling",
+      "differential levelling",
+      "longitudinal levelling"
+    ],
+    "a": 2
+  },
+  {
+    "id": 2,
+    "q": "If velocities of fluid particles vary from point to point in magnitude and direction, as well as from instant to instant, the flow is said to be:",
+    "o": [
+      "laminar",
+      "turbulent flow",
+      "uniform flow",
+      "non-uniform flow"
+    ],
+    "a": 1
+  },
+  {
+    "id": 3,
+    "q": "The vane shear test is used for the in-situ determination of the undrained strength of the intact fully saturated:",
+    "o": [
+      "sands",
+      "clays",
+      "gravels",
+      "highly organic soils"
+    ],
+    "a": 1
+  },
+  {
+    "id": 4,
+    "q": "Through a point in a loaded soil, the principal stress is maximum on:",
+    "o": [
+      "minor principal plane",
+      "intermediate principal plane",
+      "major principal plane",
+      "none of these"
+    ],
+    "a": 2
+  },
+  {
+    "id": 5,
+    "q": "The process of manufacturing steel by heating short lengths of wrought iron bars mixed with charcoal in fire clay crucibles and collecting the molten iron into moulds, is known as:",
+    "o": [
+      "Cementation process",
+      "Crucible process",
+      "Bessemer process",
+      "Open hearth process"
+    ],
+    "a": 1
+  },
+  {
+    "id": 6,
+    "q": "Varnish is a transparent or semi-transparent solution of resinuous substances in:",
+    "o": [
+      "alcohol",
+      "linseed",
+      "turpentine",
+      "all the above"
+    ],
+    "a": 3
+  },
+  {
+    "id": 7,
+    "q": "If the Poisson's ratio of a material is 0.25, the ratio of Modulus of Rigidity (G) to the Young's Modulus (E) is:",
+    "o": [
+      "2",
+      "0.4",
+      "2.5",
+      "4"
+    ],
+    "a": 1
+  },
+  {
+    "id": 8,
+    "q": "The method of increasing fatigue resistance by overstressing the metal by successively increasing the loading is known as:",
+    "o": [
+      "compounding",
+      "coaxing",
+      "relaxing",
+      "enduring"
+    ],
+    "a": 1
+  },
+  {
+    "id": 9,
+    "q": "The forces, whose lines of action are parallel to each other and act in the same directions, are known as:",
+    "o": [
+      "Coplanar concurrent forces",
+      "Coplanar non-concurrent forces",
+      "Like parallel forces",
+      "Unlike parallel forces"
+    ],
+    "a": 2
+  },
+  {
+    "id": 10,
+    "q": "Beams of uniform strength are preferred to those of uniform section because these are economical for:",
+    "o": [
+      "large spans",
+      "heavy weights",
+      "light weights",
+      "short spans"
+    ],
+    "a": 0
+  },
+  {
+    "id": 11,
+    "q": "A beam is said to be of uniform strength if:",
+    "o": [
+      "the bending moment is same throughout the beam",
+      "the deflection is same throughout the beam",
+      "the bending stress is same throughout the beam",
+      "none of the above"
+    ],
+    "a": 2
+  },
+  {
+    "id": 12,
+    "q": "Monel metal is an alloy of",
+    "o": [
+      "copper and zinc",
+      "copper and chromium",
+      "copper and nickel",
+      "copper and chromium"
+    ],
+    "a": 2
+  },
+  {
+    "id": 13,
+    "q": "The bearings of the lines AB and BC are 146° 30' and 68° 30'. The included angle All",
+    "o": [
+      "102°",
+      "78°",
+      "45°",
+      "None of these."
+    ],
+    "a": 0
+  },
+  {
+    "id": 14,
+    "q": "If velocities of fluid particles vary from point to point in magnitude and direction, as well as from instant to instant, the flow is said to be",
+    "o": [
+      "laminar",
+      "turbulent flow",
+      "uniform flow",
+      "non-uniform flow."
+    ],
+    "a": 1
+  },
+  {
+    "id": 15,
+    "q": "A land is said to be water-logged if its soil pores within:",
+    "o": [
+      "a depth of 40 cm are saturated",
+      "a depth of 50 cm are saturated",
+      "root zone of the crops are saturated",
+      "all the above."
+    ],
+    "a": 2
+  },
+  {
+    "id": 16,
+    "q": "A river is said to be of:",
+    "o": [
+      "aggrading type if it builds up its bed to a certain slope",
+      "degrading type if it cuts its bed to a certain slope",
+      "meandering type if it flows in sinuous curve",
+      "all the above."
+    ],
+    "a": 3
+  },
+  {
+    "id": 17,
+    "q": "The length of the straight portion of a bar beyond the end of the hook, should be at least:",
+    "o": [
+      "twice the diameter",
+      "thrice the diameter",
+      "four times the diameter",
+      "five times the diameter",
+      "seven times the diameter."
+    ],
+    "a": 2
+  },
+  {
+    "id": 18,
+    "q": "Distribution of shear intensity over a rectangular section of a beam, follows:",
+    "o": [
+      "a circular curve",
+      "a straight line",
+      "a parabolic curve",
+      "an elliptical curve",
+      "none of these."
+    ],
+    "a": 2
+  },
+  {
+    "id": 19,
+    "q": "The process of working a flat for the finishing coat, is known:",
+    "o": [
+      "dubbing out",
+      "floating",
+      "knetting",
+      "blistering."
+    ],
+    "a": 1
+  },
+  {
+    "id": 20,
+    "q": "The sill of a common wooden partition is:",
+    "o": [
+      "vertical wooden member on either end",
+      "lower horizontal wooden member",
+      "upper horizontal wooden member",
+      "intermediate horizontal wooden member."
+    ],
+    "a": 1
+  },
+  {
+    "id": 21,
+    "q": "The maximum pressure which the pipe can withstand without any leakage during hydrostatic pressure test, is called:",
+    "o": [
+      "Working pressure",
+      "Design pressure",
+      "Test pressure",
+      "Hydrostatic pressure."
+    ],
+    "a": 2
+  },
+  {
+    "id": 22,
+    "q": "Aeration of water is done to remove:",
+    "o": [
+      "odour",
+      "colour",
+      "bacterias",
+      "hardness",
+      "turbidity."
+    ],
+    "a": 0
+  },
+  {
+    "id": 23,
+    "q": "If cross slope of a country is upto 10% the terrain is classified as:",
+    "o": [
+      "plain",
+      "rolling",
+      "mountainous",
+      "steep."
+    ],
+    "a": 0
+  },
+  {
+    "id": 24,
+    "q": "Setting out of Lemniscate transition curves, is done with:",
+    "o": [
+      "perpendicular offsets",
+      "radial offsets",
+      "deflection angles",
+      "polar deflection angles."
+    ],
+    "a": 3
+  },
+  {
+    "id": 25,
+    "q": "The ratio of the rate of change of discharge of an outlet and parent channel, is known as:",
+    "o": [
+      "efficiency",
+      "sensitivity",
+      "flexibility",
+      "modular limit."
+    ],
+    "a": 2
+  },
+  {
+    "id": 26,
+    "q": "Water-shed line is abandoned for aligning an irrigation canal if:",
+    "o": [
+      "water shed forms a sharp loop",
+      "canal has to take off from a river",
+      "towns and villages are located on the water shed line",
+      "all the above."
+    ],
+    "a": 3
+  },
+  {
+    "id": 27,
+    "q": "Completion of an activity on CPM network diagram, is generally known:",
+    "o": [
+      "Event",
+      "Node",
+      "Connector",
+      "All the above."
+    ],
+    "a": 3
+  },
+  {
+    "id": 28,
+    "q": "The first stage of a construction, is:",
+    "o": [
+      "preparation of estimate",
+      "survey of the site",
+      "initiation of proposal",
+      "preparation of tender",
+      "allotment of funds."
+    ],
+    "a": 2
+  },
+  {
+    "id": 29,
+    "q": "'मधेश कृषि विश्वविद्यालय' (Madhesh Agricultural University) कुन जिल्लामा स्थापना गर्ने प्रक्रिया अघि बढेको छ/स्थापना भएको छ?",
+    "o": [
+      "बारा",
+      "सप्तरी",
+      "सिरहा",
+      "धनुषा"
+    ],
+    "a": 1,
+    "e": "मधेश कृषि विश्वविद्यालय सप्तरी जिल्लाको राजविराजमा स्थापना भएको छ।"
+  },
+  {
+    "id": 30,
+    "q": "प्रश्नपत्रको छपाई सम्बन्धी काम कसले तोकेको कर्मचारीबाट गराउनुपर्ने व्यवस्था छ?",
+    "o": [
+      "अध्यक्षले",
+      "आयोगको सचिवले",
+      "परीक्षा महाशाखा प्रमुखले",
+      "मर्यादापालकले"
+    ],
+    "a": 1,
+    "e": "प्रश्नपत्रको छपाई सम्बन्धी काम आयोगको सचिवले तोकेको कर्मचारीबाट गराउनुपर्नेछ। (नियमावली नियम १६ को उपनियम ३)"
+  },
+  {
+    "id": 31,
+    "q": "सार्वजनिक निकायले कति वर्ष पुराना सूचनाहरू सुरक्षित (अद्यावधिक) राख्नुपर्छ?",
+    "o": [
+      "१० वर्ष",
+      "१५ वर्ष",
+      "२० वर्ष",
+      "२५ वर्ष"
+    ],
+    "a": 2
+  },
+  {
+    "id": 32,
+    "q": "सरकारी कार्यालयका \"लेखा सम्बन्धी कागजातहरू\" (जस्तै: गोश्वारा भौचर, बैंक स्टेटमेन्ट) सामान्यतया कति वर्षसम्म सुरक्षित राख्नुपर्ने व्यवस्था छ?",
+    "o": [
+      "३ वर्ष",
+      "५ वर्ष",
+      "१० वर्ष",
+      "२० वर्ष"
+    ],
+    "a": 1
+  },
+  {
+    "id": 33,
+    "q": "राष्ट्रिय महिला आयोग नेपालको संविधानको कुन भाग र धारामा उल्लेख गरिएको छ?",
+    "o": [
+      "भाग २६, धारा २५१",
+      "भाग २७, धारा २५२",
+      "भाग २८, धारा २५३",
+      "भाग २९, धारा २५४"
+    ],
+    "a": 1
+  },
+  {
+    "id": 34,
+    "q": "मधेश प्रदेश निजामती सेवा अन्तर्गत तलका मध्ये कुन 'सेवा' (Service) को गठन गरिएको छैन?",
+    "o": [
+      "वन सेवा",
+      "इन्जिनियरिङ्ग सेवा",
+      "परराष्ट्र सेवा",
+      "विविध सेवा"
+    ],
+    "a": 2,
+    "e": "संघीय निजामती सेवामा १० वटा सेवा छन् (परराष्ट्र सहित), तर मधेश प्रदेश निजामती सेवा ऐनको दफा ४ मा ९ वटा मात्र सेवाहरू छन्। \"परराष्ट्र सेवा\" प्रदेशमा रहँदैन।"
+  },
+  {
+    "id": 35,
+    "q": "सुशासन ऐनको दफा ४५ बमोजिम मन्त्रालयले कार्य सम्पादन छिटो छरितो बनाउन के बनाई लागू गर्न सक्छ?",
+    "o": [
+      "कार्यविधि (Procedure)",
+      "दिग्दर्शन (Manual/Directive)",
+      "नियमावली (Regulation)",
+      "निर्देशिका (Guideline)"
+    ],
+    "a": 1,
+    "e": "ऐनको दफा ४५ अनुसार मन्त्रालयले आवश्यकता अनुसार आन्तरिक दिग्दर्शन (Manual) बनाई लागू गर्न सक्नेछ।"
+  },
+  {
+    "id": 36,
+    "q": "पाठ्यक्रम निर्माण गर्दा कुन निकायको प्रतिक्रिया लिनुपर्ने व्यवस्था ऐनमा छ?",
+    "o": [
+      "लोक सेवा आयोग (केन्द्र)",
+      "अर्थ मन्त्रालय",
+      "सेवा सञ्चालन गर्ने सम्बन्धित मन्त्रालय वा निकाय",
+      "मुख्य न्यायाधिवक्ताको कार्यालय"
+    ],
+    "a": 2,
+    "e": "पाठ्यक्रम स्वीकृत गर्दा सेवा सञ्चालन गर्ने सम्बन्धित मन्त्रालय, सचिवालय वा स्थानीय तहको प्रतिक्रिया लिनुपर्नेछ। * (ऐन दफा १४ को उपदफा ४)"
+  },
+  {
+    "id": 37,
+    "q": "अवैध मोबाइल रोक्न लागू गरिएको 'MDMS' को पूरा रूप के हो?",
+    "o": [
+      "Mobile Data Management",
+      "Mobile Device Management System",
+      "Mobile Device Monitoring",
+      "Master Device System"
+    ],
+    "a": 1,
+    "e": "भन्सार छलीका फोन रोक्ने प्रणाली।"
+  },
+  {
+    "id": 38,
+    "q": "उपमहानगरपालिका घोषणा हुनका लागि कम्तीमा कति स्थायी बासिन्दा हुनुपर्दछ?",
+    "o": [
+      "१ लाख",
+      "१ लाख ५० हजार",
+      "२ लाख",
+      "३ लाख"
+    ],
+    "a": 2
+  },
+  {
+    "id": 39,
+    "q": "Which of the following is a physical water pollutant?",
+    "o": [
+      "Nitrates",
+      "Dissolved Oxygen",
+      "Turbidity",
+      "Pesticides"
+    ],
+    "a": 2
+  },
+  {
+    "id": 40,
+    "q": "The gas produced in significant quantities from a Sanitary Landfill is:",
+    "o": [
+      "Nitrogen",
+      "Methane",
+      "Helium",
+      "Argon"
+    ],
+    "a": 1
+  },
+  {
+    "id": 41,
+    "q": "कसैलाई पनि मृत्युदण्डको सजाय दिने गरी कानुन बनाइने छैन\" भन्ने प्रावधान कुन हक अन्तर्गत पर्दछ?",
+    "o": [
+      "स्वतन्त्रताको हक (धारा १७)",
+      "सम्मानपूर्वक बाँच्न पाउने हक (धारा १६)",
+      "न्याय सम्बन्धी हक (धारा २०)",
+      "यातना विरुद्धको हक (धारा २२)"
+    ],
+    "a": 1
+  },
+  {
+    "id": 42,
+    "q": "मधेस प्रदेशको उत्तरमा कुन भौगोलिक क्षेत्र पर्छ?",
+    "o": [
+      "पहाड र चुरे",
+      "तराई",
+      "भारत",
+      "हिमाल"
+    ],
+    "a": 0
+  },
+  {
+    "id": 43,
+    "q": "मधेस प्रदेशको कुन जिल्लामा सबैभन्दा बढी उद्योगहरू रहेका छन्?",
+    "o": [
+      "धनुषा",
+      "पर्सा",
+      "बारा",
+      "ख र ग दुवै"
+    ],
+    "a": 3
+  },
+  {
+    "id": 44,
+    "q": "मधेस प्रदेशको राजधानी कहाँ तोकिएको छ?",
+    "o": [
+      "वीरगन्ज",
+      "जनकपुरधाम",
+      "राजविराज",
+      "लहान"
+    ],
+    "a": 1
+  },
+  {
+    "id": 45,
+    "q": "विश्व जनसंख्या दिवस कहिले मनाइन्छ ?",
+    "o": [
+      "जुलाई ११",
+      "जुलाई २२",
+      "जुलाई २७",
+      "जुलाई २९"
+    ],
+    "a": 0
+  },
+  {
+    "id": 46,
+    "q": "हवाइजहाजको उडानको तथ्याङ्क र आवाजलाई ग्रहण गर्ने यन्त्र \"ब्ल्याक बक्स\" को रंग कस्तो हुन्छ ?",
+    "o": [
+      "कालो",
+      "सेतो",
+      "हरियो",
+      "हलका पहेंलो"
+    ],
+    "a": 3
+  },
+  {
+    "id": 47,
+    "q": "भ्यागुते रोग विरुद्ध डि.पि.टी खोप दिइन्छ भने लहरे खोकी विरुद्ध दिइने खोप कुन हो ?",
+    "o": [
+      "बि.सि.जी",
+      "डि.पि.टी",
+      "टी.टी",
+      "कुनै पनी होइन"
+    ],
+    "a": 1
+  },
+  {
+    "id": 48,
+    "q": "संयुक्त राष्ट्रसंघको सदस्यता प्राप्त गर्ने सार्कको अन्तिम मुलुक कुन हो ?",
+    "o": [
+      "नेपाल",
+      "बङ्गलादेश",
+      "अफगानिस्तान",
+      "भारत"
+    ],
+    "a": 1
+  },
+  {
+    "id": 49,
+    "q": "आसियानको सदस्य राष्ट्र मध्ये सबैभन्दा कम प्रतिव्यक्ति आय भएको राष्ट्र कुन हो ?",
+    "o": [
+      "थाइल्यान्ड",
+      "म्यानमार",
+      "मलेसिया",
+      "सिङ्गापुर"
+    ],
+    "a": 1
+  },
+  {
+    "id": 50,
+    "q": "नेपालको संविधान अनुसार प्रतिनिधिसभामा कति निर्वाचन क्षेत्र रहेका छन्?",
+    "o": [
+      "७७",
+      "१६५",
+      "२७५",
+      "३३०"
+    ],
+    "a": 1
+  }
+];
+
+const PRAISE = {
+    good: ["You are a Genius", "Superb work", "Amazing", "Brilliant", "Fantastic", "Excellent"],
+    bad: ["Keep pushing", "Don't give up", "Stay focused", "You can do this"]
+};
+
+const App = {
+    state: { user: null, quiz: [], curr: 0, score: 0, mistakes: [], timer: null, submitted: false },
+
+    save: (k, v) => { try { localStorage.setItem(k, v) } catch(e) {} },
+    load: (k) => { try { return localStorage.getItem(k) } catch(e) { return null } },
+
+    verifyAndLogin: () => {
+        const n = document.getElementById('inp-name').value.trim();
+        const q = document.getElementById('inp-qual').value;
+        const c = document.getElementById('inp-code').value.trim();
+        const msg = document.getElementById('auth-msg');
+        const btn = document.getElementById('btn-verify');
+
+        if(!n || !c) {
+            msg.innerText = "Please enter Name and Code";
+            msg.style.display = 'block'; return;
+        }
+
+        btn.disabled = true; btn.innerText = "Verifying..."; msg.style.display = 'none';
+
+        fetch(`${CFG.authScript}?code=${c}&name=${n}&qual=${q}`)
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === 'success') {
+                document.getElementById('inp-pass').value = data.password;
+                App.state.user = { name: n, qual: q, code: c };
+                App.save(KEYS.user, JSON.stringify(App.state.user));
+                setTimeout(() => App.dash(), 800);
+            } else {
+                btn.disabled = false; btn.innerText = "Verify & Login";
+                msg.style.display = 'block'; msg.style.color = "#ff0055";
+                msg.innerHTML = data.message.includes("used") ? "Code already used or expired." : "Invalid Code";
+            }
+        })
+        .catch(() => {
+            btn.disabled = false; btn.innerText = "Verify & Login";
+            msg.style.display = 'block'; msg.innerText = "Connection Error";
+        });
+    },
+
+    dash: () => {
+        document.getElementById('title-display').innerText = CFG.topic;
+        document.getElementById('dash-topic-display').innerText = CFG.topic;
+
+        const stored = App.load(KEYS.user);
+        if(!stored) return;
+        
+        App.state.user = JSON.parse(stored);
+        
+        document.getElementById('greet-msg').innerText = `Namaste, ${App.state.user.name.split(' ')[0]}!`;
+        document.getElementById('view-login').classList.add('hidden');
+        document.getElementById('view-result').classList.add('hidden');
+        document.getElementById('view-dash').classList.remove('hidden');
+
+        if(App.load(KEYS.sent)) {
+            document.getElementById('btn-start').innerText = "Retake (Practice Mode)";
+            document.getElementById('submitted-msg').style.display = 'block';
+            document.getElementById('submitted-msg').innerText = "✅ Previous Score Submitted";
+        } else {
+            document.getElementById('btn-start').innerText = "Start Exam";
+            document.getElementById('submitted-msg').style.display = 'none';
+        }
+
+        const m = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        document.getElementById('btn-review').style.display = m.length > 0 ? 'inline-block' : 'none';
+    },
+
+    start: (review) => {
+        App.state.curr = 0; App.state.score = 0; App.state.mistakes = []; App.state.submitted = false;
+        const prevM = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        const flatDB = DB.flat ? DB.flat() : DB;
+        let source = review ? flatDB.filter(q => prevM.includes(q.id)) : [...flatDB];
+        
+        if(!source.length) return alert("No questions available.");
+
+        App.state.quiz = source.map(q => {
+            let opts = q.o.map((txt, i) => ({ t: txt, c: i === q.a }));
+            return { ...q, shuffledOpts: opts.sort(() => Math.random() - 0.5) };
+        }).sort(() => Math.random() - 0.5);
+
+        document.getElementById('view-dash').classList.add('hidden');
+        document.getElementById('view-quiz').classList.remove('hidden');
+        document.getElementById('q-total').innerText = App.state.quiz.length;
+        App.timer(45*60);
+        App.render();
+    },
+
+    render: () => {
+        const q = App.state.quiz[App.state.curr];
+        document.getElementById('q-idx').innerText = App.state.curr + 1;
+        document.getElementById('q-text').innerText = q.q;
+        document.getElementById('exp-box').style.display = 'none';
+        document.getElementById('btn-next').classList.add('hidden');
+        
+        const list = document.getElementById('opts-list');
+        list.innerHTML = '';
+        q.shuffledOpts.forEach((opt, i) => {
+            const btn = document.createElement('div');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<div class="option-marker">${String.fromCharCode(65+i)}</div>${opt.t}`;
+            btn.onclick = () => App.check(btn, opt, q);
+            list.appendChild(btn);
+        });
+    },
+
+    check: (btn, opt, q) => {
+        const all = document.querySelectorAll('.option-btn');
+        all.forEach(b => { b.onclick = null; b.style.opacity = '0.6'; });
+        btn.style.opacity = '1';
+        
+        const praise = document.getElementById('praise-txt');
+        praise.classList.remove('animate-praise');
+        void praise.offsetWidth; praise.classList.add('animate-praise');
+
+        // --- PERSONALIZATION UPDATE STARTS HERE ---
+        // Get the first name from the stored user object, fallback to empty string if missing
+        const userName = App.state.user ? App.state.user.name.split(' ')[0] : '';
+        // ------------------------------------------
+
+        if(opt.c) {
+            btn.classList.add('correct');
+            App.state.score++;
+            // Update: Append Name
+            praise.innerText = PRAISE.good[Math.floor(Math.random()*PRAISE.good.length)] + " ! " + userName;
+            praise.style.color = "#00f260";
+            
+            let m = JSON.parse(App.load(KEYS.mistakes) || "[]").filter(id => id !== q.id);
+            App.save(KEYS.mistakes, JSON.stringify(m));
+        } else {
+            btn.classList.add('wrong');
+            all.forEach((b, i) => { if(q.shuffledOpts[i].c) b.classList.add('correct'); });
+            App.state.mistakes.push(q.id);
+            // Update: Append Name
+            praise.innerText = PRAISE.bad[Math.floor(Math.random()*PRAISE.bad.length)] + " ! " + userName;
+            praise.style.color = "#ff0055";
+        }
+
+        if(q.e) {
+            document.getElementById('exp-box').innerHTML = `<strong>Explanation:</strong> ${q.e}`;
+            document.getElementById('exp-box').style.display = 'block';
+        }
+        document.getElementById('btn-next').classList.remove('hidden');
+        setTimeout(() => document.getElementById('btn-next').scrollIntoView({behavior:"smooth", block:"nearest"}), 100);
+    },
+
+    next: () => {
+        App.state.curr++;
+        if(App.state.curr < App.state.quiz.length) App.render();
+        else App.finish();
+    },
+
+    timer: (sec) => {
+        if(App.state.timer) clearInterval(App.state.timer);
+        App.state.timer = setInterval(() => {
+            sec--;
+            let m = Math.floor(sec/60), s = sec%60;
+            document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
+            if(sec<=0) App.finish();
+        }, 1000);
+    },
+
+    finish: () => {
+        clearInterval(App.state.timer);
+        document.getElementById('view-quiz').classList.add('hidden');
+        document.getElementById('view-result').classList.remove('hidden');
+
+        let m = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        m = [...new Set([...m, ...App.state.mistakes])];
+        App.save(KEYS.mistakes, JSON.stringify(m));
+
+        const pct = Math.round((App.state.score / App.state.quiz.length) * 100);
+        document.getElementById('res-score').innerText = App.state.score;
+        document.getElementById('res-pct').innerText = `${pct}% Accuracy`;
+        App.sync();
+    },
+
+    sync: () => {
+        if(App.state.submitted) return;
+        if(App.load(KEYS.sent)) {
+            document.getElementById('sync-status').innerText = "Practice score not sent.";
+            return;
+        }
+
+        App.state.submitted = true;
+        const data = {
+            date: new Date().toLocaleString(),
+            name: App.state.user.name,
+            qualification: App.state.user.qual,
+            topic: CFG.topic,
+            score: App.state.score
+        };
+
+        if(navigator.onLine) {
+            document.getElementById('sync-status').innerText = "Syncing...";
+            fetch(CFG.scoreScript, {
+                method: 'POST', mode: 'no-cors',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            }).then(() => {
+                App.save(KEYS.sent, "true");
+                document.getElementById('sync-status').innerText = "✅ Score Saved!";
+                document.getElementById('sync-status').style.color = "#00f260";
+            }).catch(() => App.offline(data));
+        } else {
+            App.offline(data);
+        }
+    },
+
+    offline: (d) => {
+        let p = JSON.parse(App.load(KEYS.pending) || "[]");
+        p.push(d);
+        App.save(KEYS.pending, JSON.stringify(p));
+        document.getElementById('sync-status').innerText = "Saved offline. Will sync later.";
+    }
+};
+
+window.onload = () => {
+    if(App.load(KEYS.user)) App.dash();
+};
+</script>
+</body>
+</html>

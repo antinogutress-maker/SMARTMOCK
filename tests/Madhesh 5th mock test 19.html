@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Madhesh 5th Mock Test 19</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* [STYLES REMAIN EXACTLY THE SAME] */
+        :root { --primary: #00f260; --secondary: #0575e6; --accent: #ff00cc; --glass-bg: rgba(255, 255, 255, 0.1); --glass-border: rgba(255, 255, 255, 0.2); --text-color: #ffffff; --card-bg: rgba(20, 20, 40, 0.95); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: linear-gradient(135deg, #1a2980, #26d0ce); min-height: 100vh; display: flex; align-items: center; justify-content: center; color: var(--text-color); padding: 15px; overflow-x: hidden; }
+        .app-container { width: 100%; max-width: 650px; background: var(--card-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 24px; padding: 2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative; overflow: hidden; transition: all 0.4s ease; }
+        h1 { font-size: 2rem; font-weight: 800; background: linear-gradient(to right, #00f260, #0575e6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+        h2 { font-size: 1.5rem; margin-bottom: 20px; }
+        p { color: #ccc; font-size: 0.95rem; line-height: 1.6; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .label { display: block; font-size: 0.8rem; margin-bottom: 5px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+        .glass-input { width: 100%; padding: 15px; background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); border-radius: 12px; color: white; font-size: 1rem; outline: none; transition: 0.3s; }
+        .glass-input:focus { border-color: var(--primary); background: rgba(255,255,255,0.15); }
+        .glass-input:read-only { background: rgba(0,0,0,0.2); color: #888; cursor: not-allowed; }
+        select.glass-input option { background: #141428; color: white; }
+        .btn { background: linear-gradient(90deg, #00f260, #0575e6); border: none; color: white; padding: 16px; width: 100%; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-top: 20px; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 5px 20px rgba(0, 242, 96, 0.3); min-height: 50px; }
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { filter: grayscale(1); cursor: wait; }
+        .btn-outline { background: transparent; border: 2px solid var(--glass-border); box-shadow: none; margin-top: 10px; }
+        .personal-header { text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--glass-border); min-height: 50px; display: flex; align-items: center; justify-content: center; }
+        .animate-praise { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .info-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: rgba(255,255,255,0.05); padding: 10px 15px; border-radius: 10px; }
+        .timer-badge { font-family: monospace; font-weight: 700; color: var(--accent); font-size: 1.1rem; }
+        .question-text { font-size: 1.2rem; font-weight: 600; margin-bottom: 20px; line-height: 1.5; }
+        .option-btn { width: 100%; padding: 18px; margin-bottom: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 12px; text-align: left; color: #ddd; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; -webkit-user-select: none; user-select: none; }
+        .option-marker { width: 30px; height: 30px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-weight: 700; flex-shrink: 0; }
+        .correct { background: rgba(0, 242, 96, 0.2) !important; border-color: #00f260 !important; color: white !important; }
+        .correct .option-marker { background: #00f260; color: black; }
+        .wrong { background: rgba(255, 0, 85, 0.2) !important; border-color: #ff0055 !important; color: white !important; }
+        .wrong .option-marker { background: #ff0055; color: white; }
+        .explanation-box { margin-top: 20px; padding: 15px; background: rgba(5, 117, 230, 0.15); border-left: 4px solid var(--secondary); border-radius: 8px; font-size: 0.9rem; display: none; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .score-circle { width: 160px; height: 160px; border-radius: 50%; border: 5px solid var(--primary); margin: 0 auto 20px auto; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 0 30px rgba(0, 242, 96, 0.2); }
+        .score-val { font-size: 3.5rem; font-weight: 800; color: white; line-height: 1; }
+        .hidden { display: none !important; }
+        #opts-list { max-height: 50vh; overflow-y: auto; padding-right: 5px; }
+        #auth-msg { text-align: center; margin-top: 15px; font-weight: 600; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="app">
+    <div id="view-login">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h1 id="title-display">Madhesh 5th Mock Test 19</h1>
+            <p>5th Edition | Civil Engineering</p>
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Full Name</span>
+            <input type="text" id="inp-name" class="glass-input" placeholder="Enter your name">
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Qualification</span>
+            <select id="inp-qual" class="glass-input">
+                <option value="Engineer">Engineer</option>
+                <option value="Sub-Engineer">Sub-Engineer</option>
+                <option value="Asst. Sub-Engineer">Asst. Sub-Engineer</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <span class="label">Unique Code</span>
+            <input type="tel" id="inp-code" class="glass-input" placeholder="Enter 5-digit code">
+        </div>
+
+        <div class="input-group">
+            <span class="label">Password (Auto-Fill)</span>
+            <input type="password" id="inp-pass" class="glass-input" placeholder="Verifying..." readonly>
+        </div>
+
+        <button class="btn" id="btn-verify" onclick="App.verifyAndLogin()">Verify & Login</button>
+        <p id="auth-msg"></p>
+    </div>
+
+    <div id="view-dash" class="hidden">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2 id="greet-msg" style="color: var(--primary);">Welcome!</h2>
+            <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 16px; margin-bottom: 20px;">
+                <p style="text-transform: uppercase; font-size: 0.8rem; color: #aaa;">Active Session</p>
+                <h3 id="dash-topic-display" style="font-size: 1.5rem; margin: 10px 0;"></h3>
+                <p>50 Questions • 45 Minutes</p>
+            </div>
+        </div>
+        <button class="btn" id="btn-start" onclick="App.start(false)">Start New Quiz</button>
+        <p id="submitted-msg" style="color: var(--primary); text-align: center; margin-top: 15px; display: none;">✅ Score Submitted Successfully</p>
+        <button class="btn btn-outline" id="btn-review" onclick="App.start(true)" style="display: none;">Review Mistakes</button>
+    </div>
+
+    <div id="view-quiz" class="hidden">
+        <div class="personal-header">
+            <div id="praise-txt" style="font-size: 1.2rem; font-weight: 700; color: white;">Good Luck!</div>
+        </div>
+
+        <div class="info-bar">
+            <span>Q: <span id="q-idx">1</span> / <span id="q-total">50</span></span>
+            <span class="timer-badge" id="timer">45:00</span>
+        </div>
+
+        <div id="q-container">
+            <div class="question-text" id="q-text">Loading...</div>
+            <div id="opts-list"></div>
+            <div class="explanation-box" id="exp-box"></div>
+        </div>
+
+        <button class="btn hidden" id="btn-next" onclick="App.next()">Next Question</button>
+    </div>
+
+    <div id="view-result" class="hidden" style="text-align: center;">
+        <h2>Quiz Completed!</h2>
+        <div class="score-circle">
+            <span class="score-val" id="res-score">0</span>
+            <span style="font-size: 0.8rem; text-transform: uppercase; color: #aaa;">Correct</span>
+        </div>
+        <div style="margin-bottom: 30px;">
+            <h3 id="res-pct" style="color: var(--primary);">0% Accuracy</h3>
+            <p id="sync-status" style="font-size: 0.9rem; margin-top: 10px; opacity: 0.8;">Syncing score...</p>
+        </div>
+        <button class="btn" onclick="App.dash()">Back to Dashboard</button>
+    </div>
+</div>
+
+<script>
+/**
+ * ----------------------------------------------------
+ * CONFIGURATION - CHANGE ONLY THIS SECTION FOR NEW APPS
+ * ----------------------------------------------------
+ */
+const CFG = {
+    // UPDATED TOPIC NAME
+    topic: "Madhesh 5th Mock Test 19", 
+    
+    scoreScript: "https://script.google.com/macros/s/AKfycbztgOiYdZlPssBus6iXQ6LwokmA4LS2b7CzgcKS4gd1iv9lG7MB_N7SupsxSdYQedEZgA/exec",
+    authScript: "https://script.google.com/macros/s/AKfycbyUGMGXI7vml6jzJsCxhXvHgnq4V4Aq6sl6blkJkdfC8_haCxI__kx3EwFzZrW942E6/exec"
+};
+
+// --- AUTOMATIC KEY GENERATOR ---
+const _tid = CFG.topic.replace(/[^a-zA-Z0-9]/g, "_");
+const KEYS = {
+    user: "civil_eng_global_user",
+    mistakes: `mistakes_${_tid}`,
+    sent: `sent_status_${_tid}`,
+    pending: `pending_${_tid}`
+};
+
+// --- DATASET (Replace with your new MCQs here) ---
+const DB = [
+  {
+    "id": 1,
+    "q": "मधेश प्रदेश सरकारको मन्त्रालयहरूको कार्यविभाजन नियमावलीको \"अनुसूची-२\" मा के व्यवस्था गरिएको छ?",
+    "o": [
+      "मन्त्रालयहरूको नाम",
+      "मन्त्रालयहरूको कार्य विभाजन",
+      "मन्त्रीहरूको शपथ ग्रहण ढाँचा",
+      "प्रदेश सभा सदस्यहरूको सेवा सुविधा"
+    ],
+    "a": 1,
+    "e": "नियम ४ सँग सम्बन्धित \"अनुसूची-२\" मा मन्त्रालयहरूबाट सम्पादन हुने \"मन्त्रालयको कार्य विभाजन\" (Work Division) को विस्तृत विवरण उल्लेख छ"
+  },
+  {
+    "id": 2,
+    "q": "अन्तर्वार्ताद्वारा मात्र (Only Interview) पदपूर्ति हुने पदको लागि अन्तर्वार्ताको पूर्णाङ्क कति हुने व्यवस्था छ?",
+    "o": [
+      "५० अङ्क",
+      "६० अङ्क",
+      "१०० अङ्क",
+      "२०० अङ्क"
+    ],
+    "a": 2,
+    "e": "लिखित परीक्षा नभई सिधै अन्तर्वार्ताद्वारा मात्र पदपूर्ति हुने पदका लागि अन्तर्वार्ताको पूर्णाङ्क १०० हुनेछ। (नियमावली अनुसूची-४ को बुँदा ४)"
+  },
+  {
+    "id": 3,
+    "q": "कुनै पनि सूचनालाई बढीमा कति वर्षसम्म गोप्य (Classified) राख्न सकिन्छ?",
+    "o": [
+      "२० वर्ष",
+      "२५ वर्ष",
+      "३० वर्ष",
+      "५० वर्ष"
+    ],
+    "a": 2
+  },
+  {
+    "id": 4,
+    "q": "आर्थिक कार्यविधि तथा वित्तीय उत्तरदायित्व ऐन, २०७६ अनुसार सरकारी कारोबार गर्ने बैंकले सङ्कलन गरेको राजस्व तोकिएको समयमा सञ्चित कोषमा दाखिला नगरेमा कति जरिवाना लाग्छ?",
+    "o": [
+      "५ प्रतिशत",
+      "१० प्रतिशत",
+      "ब्याज मात्र",
+      "जरिवाना लाग्दैन"
+    ],
+    "a": 1,
+    "e": "ऐनको दफा २७ (४) अनुसार बैंकले राजस्व दाखिला गर्न ढिलो गरेमा जम्मा गर्न बाँकी रकमको दश प्रतिशत (१०%) का दरले जरिवाना हुनेछ। (स्रोत: ऐन २०७६, दफा २७ (४))"
+  },
+  {
+    "id": 5,
+    "q": "कुनै प्रदेश निजामती कर्मचारीले 'राजनीतिक दलको सदस्यता लिएमा' निजलाई कस्तो विभागीय सजाय हुन्छ?",
+    "o": [
+      "नसिहत",
+      "बढुवा रोक्का",
+      "भविष्यमा अयोग्य नठहरिने गरी सेवाबाट हटाउने",
+      "भविष्यमा अयोग्य ठहरिने गरी बर्खास्त"
+    ],
+    "a": 2,
+    "e": "राजनीतिक दलको सदस्यता लिएमा सेवाबाट हटाउने सजाय हुन्छ। स्रोत: दफा ८७(१)(ख)।"
+  },
+  {
+    "id": 6,
+    "q": "सुशासन ऐन बमोजिम नेपाल सरकारले प्रशासनिक कार्य सम्पादन गर्दा अख्तियार गर्ने नीतिहरुमा तलको कुन पर्दैन?",
+    "o": [
+      "आर्थिक उदारीकरण",
+      "सामाजिक न्याय",
+      "केन्द्रीकृत शासन प्रणाली",
+      "वातावरणीय संरक्षण"
+    ],
+    "a": 2,
+    "e": "दफा ७ मा 'विकेन्द्रीकरण तथा सन्तुलित क्षेत्रीय विकास' उल्लेख छ, 'केन्द्रीकृत शासन प्रणाली' होइन।"
+  },
+  {
+    "id": 7,
+    "q": "आदिवासी जनजाति आयोग नेपालको संविधानको कुन भाग र धारामा उल्लेख गरिएको छ?",
+    "o": [
+      "भाग २६, धारा २६०",
+      "भाग २७, धारा २६१",
+      "भाग २८, धारा २६२",
+      "भाग २९, धारा २६३"
+    ],
+    "a": 1
+  },
+  {
+    "id": 8,
+    "q": "What is the minimum duration of a procurement contract for price adjustment to be considered?",
+    "o": [
+      "Six months",
+      "Twelve months",
+      "Fifteen months",
+      "Eighteen months"
+    ],
+    "a": 2
+  },
+  {
+    "id": 9,
+    "q": "भवन निर्माण गर्दा सँधियारलाई सूचना टाँस गरेको म्याद नाघेको कति दिनभित्र प्राविधिक कर्मचारी खटाई जाँच गर्न लगाउनु पर्नेछ?",
+    "o": [
+      "३ दिनभित्र",
+      "५ दिनभित्र",
+      "७ दिनभित्र",
+      "१० दिनभित्र"
+    ],
+    "a": 0
+  },
+  {
+    "id": 10,
+    "q": "आर्थिक कार्यविधि तथा वित्तीय उत्तरदायित्व नियमावली २०७७, कार्यालयमा प्राप्त भएको नगद राजस्व कति रकमसम्म भएमा सोझै नगद बुझिलिन सकिन्छ (बैंक भौचर बिना)?",
+    "o": [
+      "रु. १,००० सम्म",
+      "रु. ३,००० सम्म",
+      "रु. ५,००० सम्म",
+      "रु. १०,००० सम्म"
+    ],
+    "a": 2,
+    "e": "नियमावलीको नियम ५८ (४) अनुसार कार्यालयले पाँच हजार रूपैयाँसम्म को राजस्व नगदै बुझिलिन सक्नेछ। (स्रोत: नियम ५८(४), पृष्ठ ४६)"
+  },
+  {
+    "id": 11,
+    "q": "If water table is comparatively high, the irrigation canal becomes useless, due to",
+    "o": [
+      "large amount of seepage",
+      "water logging of the cultivated areas",
+      "uncertain water demand",
+      "spread of malaria",
+      "all the above."
+    ],
+    "a": 4
+  },
+  {
+    "id": 12,
+    "q": "Irrigation canals are generally aligned along",
+    "o": [
+      "ridge line",
+      "contour line",
+      "valley line",
+      "straight line."
+    ],
+    "a": 0
+  },
+  {
+    "id": 13,
+    "q": "Railway projects are treated as",
+    "o": [
+      "light construction",
+      "heavy construction",
+      "industrial construction",
+      "none of these."
+    ],
+    "a": 1
+  },
+  {
+    "id": 14,
+    "q": "For the execution of a project, a contractor is",
+    "o": [
+      "a person",
+      "a firm",
+      "an agency",
+      "all the above."
+    ],
+    "a": 3
+  },
+  {
+    "id": 15,
+    "q": "The measurement is made for stone work in square metre in case of",
+    "o": [
+      "Wall facing",
+      "Columns, lintels, copings",
+      "Building work",
+      "Dressed stones in Chajjas",
+      "(a) and (d) of the above."
+    ],
+    "a": 4
+  },
+  {
+    "id": 16,
+    "q": "The expected out turn of 2.5 cm cement concrete floor per manson per day",
+    "o": [
+      "2.5 sqm",
+      "5.0 sqm",
+      "7.5 sqm",
+      "10 sqm"
+    ],
+    "a": 2
+  },
+  {
+    "id": 17,
+    "q": "Thickness of a pavement may be reduced considerably by",
+    "o": [
+      "compaction of soil",
+      "stabilisation of soil",
+      "drainage of soil",
+      "combination of all the above."
+    ],
+    "a": 3
+  },
+  {
+    "id": 18,
+    "q": "The minimum value of camber provided for thin bituminous surface hill roads, is",
+    "o": [
+      "2.2%",
+      "2.5%",
+      "3.0%",
+      "3.5%"
+    ],
+    "a": 1
+  },
+  {
+    "id": 19,
+    "q": "Surge tanks are used",
+    "o": [
+      "for storage water",
+      "to increase the velocity in a pipeline",
+      "as overflow valves",
+      "to guard against water hammer."
+    ],
+    "a": 3
+  },
+  {
+    "id": 20,
+    "q": "Acidity in water is caused due to",
+    "o": [
+      "Mineral acids",
+      "Free CO2",
+      "Iron sulphate",
+      "Aluminium sulphate",
+      "All the above."
+    ],
+    "a": 4
+  },
+  {
+    "id": 21,
+    "q": "Dado is usually provided in",
+    "o": [
+      "dinning halls",
+      "bath rooms",
+      "living rooms",
+      "verandah",
+      "roofs."
+    ],
+    "a": 1
+  },
+  {
+    "id": 22,
+    "q": "Queen closer may be placed",
+    "o": [
+      "in header course",
+      "in stretcher course",
+      "in header course next to first brick",
+      "in stretcher course next to first brick",
+      "in any position."
+    ],
+    "a": 2
+  },
+  {
+    "id": 23,
+    "q": "Tongue plates are provided in a steel girder at",
+    "o": [
+      "the upper flange",
+      "the lower flange",
+      "the upper end of the web",
+      "the lower end of the web",
+      "the upper and lower ends of the web."
+    ],
+    "a": 4
+  },
+  {
+    "id": 24,
+    "q": "For a column of height L fixed in position and direction both at its top and bottom, its effective length, is",
+    "o": [
+      "L",
+      "L",
+      "(1/2)*L",
+      "2L"
+    ],
+    "a": 2
+  },
+  {
+    "id": 25,
+    "q": "In the pipette analysis, the sampling depth will be",
+    "o": [
+      "constant",
+      "goes on increasing",
+      "does decrease",
+      "none"
+    ],
+    "a": 0
+  },
+  {
+    "id": 26,
+    "q": "Number of piles required to support a wall is:",
+    "o": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "a": 1
+  },
+  {
+    "id": 27,
+    "q": "A flow whose streamline is represented by a curve, is called",
+    "o": [
+      "one-dimensional flow",
+      "two-dimensional flow",
+      "three-dimensional flow",
+      "four-dimensional flow"
+    ],
+    "a": 1
+  },
+  {
+    "id": 28,
+    "q": "The highest efficiency is obtained with a channel of",
+    "o": [
+      "circular",
+      "square",
+      "rectangular",
+      "trapezoidal"
+    ],
+    "a": 3
+  },
+  {
+    "id": 29,
+    "q": "Laminar flow is also called",
+    "o": [
+      "Viscous flow",
+      "Compressible flow",
+      "Steady flow",
+      "Uniform flow"
+    ],
+    "a": 0
+  },
+  {
+    "id": 30,
+    "q": "The neutral axis of a beam cross-section must",
+    "o": [
+      "pass through the centroid of the section",
+      "be equidistant from the top of bottom films",
+      "be an axis of symmetry of the section",
+      "none of these."
+    ],
+    "a": 0
+  },
+  {
+    "id": 31,
+    "q": "Every material obeys the Hooke's law within its",
+    "o": [
+      "elastic limit",
+      "plastic point",
+      "limit of proportionality",
+      "none of these."
+    ],
+    "a": 2
+  },
+  {
+    "id": 32,
+    "q": "The value of Poisson's ratio always remains",
+    "o": [
+      "greater than one",
+      "less than one",
+      "equal to one",
+      "none of these."
+    ],
+    "a": 1
+  },
+  {
+    "id": 33,
+    "q": "Which of the following tools is used for cutting soft bricks",
+    "o": [
+      "Jointer",
+      "Scutch",
+      "Spirit level",
+      "Trowel"
+    ],
+    "a": 1
+  },
+  {
+    "id": 34,
+    "q": "Which of the following is an alloy of copper?",
+    "o": [
+      "Vitalium",
+      "Brass",
+      "Invar",
+      "Solder"
+    ],
+    "a": 1
+  },
+  {
+    "id": 35,
+    "q": "In the cement the compound quickest to react with water, is",
+    "o": [
+      "Tricalcium aluminate",
+      "Tetra-calcium alumino-ferrite",
+      "Tricalcium silicate",
+      "Dicalcium silicate."
+    ],
+    "a": 0
+  },
+  {
+    "id": 36,
+    "q": "The direction of steepest slope on a contour, is",
+    "o": [
+      "along the contour",
+      "at an angle of 45° to the contour",
+      "at right angles to the contour",
+      "none of these."
+    ],
+    "a": 2
+  },
+  {
+    "id": 37,
+    "q": "The longitudinal section of the surface of bubble tube is",
+    "o": [
+      "straight",
+      "circular",
+      "parabolic",
+      "elliptic."
+    ],
+    "a": 1
+  },
+  {
+    "id": 38,
+    "q": "Imaginary line passing through points having equal magnetic declination is termed as",
+    "o": [
+      "isogonic line",
+      "agonic line",
+      "isoclinic line",
+      "none of these."
+    ],
+    "a": 0
+  },
+  {
+    "id": 39,
+    "q": "मधेस प्रदेशको प्रमुख नगदे बाली कुन हो?",
+    "o": [
+      "अलैंची",
+      "उखु",
+      "चिया",
+      "कफी"
+    ],
+    "a": 1
+  },
+  {
+    "id": 40,
+    "q": "मधेश प्रदेशको सबैभन्दा ठूलो औद्योगिक सहर कुन हो?",
+    "o": [
+      "लहान",
+      "वीरगञ्ज",
+      "गौर",
+      "मलङ्गवा"
+    ],
+    "a": 1
+  },
+  {
+    "id": 41,
+    "q": "नेपालको १५औँ योजनाले मधेस प्रदेशलाई कुन मुख्य पहिचान दिएको छ?",
+    "o": [
+      "ऊर्जा र पर्यटनको केन्द्र",
+      "नेपालको अन्न भण्डार र औद्योगिक हब",
+      "जडीबुटी र वन पैदावारको केन्द्र",
+      "जलस्रोतको प्रमुख स्रोत"
+    ],
+    "a": 1
+  },
+  {
+    "id": 42,
+    "q": "एक सिङ्गे गैँडा' का लागि नेपालको कुन राष्ट्रिय निकुञ्ज प्रसिद्ध छ?",
+    "o": [
+      "सगरमाथा राष्ट्रिय निकुञ्ज",
+      "चितवन राष्ट्रिय निकुञ्ज",
+      "बर्दिया राष्ट्रिय निकुञ्ज",
+      "रारा राष्ट्रिय निकुञ्ज"
+    ],
+    "a": 1
+  },
+  {
+    "id": 43,
+    "q": "चिकित्सा विज्ञानमा 'पेनिसिलिन' को आविष्कार कसले गरेका थिए?",
+    "o": [
+      "लुइस पास्चर",
+      "अलेक्जेन्डर फ्लेमिङ",
+      "एडवर्ड जेनर",
+      "म्याडम क्युरी"
+    ],
+    "a": 1
+  },
+  {
+    "id": 44,
+    "q": "शारीरिक ऊर्जाका लागि सबैभन्दा छिटो काम गर्ने तत्व कुन हो?",
+    "o": [
+      "ग्लुकोज",
+      "प्रोटिन",
+      "भिटामिन",
+      "खनिज"
+    ],
+    "a": 0
+  },
+  {
+    "id": 45,
+    "q": "संयुक्त राष्ट्र संघका कतिवटा मुख्य अङ्गहरू छन्?",
+    "o": [
+      "५",
+      "६",
+      "७",
+      "४"
+    ],
+    "a": 1
+  },
+  {
+    "id": 46,
+    "q": "आसियान (ASEAN) को स्थापना कहिले भएको थियो?",
+    "o": [
+      "१९६७ अगस्ट ८",
+      "१९७० जुन ५",
+      "१९४५ अक्टोबर २४",
+      "१९८५ डिसेम्बर ८"
+    ],
+    "a": 0
+  },
+  {
+    "id": 47,
+    "q": "हालै कुन देशले नाटो (NATO) को ३२औँ सदस्यका रूपमा सदस्यता प्राप्त गर्‍यो?",
+    "o": [
+      "फिनल्याण्ड",
+      "स्विडेन",
+      "युक्रेन",
+      "नर्वे"
+    ],
+    "a": 1
+  },
+  {
+    "id": 48,
+    "q": "प्रतिव्यक्ति विद्युत उपभोग कति किलोवाट घण्टा पुर्‍याउने लक्ष्य राखिएको छ?",
+    "o": [
+      "२४५",
+      "७००",
+      "५००",
+      "८००"
+    ],
+    "a": 1
+  },
+  {
+    "id": 49,
+    "q": "The gas produced in significant quantities from a Sanitary Landfill is:",
+    "o": [
+      "Nitrogen",
+      "Methane",
+      "Helium",
+      "Argon"
+    ],
+    "a": 1
+  },
+  {
+    "id": 50,
+    "q": "The Chure region is geographically located between which two regions?",
+    "o": [
+      "Terai and Bhabar",
+      "Bhabar and Mahabharat Range",
+      "Mahabharat and Himals",
+      "Terai and Indian border"
+    ],
+    "a": 1
+  }
+];
+
+const PRAISE = {
+    good: ["You are a Genius", "Superb work", "Amazing", "Brilliant", "Fantastic", "Excellent"],
+    bad: ["Keep pushing", "Don't give up", "Stay focused", "You can do this"]
+};
+
+const App = {
+    state: { user: null, quiz: [], curr: 0, score: 0, mistakes: [], timer: null, submitted: false },
+
+    save: (k, v) => { try { localStorage.setItem(k, v) } catch(e) {} },
+    load: (k) => { try { return localStorage.getItem(k) } catch(e) { return null } },
+
+    verifyAndLogin: () => {
+        const n = document.getElementById('inp-name').value.trim();
+        const q = document.getElementById('inp-qual').value;
+        const c = document.getElementById('inp-code').value.trim();
+        const msg = document.getElementById('auth-msg');
+        const btn = document.getElementById('btn-verify');
+
+        if(!n || !c) {
+            msg.innerText = "Please enter Name and Code";
+            msg.style.display = 'block'; return;
+        }
+
+        btn.disabled = true; btn.innerText = "Verifying..."; msg.style.display = 'none';
+
+        fetch(`${CFG.authScript}?code=${c}&name=${n}&qual=${q}`)
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === 'success') {
+                document.getElementById('inp-pass').value = data.password;
+                App.state.user = { name: n, qual: q, code: c };
+                App.save(KEYS.user, JSON.stringify(App.state.user));
+                setTimeout(() => App.dash(), 800);
+            } else {
+                btn.disabled = false; btn.innerText = "Verify & Login";
+                msg.style.display = 'block'; msg.style.color = "#ff0055";
+                msg.innerHTML = data.message.includes("used") ? "Code already used or expired." : "Invalid Code";
+            }
+        })
+        .catch(() => {
+            btn.disabled = false; btn.innerText = "Verify & Login";
+            msg.style.display = 'block'; msg.innerText = "Connection Error";
+        });
+    },
+
+    dash: () => {
+        document.getElementById('title-display').innerText = CFG.topic;
+        document.getElementById('dash-topic-display').innerText = CFG.topic;
+
+        const stored = App.load(KEYS.user);
+        if(!stored) return;
+        
+        App.state.user = JSON.parse(stored);
+        
+        document.getElementById('greet-msg').innerText = `Namaste, ${App.state.user.name.split(' ')[0]}!`;
+        document.getElementById('view-login').classList.add('hidden');
+        document.getElementById('view-result').classList.add('hidden');
+        document.getElementById('view-dash').classList.remove('hidden');
+
+        if(App.load(KEYS.sent)) {
+            document.getElementById('btn-start').innerText = "Retake (Practice Mode)";
+            document.getElementById('submitted-msg').style.display = 'block';
+            document.getElementById('submitted-msg').innerText = "✅ Previous Score Submitted";
+        } else {
+            document.getElementById('btn-start').innerText = "Start Exam";
+            document.getElementById('submitted-msg').style.display = 'none';
+        }
+
+        const m = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        document.getElementById('btn-review').style.display = m.length > 0 ? 'inline-block' : 'none';
+    },
+
+    start: (review) => {
+        App.state.curr = 0; App.state.score = 0; App.state.mistakes = []; App.state.submitted = false;
+        const prevM = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        const flatDB = DB.flat ? DB.flat() : DB;
+        let source = review ? flatDB.filter(q => prevM.includes(q.id)) : [...flatDB];
+        
+        if(!source.length) return alert("No questions available.");
+
+        App.state.quiz = source.map(q => {
+            let opts = q.o.map((txt, i) => ({ t: txt, c: i === q.a }));
+            return { ...q, shuffledOpts: opts.sort(() => Math.random() - 0.5) };
+        }).sort(() => Math.random() - 0.5);
+
+        document.getElementById('view-dash').classList.add('hidden');
+        document.getElementById('view-quiz').classList.remove('hidden');
+        document.getElementById('q-total').innerText = App.state.quiz.length;
+        App.timer(45*60);
+        App.render();
+    },
+
+    render: () => {
+        const q = App.state.quiz[App.state.curr];
+        document.getElementById('q-idx').innerText = App.state.curr + 1;
+        document.getElementById('q-text').innerText = q.q;
+        document.getElementById('exp-box').style.display = 'none';
+        document.getElementById('btn-next').classList.add('hidden');
+        
+        const list = document.getElementById('opts-list');
+        list.innerHTML = '';
+        q.shuffledOpts.forEach((opt, i) => {
+            const btn = document.createElement('div');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<div class="option-marker">${String.fromCharCode(65+i)}</div>${opt.t}`;
+            btn.onclick = () => App.check(btn, opt, q);
+            list.appendChild(btn);
+        });
+    },
+
+    check: (btn, opt, q) => {
+        const all = document.querySelectorAll('.option-btn');
+        all.forEach(b => { b.onclick = null; b.style.opacity = '0.6'; });
+        btn.style.opacity = '1';
+        
+        const praise = document.getElementById('praise-txt');
+        praise.classList.remove('animate-praise');
+        void praise.offsetWidth; praise.classList.add('animate-praise');
+
+        // --- PERSONALIZATION UPDATE STARTS HERE ---
+        // Get the first name from the stored user object, fallback to empty string if missing
+        const userName = App.state.user ? App.state.user.name.split(' ')[0] : '';
+        // ------------------------------------------
+
+        if(opt.c) {
+            btn.classList.add('correct');
+            App.state.score++;
+            // Update: Append Name
+            praise.innerText = PRAISE.good[Math.floor(Math.random()*PRAISE.good.length)] + " ! " + userName;
+            praise.style.color = "#00f260";
+            
+            let m = JSON.parse(App.load(KEYS.mistakes) || "[]").filter(id => id !== q.id);
+            App.save(KEYS.mistakes, JSON.stringify(m));
+        } else {
+            btn.classList.add('wrong');
+            all.forEach((b, i) => { if(q.shuffledOpts[i].c) b.classList.add('correct'); });
+            App.state.mistakes.push(q.id);
+            // Update: Append Name
+            praise.innerText = PRAISE.bad[Math.floor(Math.random()*PRAISE.bad.length)] + " ! " + userName;
+            praise.style.color = "#ff0055";
+        }
+
+        if(q.e) {
+            document.getElementById('exp-box').innerHTML = `<strong>Explanation:</strong> ${q.e}`;
+            document.getElementById('exp-box').style.display = 'block';
+        }
+        document.getElementById('btn-next').classList.remove('hidden');
+        setTimeout(() => document.getElementById('btn-next').scrollIntoView({behavior:"smooth", block:"nearest"}), 100);
+    },
+
+    next: () => {
+        App.state.curr++;
+        if(App.state.curr < App.state.quiz.length) App.render();
+        else App.finish();
+    },
+
+    timer: (sec) => {
+        if(App.state.timer) clearInterval(App.state.timer);
+        App.state.timer = setInterval(() => {
+            sec--;
+            let m = Math.floor(sec/60), s = sec%60;
+            document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
+            if(sec<=0) App.finish();
+        }, 1000);
+    },
+
+    finish: () => {
+        clearInterval(App.state.timer);
+        document.getElementById('view-quiz').classList.add('hidden');
+        document.getElementById('view-result').classList.remove('hidden');
+
+        let m = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        m = [...new Set([...m, ...App.state.mistakes])];
+        App.save(KEYS.mistakes, JSON.stringify(m));
+
+        const pct = Math.round((App.state.score / App.state.quiz.length) * 100);
+        document.getElementById('res-score').innerText = App.state.score;
+        document.getElementById('res-pct').innerText = `${pct}% Accuracy`;
+        App.sync();
+    },
+
+    sync: () => {
+        if(App.state.submitted) return;
+        if(App.load(KEYS.sent)) {
+            document.getElementById('sync-status').innerText = "Practice score not sent.";
+            return;
+        }
+
+        App.state.submitted = true;
+        const data = {
+            date: new Date().toLocaleString(),
+            name: App.state.user.name,
+            qualification: App.state.user.qual,
+            topic: CFG.topic,
+            score: App.state.score
+        };
+
+        if(navigator.onLine) {
+            document.getElementById('sync-status').innerText = "Syncing...";
+            fetch(CFG.scoreScript, {
+                method: 'POST', mode: 'no-cors',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            }).then(() => {
+                App.save(KEYS.sent, "true");
+                document.getElementById('sync-status').innerText = "✅ Score Saved!";
+                document.getElementById('sync-status').style.color = "#00f260";
+            }).catch(() => App.offline(data));
+        } else {
+            App.offline(data);
+        }
+    },
+
+    offline: (d) => {
+        let p = JSON.parse(App.load(KEYS.pending) || "[]");
+        p.push(d);
+        App.save(KEYS.pending, JSON.stringify(p));
+        document.getElementById('sync-status').innerText = "Saved offline. Will sync later.";
+    }
+};
+
+window.onload = () => {
+    if(App.load(KEYS.user)) App.dash();
+};
+</script>
+</body>
+</html>

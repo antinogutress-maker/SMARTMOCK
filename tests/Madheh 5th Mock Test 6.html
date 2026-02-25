@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Madhesh 5th Mock Test 5</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00f260;
+            --secondary: #0575e6;
+            --accent: #ff00cc;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-color: #ffffff;
+            --card-bg: rgba(20, 20, 40, 0.95);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-color);
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        /* --- Glassmorphism Container --- */
+        .app-container {
+            width: 100%;
+            max-width: 650px;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        /* --- Typography --- */
+        h1 { font-size: 2rem; font-weight: 800; background: linear-gradient(to right, #00f260, #0575e6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+        h2 { font-size: 1.5rem; margin-bottom: 20px; }
+        p { color: #ccc; font-size: 0.95rem; line-height: 1.6; }
+
+        /* --- Inputs & Buttons --- */
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .label { display: block; font-size: 0.8rem; margin-bottom: 5px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+        .glass-input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+        .glass-input:focus { border-color: var(--primary); background: rgba(255,255,255,0.15); }
+        .glass-input:read-only { background: rgba(0,0,0,0.2); color: #888; cursor: not-allowed; }
+        
+        select.glass-input option { background: #141428; color: white; }
+
+        .btn {
+            background: linear-gradient(90deg, #00f260, #0575e6);
+            border: none;
+            color: white;
+            padding: 16px;
+            width: 100%;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 5px 20px rgba(0, 242, 96, 0.3);
+            min-height: 50px; 
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { filter: grayscale(1); cursor: wait; }
+        .btn-outline { background: transparent; border: 2px solid var(--glass-border); box-shadow: none; margin-top: 10px; }
+
+        /* --- Personalization Header --- */
+        .personal-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--glass-border);
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .animate-praise { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* --- Quiz UI --- */
+        .info-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.05);
+            padding: 10px 15px;
+            border-radius: 10px;
+        }
+        .timer-badge { font-family: monospace; font-weight: 700; color: var(--accent); font-size: 1.1rem; }
+
+        .question-text { font-size: 1.2rem; font-weight: 600; margin-bottom: 20px; line-height: 1.5; }
+
+        .option-btn {
+            width: 100%;
+            padding: 18px;
+            margin-bottom: 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            text-align: left;
+            color: #ddd;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        .option-marker {
+            width: 30px; height: 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin-right: 15px; font-weight: 700; flex-shrink: 0;
+        }
+
+        .correct { background: rgba(0, 242, 96, 0.2) !important; border-color: #00f260 !important; color: white !important; }
+        .correct .option-marker { background: #00f260; color: black; }
+        
+        .wrong { background: rgba(255, 0, 85, 0.2) !important; border-color: #ff0055 !important; color: white !important; }
+        .wrong .option-marker { background: #ff0055; color: white; }
+
+        .explanation-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(5, 117, 230, 0.15);
+            border-left: 4px solid var(--secondary);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Results --- */
+        .score-circle {
+            width: 160px; height: 160px;
+            border-radius: 50%;
+            border: 5px solid var(--primary);
+            margin: 0 auto 20px auto;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            box-shadow: 0 0 30px rgba(0, 242, 96, 0.2);
+        }
+        .score-val { font-size: 3.5rem; font-weight: 800; color: white; line-height: 1; }
+        
+        .hidden { display: none !important; }
+        
+        #opts-list { max-height: 50vh; overflow-y: auto; padding-right: 5px; }
+
+        /* Auth Message Style */
+        #auth-msg { 
+            text-align: center; 
+            margin-top: 15px; 
+            font-weight: 600; 
+            background: rgba(0,0,0,0.3); 
+            padding: 10px; 
+            border-radius: 8px; 
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="app">
+    <div id="view-login">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h1>Madhesh 5th Mock Test  4</h1>
+            <p>5th Edition | Civil Engineering</p>
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Full Name</span>
+            <input type="text" id="inp-name" class="glass-input" placeholder="Enter your name">
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Qualification</span>
+            <select id="inp-qual" class="glass-input">
+                <option value="Engineer">Engineer</option>
+                <option value="Sub-Engineer">Sub-Engineer</option>
+                <option value="Asst. Sub-Engineer">Asst. Sub-Engineer</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <span class="label">Unique Code</span>
+            <input type="tel" id="inp-code" class="glass-input" placeholder="Enter 5-digit code">
+        </div>
+
+        <div class="input-group">
+            <span class="label">Password (Auto-Fill)</span>
+            <input type="password" id="inp-pass" class="glass-input" placeholder="Verifying..." readonly>
+        </div>
+
+        <button class="btn" id="btn-verify" onclick="App.verifyAndLogin()">Verify & Login</button>
+        
+        <p id="auth-msg"></p>
+    </div>
+
+    <div id="view-dash" class="hidden">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2 id="greet-msg" style="color: var(--primary);">Welcome!</h2>
+            <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 16px; margin-bottom: 20px;">
+                <p style="text-transform: uppercase; font-size: 0.8rem; color: #aaa;">Active Session</p>
+                <h3 style="font-size: 1.5rem; margin: 10px 0;">Madhesh 5th Mock Test  4</h3>
+                <p>50 Questions • 45 Minutes</p>
+            </div>
+        </div>
+        <button class="btn" id="btn-start" onclick="App.start(false)">Start New Quiz</button>
+        <p id="submitted-msg" style="color: var(--primary); text-align: center; margin-top: 15px; display: none;">✅ Score Submitted Successfully</p>
+        <button class="btn btn-outline" id="btn-review" onclick="App.start(true)" style="display: none;">Review Mistakes</button>
+    </div>
+
+    <div id="view-quiz" class="hidden">
+        <div class="personal-header">
+            <div id="praise-txt" style="font-size: 1.2rem; font-weight: 700; color: white;">Good Luck!</div>
+        </div>
+
+        <div class="info-bar">
+            <span>Q: <span id="q-idx">1</span> / <span id="q-total">50</span></span>
+            <span class="timer-badge" id="timer">45:00</span>
+        </div>
+
+        <div id="q-container">
+            <div class="question-text" id="q-text">Loading...</div>
+            <div id="opts-list"></div>
+            <div class="explanation-box" id="exp-box"></div>
+        </div>
+
+        <button class="btn hidden" id="btn-next" onclick="App.next()">Next Question</button>
+    </div>
+
+    <div id="view-result" class="hidden" style="text-align: center;">
+        <h2>Quiz Completed!</h2>
+        <div class="score-circle">
+            <span class="score-val" id="res-score">0</span>
+            <span style="font-size: 0.8rem; text-transform: uppercase; color: #aaa;">Correct</span>
+        </div>
+        <div style="margin-bottom: 30px;">
+            <h3 id="res-pct" style="color: var(--primary);">0% Accuracy</h3>
+            <p id="sync-status" style="font-size: 0.9rem; margin-top: 10px; opacity: 0.8;">Syncing score...</p>
+        </div>
+        <button class="btn" onclick="App.dash()">Back to Dashboard</button>
+    </div>
+</div>
+
+<script>
+/**
+ * Madhesh 5th Mock Test 5- SECURE EDITION
+ */
+
+const CFG = {
+    // 1. Script for SCORE submission (Original)
+    scoreScript: "https://script.google.com/macros/s/AKfycbztgOiYdZlPssBus6iXQ6LwokmA4LS2b7CzgcKS4gd1iv9lG7MB_N7SupsxSdYQedEZgA/exec",
+    // 2. Script for LOGIN/AUTH (New)
+    authScript: "https://script.google.com/macros/s/AKfycbyUGMGXI7vml6jzJsCxhXvHgnq4V4Aq6sl6blkJkdfC8_haCxI__kx3EwFzZrW942E6/exec",
+    topic: "Madhesh 5th Mock Test  4"
+};
+
+const PRAISE = {
+    good: ["You are a Genius", "Superb work", "Amazing", "Brilliant", "Fantastic", "Excellent", "Spot on", "Wow"],
+    bad: ["Keep pushing", "Don't give up", "Stay focused", "You can do this", "Nice try", "Learn from this"]
+};
+
+// --- DATASET ---
+const DB = [
+  {
+    "id": 1,
+    "q": "In a singly reinforced beam, if the depth of the actual neutral axis is less than the critical neutral axis, the section is:",
+    "o": [
+      "Balanced",
+      "Over-reinforced",
+      "Under-reinforced",
+      "Critical"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 2,
+    "q": "A column is considered a \"Long Column\" if the ratio of its effective length to its least lateral dimension is:",
+    "o": [
+      "Less than 12",
+      "Exactly 12",
+      "Greater than 12",
+      "Between 5 and 8"
+    ],
+    "a": 2
+  },
+  {
+    "id": 3,
+    "q": "Grading of Aggregates\" is done to ensure:",
+    "o": [
+      "The concrete looks colorful",
+      "Minimum voids in the concrete mix",
+      "Aggregates are of the same size",
+      "To increase the cost"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 4,
+    "q": "Which type of scaffolding is used specifically for stone masonry where it is difficult to leave holes in the wall?",
+    "o": [
+      "Single Scaffolding",
+      "Double Scaffolding",
+      "Cantilever Scaffolding",
+      "Suspended Scaffolding"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 5,
+    "q": "The \"Design Period\" for a typical rural water supply scheme in Nepal is generally taken as:",
+    "o": [
+      "1 to 5 years",
+      "5 to 10 years",
+      "15 to 20 years",
+      "100 years"
+    ],
+    "a": 2
+  },
+  {
+    "id": 6,
+    "q": "The pressure at any point in the pipeline when the water is NOT flowing is called:",
+    "o": [
+      "Dynamic Pressure",
+      "Static Pressure",
+      "Atmospheric Pressure",
+      "Negative Pressure"
+    ],
+    "a": 1
+  },
+  {
+    "id": 7,
+    "q": "Which crop has the highest Delta among the following?",
+    "o": [
+      "Wheat",
+      "Paddy",
+      "Maize",
+      "Gram"
+    ],
+    "a": 1
+  },
+  {
+    "id": 8,
+    "q": "\"Paleo Irrigation\" is defined as:",
+    "o": [
+      "Watering given to the crop just before harvesting",
+      "First watering given to a crop when it is a few centimeters high",
+      "Watering given to a dry land before sowing a crop",
+      "Irrigation done during the night"
+    ],
+    "a": 2
+  },
+  {
+    "id": 9,
+    "q": "Which type of trail bridge is most common in Nepal for long spans across deep gorges?",
+    "o": [
+      "Slab Bridge",
+      "Suspension Bridge",
+      "Timber Bridge",
+      "Box Culvert"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 10,
+    "q": "The 'California Bearing Ratio' (CBR) test is used to evaluate the strength of:",
+    "o": [
+      "Bitumen",
+      "Sub-grade soil",
+      "Concrete",
+      "Steel"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 11,
+    "q": "\"Salvage Value\" is defined as the value of a property at the end of its utility period:",
+    "o": [
+      "After being dismantled (as scrap)",
+      "Without being dismantled",
+      "When it is newly built",
+      "Including the cost of land only"
+    ],
+    "a": 1
+  },
+  {
+    "id": 12,
+    "q": "Which of the following items of work is measured in Cubic Meters (m^3)?",
+    "o": [
+      "D.P.C. (Damp Proof Course)",
+      "RCC work in beams and slabs",
+      "Plastering",
+      "Painting"
+    ],
+    "a": 1
+  },
+  {
+    "id": 13,
+    "q": "The most common tool used for representing a construction schedule for simple projects is:",
+    "o": [
+      "Pie Chart",
+      "Bar Chart",
+      "Flowchart",
+      "Venn Diagram"
+    ],
+    "a": 1,
+    "e": "[attachment_0](attachment)"
+  },
+  {
+    "id": 14,
+    "q": "The main purpose of \"Construction Supervision\" is to ensure:",
+    "o": [
+      "The contractor earns a huge profit",
+      "The work is done according to drawings, specifications, and the agreement",
+      "The site looks clean every day",
+      "The laborers are happy"
+    ],
+    "a": 1
+  },
+  {
+    "id": 15,
+    "q": "The curve composed of two arcs of different radii having their centres on the opposite side of the curve, is known",
+    "o": [
+      "a simple curve",
+      "a compound curve",
+      "a reverse curve",
+      "a vertical curve."
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 16,
+    "q": "The ratio of the angles subtended at the eye, by the virtual image and the object, is known as telescope's",
+    "o": [
+      "resolving power",
+      "brightness",
+      "field of view",
+      "magnification."
+    ],
+    "a": 3
+  },
+  {
+    "id": 17,
+    "q": "In a constant level tube, size of the bubble remains constant because upper wall is",
+    "o": [
+      "of relatively larger radius",
+      "of relatively smaller radius",
+      "flat",
+      "convex downwards."
+    ],
+    "a": 0
+  },
+  {
+    "id": 18,
+    "q": "Minimum size of the particles of silt soil, is",
+    "o": [
+      "0.002 mm",
+      "0.04 mm",
+      "0.06 mm.",
+      "0.08 mm"
+    ],
+    "a": 0
+  },
+  {
+    "id": 19,
+    "q": "The maximum value of effective stress in the past divided by the present value, is defined as over consolidation ratio (OCR). The O.C.R. of an over consolidated clay is",
+    "o": [
+      "less than 1",
+      "1",
+      "more than 1",
+      "None of these."
+    ],
+    "a": 2
+  },
+  {
+    "id": 20,
+    "q": "If the atmospheric pressure on the surface of an oil tank (sp. gr. 0.8) is 0.1 kg/cm2, the pressure at a depth of 2.5 m, is",
+    "o": [
+      "1 metre of water",
+      "2 metres of water",
+      "3 metres of water",
+      "3.5 metres of water"
+    ],
+    "a": 2
+  },
+  {
+    "id": 21,
+    "q": "The shear stress distribution in viscous fluid through a circular pipe is :",
+    "o": [
+      "maximum at the centre",
+      "maximum at the inside of surface",
+      "same throughout the section",
+      "none of these."
+    ],
+    "a": 2
+  },
+  {
+    "id": 22,
+    "q": "The side slope of Cipolletti weir is generally kept",
+    "o": [
+      "1 :4",
+      "1 : 3",
+      "1 :2",
+      "1 : 5"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 23,
+    "q": "The rocks in which argil (or clay) predominates, are called",
+    "o": [
+      "sillicious rocks",
+      "argillaceous rocks",
+      "calcareous rocks",
+      "igneous rocks."
+    ],
+    "a": 1
+  },
+  {
+    "id": 24,
+    "q": "Chemically, marble is known as",
+    "o": [
+      "metamorphic rock",
+      "argillaceous rock",
+      "calcareous rock",
+      "silicious rock."
+    ],
+    "a": 2
+  },
+  {
+    "id": 25,
+    "q": "The filler used in plastic bitumen, is",
+    "o": [
+      "shale powder",
+      "talc powder",
+      "asbestos powder",
+      "plastic powder"
+    ],
+    "a": 2
+  },
+  {
+    "id": 26,
+    "q": "For a brittle material (like cast iron), the design of a component is typically based on its:",
+    "o": [
+      "Yield Strength",
+      "Ductility",
+      "Ultimate Strength",
+      "Plastic Limit"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 27,
+    "q": "If a structural bolt has an ultimate strength of 500 MPa and the design requires a Factor of Safety of 2.5, what is the maximum allowable working stress?",
+    "o": [
+      "1250 MPa",
+      "500 MPa",
+      "200 MPa",
+      "125 MPa"
+    ],
+    "a": 2
+  },
+  {
+    "id": 28,
+    "q": "A structural component made of a ductile material is subjected to a fluctuating load. If the design is based on the 'Margin of Safety' rather than just the Factor of Safety (FoS), and the Margin of Safety is defined as (FoS−1), which of the following statements best describes the condition when the working stress is exactly half of the ultimate strength?",
+    "o": [
+      "The Margin of Safety is 0.5",
+      "The component is at the point of immediate fracture",
+      "The Margin of Safety is 1.0",
+      "The Factor of Safety is 0.5"
+    ],
+    "a": 2
+  },
+  {
+    "id": 29,
+    "q": "एफ. डब्लु. टेलरले \"वैज्ञानिक व्यवस्थापनका सिद्धान्तहरू\" (Principles of Scientific Management) कहिले प्रतिपादन गरेका हुन्?",
+    "o": [
+      "१९११ ई.सं. (1911 AD)",
+      "१९१६ ई.सं. (1916 AD)",
+      "१९२७ ई.सं. (1927 AD)",
+      "१९३० ई.सं. (1930 AD)"
+    ],
+    "a": 0
+  },
+  {
+    "id": 30,
+    "q": "नेपालमा पहिलो डिजिटल बडापत्रको सुरुवात कहिले र कुन जिल्लाबाट भएको थियो?",
+    "o": [
+      "क) २०७३ असोज १६ गते, रुकुम जिल्ला",
+      "ख) २०७४ असोज १६ गते, रुकुम जिल्ला",
+      "ग) २०७५ असोज १६ गते, रुकुम जिल्ला",
+      "घ) २०७६ असोज १६ गते, रुकुम जिल्ला"
+    ],
+    "a": 0
+  },
+  {
+    "id": 31,
+    "q": "मधेश प्रदेश निजामती सेवा ऐन २०७७ अनुसार समावेसी तर्फ शारीरिक रूपमा अशक्त ( अपाङ्ग ) समूहलाई कति प्रतिशत कोटा छुट्याएको छ ?",
+    "o": [
+      "3%",
+      "2%",
+      "4%",
+      "5%"
+    ],
+    "a": 1
+  },
+  {
+    "id": 32,
+    "q": "मधेस प्रदेश सरकार कार्य विभाजन नियमावली, २०८० अनुसार मन्त्रिपरिषद, मुख्यमन्त्री तथा मन्त्रिपरिषदको कार्यालय अन्तर्गत कतिवटा कार्यहरू पर्दछन्?",
+    "o": [
+      "२०",
+      "२५",
+      "३५",
+      "३०"
+    ],
+    "a": 3,
+    "e": "मधेश प्रदेशमा १२ वटा मन्त्रालय छन्।"
+  },
+  {
+    "id": 33,
+    "q": "बजेट तथा कार्यक्रम तर्जुमा समिति' को संयोजक को रहने व्यवस्था छ?",
+    "o": [
+      "अध्यक्ष वा प्रमुख",
+      "उपाध्यक्ष वा उपप्रमुख",
+      "प्रमुख प्रशासकीय अधिकृत",
+      "आर्थिक प्रशासन शाखा प्रमुख"
+    ],
+    "a": 1
+  },
+  {
+    "id": 34,
+    "q": "काममा ढिलाई भएमा 'पूर्व निर्धारित क्षतिपूर्ति' (Liquidated Damages) प्रति दिन कति प्रतिशतका दरले काटिन्छ?",
+    "o": [
+      "०.०१ प्रतिशत",
+      "०.०५ प्रतिशत",
+      "०.१ प्रतिशत",
+      "०.५ प्रतिशत"
+    ],
+    "a": 1
+  },
+  {
+    "id": 35,
+    "q": "लागत अनुमान (Cost Estimate) स्वीकृत गर्ने अधिकारका सम्बन्धमा सही जोडा कुन हो?",
+    "o": [
+      "५ करोड-विभागीय प्रमुख, १० करोड-उपसचिव",
+      "५ करोड-उपसचिव, १० करोड-सहसचिव",
+      "५ करोड-तृतीय श्रेणी, १० करोड-द्वितीय श्रेणी,",
+      "५ करोड-प्रथम श्रेणी, १० करोड-विभागीय प्रमुख"
+    ],
+    "a": 2,
+    "e": "२० करोड-प्रथम श्रेणी, २० करोड माथि-विभागीय प्रमुख"
+  },
+  {
+    "id": 36,
+    "q": "नेपालको संविधान २०७२ बमोजिम नेपालमा कतिवटा संवैधानिक आयोगहरू रहेका छन्?",
+    "o": [
+      "१०",
+      "१२",
+      "१३",
+      "१५"
+    ],
+    "a": 2
+  },
+  {
+    "id": 37,
+    "q": "आर्थिक कार्यविधि तथा वित्तीय उत्तरदायित्व नियमावली, २०७७ अनुसार \"फुटकर खर्च\" भन्नाले एक पटकमा कति रकमसम्मको खर्चलाई जनाउँछ?",
+    "o": [
+      "रु. १,००० सम्म",
+      "रु. २,००० सम्म",
+      "रु. ३,००० सम्म",
+      "रु. ५,००० सम्म"
+    ],
+    "a": 1,
+    "e": "आर्थिक कार्यविधि तथा वित्तीय उत्तरदायित्व नियमावली, २०७७, नियम ३९ (५) को स्पष्टीकरण"
+  },
+  {
+    "id": 38,
+    "q": "प्रदेश लोक सेवा आयोग ऐन, २०७६ अनुसार परीक्षामा अमर्यादित कार्य गर्ने (जस्तै: चिट चोर्ने, अर्काको नक्कल गर्ने) उम्मेदवारलाई आयोगले बढीमा कति वर्षसम्म आयोगको परीक्षामा सहभागी हुन नपाउने गरी रोक लगाउन सक्छ?",
+    "o": [
+      "१ वर्ष",
+      "२ वर्ष",
+      "३ वर्ष",
+      "५ वर्ष"
+    ],
+    "a": 1,
+    "e": "ऐनको दफा ६४ को उपदफा (१) को खण्ड (ख) अनुसार चिट चोर्ने वा नक्कल गर्नेलाई २ वर्षसम्म रोक लगाउन सकिनेछ। (प्रश्नपत्र आउट गर्ने वा अर्काको नाममा परीक्षा दिनेलाई बढी सजाय हुन्छ, तर सामान्य अमर्यादित कार्य/चिट चोर्नेलाई २ वर्ष तोकिएको छ)।"
+  },
+  {
+    "id": 39,
+    "q": "Which of the following is considered the most environmentally preferred level of the 'Waste Management Hierarchy'?",
+    "o": [
+      "Energy Recovery",
+      "Sanitary Landfilling",
+      "Source Reduction",
+      "Recycling"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 40,
+    "q": "In a modern sanitary landfill, what is the primary purpose of the 'daily cover' layer of soil?",
+    "o": [
+      "To prevent the spread of odors and discourage scavengers",
+      "To filter the leachate before it reaches the liner",
+      "To increase the rate of anaerobic decomposition",
+      "To provide a waterproof seal against heavy rainfall"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 41,
+    "q": "मधेश प्रदेशको सबैभन्दा ठूलो सम्भावना रहेको क्षेत्र कुन हो?",
+    "o": [
+      "खानी तथा खनिज",
+      "जलविद्युत उत्पादन",
+      "कृषि र पर्यटन",
+      "हिमाली जडिबुटी"
+    ],
+    "a": 2
+  },
+  {
+    "id": 42,
+    "q": "प्राचीन मिथिला राज्यको राजधानी कहाँ रहेको थियो?",
+    "o": [
+      "राजविराज",
+      "वीरगन्ज",
+      "जनकपुर",
+      "कलैया"
+    ],
+    "a": 2
+  },
+  {
+    "id": 43,
+    "q": "नेपालको कुन राष्ट्रिय निकुञ्ज मुख्य रूपमा मधेश प्रदेश र बागमती प्रदेशमा फैलिएको छ?",
+    "o": [
+      "सगरमाथा राष्ट्रिय निकुञ्ज",
+      "पर्सा राष्ट्रिय निकुञ्ज",
+      "बर्दिया राष्ट्रिय निकुञ्ज",
+      "रारा राष्ट्रिय निकुञ्ज"
+    ],
+    "a": 1
+  },
+  {
+    "id": 44,
+    "q": "मधेश प्रदेशमा बोलिने मुख्य भाषाहरू मध्ये कुन सबैभन्दा बढी बोलिन्छ?",
+    "o": [
+      "मैथिली",
+      "भोजपुरी",
+      "बज्जिका",
+      "नेपाली"
+    ],
+    "a": 0
+  },
+  {
+    "id": 45,
+    "q": "नेपालको संविधान अनुसार मधेश प्रदेशमा प्रतिनिधिसभाका लागि कतिवटा निर्वाचन क्षेत्रहरू रहेका छन्?",
+    "o": [
+      "३२ वटा",
+      "४० वटा",
+      "३५ वटा",
+      "२८ वटा"
+    ],
+    "a": 0
+  },
+  {
+    "id": 46,
+    "q": "मधेश प्रदेशको कुन जिल्लालाई 'गढीमाई मेला' का लागि प्रसिद्ध मानिन्छ?",
+    "o": [
+      "रौतहट",
+      "धनुषा",
+      "बारा",
+      "सर्लाही"
+    ],
+    "a": 2,
+    "e": "विश्वकै ठूलो बलि दिइने मेलाको रूपमा चिनिने गढीमाई मेला बारा जिल्लाको बरियारपुरमा लाग्दछ।"
+  },
+  {
+    "id": 47,
+    "q": "नेपालको संविधानको कुन धारामा 'प्रदेशको नामकरण' सम्बन्धी व्यवस्था गरिएको छ?",
+    "o": [
+      "धारा २९०",
+      "धारा १",
+      "धारा ५६",
+      "धारा २९५"
+    ],
+    "a": 3,
+    "e": "धारा २९५ मा प्रदेशको सिमाना निर्धारण र नामकरण सम्बन्धी विशेष व्यवस्था गरिएको छ।"
+  },
+  {
+    "id": 48,
+    "q": "हेन्ले पासपोर्ट इन्डेक्स २०२६' (Henley Passport Index 2026) अनुसार लगातार तेस्रो पटक विश्वको सबैभन्दा शक्तिशाली पासपोर्ट कुन देशको रहेको छ?",
+    "o": [
+      "जापान",
+      "सिङ्गापुर",
+      "फ्रान्स",
+      "जर्मनी"
+    ],
+    "a": 1
+  },
+  {
+    "id": 49,
+    "q": "फिफा विश्वकप २०२६ (FIFA World Cup 2026) को उद्घाटन खेल कुन देशमा हुने तय भएको छ?",
+    "o": [
+      "संयुक्त राज्य अमेरिका",
+      "क्यानडा",
+      "मेक्सिको",
+      "ब्राजिल"
+    ],
+    "a": 2,
+    "e": "फिफा विश्वकपक फुटबलको उद्घाटन खेल मेक्सिकोमा र फाइनल खेल अमेरिकामा हुने भएको छ । "
+  },
+  {
+    "id": 50,
+    "q": "क्यान्सर नलाग्ने मानव शरीरको एकमात्र अङ्ग कुन हो ?",
+    "o": [
+      "आँखाको नानी",
+      "मृगौला",
+      "मुटु",
+      "सानो अन्द्रा"
+    ],
+    "a": 0,
+    "e": "[attachment_1](attachment)"
+  }
+];
+
+const App = {
+    state: { user: null, quiz: [], curr: 0, score: 0, mistakes: [], timer: null, submitted: false },
+
+    // Safe Storage Wrappers
+    save: (k, v) => { try { localStorage.setItem(k, v) } catch(e) {} },
+    load: (k) => { try { return localStorage.getItem(k) } catch(e) { return null } },
+
+    // --- REPLACED: NEW VERIFICATION LOGIC ---
+    verifyAndLogin: () => {
+        const n = document.getElementById('inp-name').value.trim();
+        const q = document.getElementById('inp-qual').value;
+        const c = document.getElementById('inp-code').value.trim();
+        const msg = document.getElementById('auth-msg');
+        const btn = document.getElementById('btn-verify');
+        const passBox = document.getElementById('inp-pass');
+
+        // Validation
+        if(!n || !c) {
+            msg.innerText = "Please enter Name and Code";
+            msg.style.display = 'block';
+            msg.style.color = '#ff9900';
+            return;
+        }
+
+        // Loading UI
+        btn.disabled = true;
+        btn.innerText = "Verifying...";
+        msg.style.display = 'none';
+
+        // CALL GOOGLE SHEET
+        fetch(`${CFG.authScript}?code=${c}&name=${n}&qual=${q}`)
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === 'success') {
+                // SUCCESS!
+                passBox.value = data.password; // Auto-fill Password
+                
+                // Save User Locally
+                App.state.user = { name: n, qual: q, code: c };
+                App.save('civilUserMadhesh_Secure', JSON.stringify(App.state.user));
+                
+                // Delay slightly for effect then go to Dash
+                setTimeout(() => App.dash(), 800);
+            } else {
+                // ERROR (Used or Invalid)
+                btn.disabled = false;
+                btn.innerText = "Verify & Login";
+                msg.style.display = 'block';
+                msg.style.color = "#ff0055";
+
+                if(data.message.includes("used") || data.message.includes("Sent")) {
+                     msg.innerHTML = "Subscribe to get 62 SMART mock test monthly: <br>Contact the admin";
+                } else {
+                     msg.innerText = data.message || "Invalid Code";
+                }
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            btn.disabled = false;
+            btn.innerText = "Verify & Login";
+            msg.innerText = "Network Error. Check connection.";
+            msg.style.display = 'block';
+            msg.style.color = "#ff0055";
+        });
+    },
+
+    dash: () => {
+        const stored = App.load('civilUserMadhesh_Secure');
+        const u = App.state.user || (stored ? JSON.parse(stored) : null);
+        
+        if(!u) return; // Stay on login if no user
+        App.state.user = u;
+        
+        window.scrollTo(0,0);
+        document.getElementById('greet-msg').innerText = `Namaste, ${u.name.split(' ')[0]}!`;
+        document.getElementById('view-login').classList.add('hidden');
+        document.getElementById('view-result').classList.add('hidden');
+        document.getElementById('view-dash').classList.remove('hidden');
+
+        // Check if sent
+        const sentKey = `sent_${CFG.topic}_${u.name}`;
+        if(App.load(sentKey)) {
+            document.getElementById('btn-start').innerText = "Retake Quiz (Practice Mode)";
+            document.getElementById('submitted-msg').style.display = 'block';
+        } else {
+            document.getElementById('btn-start').innerText = "Start New Quiz";
+            document.getElementById('submitted-msg').style.display = 'none';
+        }
+
+        const mString = App.load('mistakesG4');
+        const m = mString ? JSON.parse(mString) : [];
+        document.getElementById('btn-review').style.display = m.length > 0 ? 'inline-block' : 'none';
+    },
+
+    start: (review) => {
+        App.state.curr = 0; App.state.score = 0; App.state.mistakes = []; App.state.submitted = false;
+
+        const mString = App.load('mistakesG4');
+        const prevM = mString ? JSON.parse(mString) : [];
+        
+        const flatDB = DB.flat ? DB.flat() : DB;
+        
+        let source = review ? flatDB.filter(q => prevM.includes(q.id)) : [...flatDB];
+        
+        if(!source.length) return alert("No questions available.");
+
+        // SHUFFLE Options & Questions
+        App.state.quiz = source.map(q => {
+            let opts = q.o.map((txt, i) => ({ t: txt, c: i === q.a }));
+            // Fisher-Yates Shuffle for Options
+            for(let i = opts.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [opts[i], opts[j]] = [opts[j], opts[i]];
+            }
+            return { ...q, shuffledOpts: opts };
+        }).sort(() => Math.random() - 0.5);
+
+        window.scrollTo(0,0);
+        document.getElementById('view-dash').classList.add('hidden');
+        document.getElementById('view-quiz').classList.remove('hidden');
+        document.getElementById('q-total').innerText = App.state.quiz.length;
+        
+        App.timer(45*60);
+        App.render();
+    },
+
+    render: () => {
+        if(!App.state.quiz.length) return;
+        
+        const q = App.state.quiz[App.state.curr];
+        const fname = App.state.user.name.split(' ')[0];
+
+        document.getElementById('q-idx').innerText = App.state.curr + 1;
+        document.getElementById('q-text').innerText = q.q || "Question text missing";
+        
+        document.getElementById('exp-box').style.display = 'none';
+        document.getElementById('btn-next').classList.add('hidden');
+        
+        const praise = document.getElementById('praise-txt');
+        praise.innerText = `Focus, ${fname}!`;
+        praise.style.color = "white";
+        praise.classList.remove('animate-praise');
+
+        const list = document.getElementById('opts-list');
+        list.innerHTML = '';
+        
+        if(q.shuffledOpts) {
+            q.shuffledOpts.forEach((opt, i) => {
+                const btn = document.createElement('div');
+                btn.className = 'option-btn';
+                btn.innerHTML = `<div class="option-marker">${String.fromCharCode(65+i)}</div>${opt.t}`;
+                btn.onclick = () => App.check(btn, opt, q);
+                list.appendChild(btn);
+            });
+        }
+    },
+
+    check: (btn, opt, q) => {
+        const all = document.querySelectorAll('.option-btn');
+        all.forEach(b => { b.onclick = null; b.style.opacity = '0.6'; });
+        btn.style.opacity = '1';
+
+        const praise = document.getElementById('praise-txt');
+        const fname = App.state.user.name.split(' ')[0];
+        
+        void praise.offsetWidth; // Trigger reflow
+        praise.classList.add('animate-praise');
+
+        if(opt.c) {
+            btn.classList.add('correct');
+            App.state.score++;
+            const word = PRAISE.good[Math.floor(Math.random()*PRAISE.good.length)];
+            praise.innerText = `${word}, ${fname}!`;
+            praise.style.color = "#00f260";
+            
+            // Clear from mistakes
+            let mString = App.load('mistakesG4');
+            let m = mString ? JSON.parse(mString) : [];
+            m = m.filter(id => id !== q.id);
+            App.save('mistakesG4', JSON.stringify(m));
+        } else {
+            btn.classList.add('wrong');
+            all.forEach((b, i) => { if(q.shuffledOpts[i].c) b.classList.add('correct'); });
+            
+            App.state.mistakes.push(q.id);
+            const word = PRAISE.bad[Math.floor(Math.random()*PRAISE.bad.length)];
+            praise.innerText = `${word}, ${fname}!`;
+            praise.style.color = "#ff0055";
+        }
+
+        if(q.e) {
+            const exp = document.getElementById('exp-box');
+            exp.innerHTML = `<strong>Explanation:</strong> ${q.e}`;
+            exp.style.display = 'block';
+        }
+        
+        document.getElementById('btn-next').classList.remove('hidden');
+        
+        setTimeout(() => {
+             document.getElementById('btn-next').scrollIntoView({behavior: "smooth", block: "nearest"});
+        }, 100);
+    },
+
+    next: () => {
+        App.state.curr++;
+        if(App.state.curr < App.state.quiz.length) App.render();
+        else App.finish();
+    },
+
+    timer: (sec) => {
+        if(App.state.timer) clearInterval(App.state.timer);
+        const el = document.getElementById('timer');
+        App.state.timer = setInterval(() => {
+            sec--;
+            let m = Math.floor(sec/60), s = sec%60;
+            if(el) el.innerText = `${m}:${s<10?'0':''}${s}`;
+            if(sec<=0) App.finish();
+        }, 1000);
+    },
+
+    finish: () => {
+        clearInterval(App.state.timer);
+        window.scrollTo(0,0);
+        document.getElementById('view-quiz').classList.add('hidden');
+        document.getElementById('view-result').classList.remove('hidden');
+
+        // Update Mistakes
+        let mString = App.load('mistakesG4');
+        let m = mString ? JSON.parse(mString) : [];
+        m = [...new Set([...m, ...App.state.mistakes])];
+        App.save('mistakesG4', JSON.stringify(m));
+
+        const pct = Math.round((App.state.score / App.state.quiz.length) * 100);
+        document.getElementById('res-score').innerText = App.state.score;
+        document.getElementById('res-pct').innerText = `${pct}% Accuracy`;
+
+        App.sync();
+    },
+
+    sync: () => {
+        if(App.state.submitted) return;
+        
+        const sentKey = `sent_${CFG.topic}_${App.state.user.name}`;
+        if(App.load(sentKey)) {
+            document.getElementById('sync-status').innerText = "Practice score not sent.";
+            return;
+        }
+
+        App.state.submitted = true;
+        App.save(sentKey, "true"); 
+
+        const data = {
+            date: new Date().toISOString(),
+            name: App.state.user.name,
+            qualification: App.state.user.qual,
+            topic: CFG.topic,
+            score: App.state.score, 
+            percentage: 0 
+        };
+
+        if(navigator.onLine) {
+            // UPDATED: USES 'CFG.scoreScript'
+            fetch(CFG.scoreScript, {
+                method: 'POST', mode: 'no-cors',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            }).then(() => {
+                document.getElementById('sync-status').innerText = "Score saved to Cloud!";
+                document.getElementById('sync-status').style.color = "#00f260";
+            }).catch(() => App.offline(data));
+        } else {
+            App.offline(data);
+        }
+    },
+
+    offline: (d) => {
+        let pString = App.load('pendingG4');
+        let p = pString ? JSON.parse(pString) : [];
+        p.push(d);
+        App.save('pendingG4', JSON.stringify(p));
+        document.getElementById('sync-status').innerText = "Saved offline.";
+    },
+
+    autoSync: () => {
+        if(navigator.onLine) {
+            let pString = App.load('pendingG4');
+            let p = pString ? JSON.parse(pString) : [];
+            if(p.length) {
+                p.forEach(d => fetch(CFG.scoreScript, {method:'POST', mode:'no-cors', body:JSON.stringify(d)}));
+                localStorage.removeItem('pendingG4');
+            }
+        }
+    }
+};
+
+window.onload = () => {
+    // UPDATED CHECK: Uses the secure key
+    if(App.load('civilUserMadhesh_Secure')) {
+        App.dash();
+    }
+    window.addEventListener('online', App.autoSync);
+};
+</script>
+</body>
+</html>

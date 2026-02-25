@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MADHESH 5th Mock Test 14</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* [STYLES REMAIN EXACTLY THE SAME] */
+        :root { --primary: #00f260; --secondary: #0575e6; --accent: #ff00cc; --glass-bg: rgba(255, 255, 255, 0.1); --glass-border: rgba(255, 255, 255, 0.2); --text-color: #ffffff; --card-bg: rgba(20, 20, 40, 0.95); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: linear-gradient(135deg, #1a2980, #26d0ce); min-height: 100vh; display: flex; align-items: center; justify-content: center; color: var(--text-color); padding: 15px; overflow-x: hidden; }
+        .app-container { width: 100%; max-width: 650px; background: var(--card-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 24px; padding: 2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative; overflow: hidden; transition: all 0.4s ease; }
+        h1 { font-size: 2rem; font-weight: 800; background: linear-gradient(to right, #00f260, #0575e6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+        h2 { font-size: 1.5rem; margin-bottom: 20px; }
+        p { color: #ccc; font-size: 0.95rem; line-height: 1.6; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .label { display: block; font-size: 0.8rem; margin-bottom: 5px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+        .glass-input { width: 100%; padding: 15px; background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); border-radius: 12px; color: white; font-size: 1rem; outline: none; transition: 0.3s; }
+        .glass-input:focus { border-color: var(--primary); background: rgba(255,255,255,0.15); }
+        .glass-input:read-only { background: rgba(0,0,0,0.2); color: #888; cursor: not-allowed; }
+        select.glass-input option { background: #141428; color: white; }
+        .btn { background: linear-gradient(90deg, #00f260, #0575e6); border: none; color: white; padding: 16px; width: 100%; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-top: 20px; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 5px 20px rgba(0, 242, 96, 0.3); min-height: 50px; }
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { filter: grayscale(1); cursor: wait; }
+        .btn-outline { background: transparent; border: 2px solid var(--glass-border); box-shadow: none; margin-top: 10px; }
+        .personal-header { text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--glass-border); min-height: 50px; display: flex; align-items: center; justify-content: center; }
+        .animate-praise { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .info-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: rgba(255,255,255,0.05); padding: 10px 15px; border-radius: 10px; }
+        .timer-badge { font-family: monospace; font-weight: 700; color: var(--accent); font-size: 1.1rem; }
+        .question-text { font-size: 1.2rem; font-weight: 600; margin-bottom: 20px; line-height: 1.5; }
+        .option-btn { width: 100%; padding: 18px; margin-bottom: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 12px; text-align: left; color: #ddd; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; -webkit-user-select: none; user-select: none; }
+        .option-marker { width: 30px; height: 30px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-weight: 700; flex-shrink: 0; }
+        .correct { background: rgba(0, 242, 96, 0.2) !important; border-color: #00f260 !important; color: white !important; }
+        .correct .option-marker { background: #00f260; color: black; }
+        .wrong { background: rgba(255, 0, 85, 0.2) !important; border-color: #ff0055 !important; color: white !important; }
+        .wrong .option-marker { background: #ff0055; color: white; }
+        .explanation-box { margin-top: 20px; padding: 15px; background: rgba(5, 117, 230, 0.15); border-left: 4px solid var(--secondary); border-radius: 8px; font-size: 0.9rem; display: none; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .score-circle { width: 160px; height: 160px; border-radius: 50%; border: 5px solid var(--primary); margin: 0 auto 20px auto; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 0 30px rgba(0, 242, 96, 0.2); }
+        .score-val { font-size: 3.5rem; font-weight: 800; color: white; line-height: 1; }
+        .hidden { display: none !important; }
+        #opts-list { max-height: 50vh; overflow-y: auto; padding-right: 5px; }
+        #auth-msg { text-align: center; margin-top: 15px; font-weight: 600; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="app">
+    <div id="view-login">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h1 id="title-display">MADHESH 5th Mock Test 14</h1>
+            <p>5th Edition | Civil Engineering</p>
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Full Name</span>
+            <input type="text" id="inp-name" class="glass-input" placeholder="Enter your name">
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Qualification</span>
+            <select id="inp-qual" class="glass-input">
+                <option value="Engineer">Engineer</option>
+                <option value="Sub-Engineer">Sub-Engineer</option>
+                <option value="Asst. Sub-Engineer">Asst. Sub-Engineer</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <span class="label">Unique Code</span>
+            <input type="tel" id="inp-code" class="glass-input" placeholder="Enter 5-digit code">
+        </div>
+
+        <div class="input-group">
+            <span class="label">Password (Auto-Fill)</span>
+            <input type="password" id="inp-pass" class="glass-input" placeholder="Verifying..." readonly>
+        </div>
+
+        <button class="btn" id="btn-verify" onclick="App.verifyAndLogin()">Verify & Login</button>
+        <p id="auth-msg"></p>
+    </div>
+
+    <div id="view-dash" class="hidden">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2 id="greet-msg" style="color: var(--primary);">Welcome!</h2>
+            <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 16px; margin-bottom: 20px;">
+                <p style="text-transform: uppercase; font-size: 0.8rem; color: #aaa;">Active Session</p>
+                <h3 id="dash-topic-display" style="font-size: 1.5rem; margin: 10px 0;"></h3>
+                <p>50 Questions • 45 Minutes</p>
+            </div>
+        </div>
+        <button class="btn" id="btn-start" onclick="App.start(false)">Start New Quiz</button>
+        <p id="submitted-msg" style="color: var(--primary); text-align: center; margin-top: 15px; display: none;">✅ Score Submitted Successfully</p>
+        <button class="btn btn-outline" id="btn-review" onclick="App.start(true)" style="display: none;">Review Mistakes</button>
+    </div>
+
+    <div id="view-quiz" class="hidden">
+        <div class="personal-header">
+            <div id="praise-txt" style="font-size: 1.2rem; font-weight: 700; color: white;">Good Luck!</div>
+        </div>
+
+        <div class="info-bar">
+            <span>Q: <span id="q-idx">1</span> / <span id="q-total">50</span></span>
+            <span class="timer-badge" id="timer">45:00</span>
+        </div>
+
+        <div id="q-container">
+            <div class="question-text" id="q-text">Loading...</div>
+            <div id="opts-list"></div>
+            <div class="explanation-box" id="exp-box"></div>
+        </div>
+
+        <button class="btn hidden" id="btn-next" onclick="App.next()">Next Question</button>
+    </div>
+
+    <div id="view-result" class="hidden" style="text-align: center;">
+        <h2>Quiz Completed!</h2>
+        <div class="score-circle">
+            <span class="score-val" id="res-score">0</span>
+            <span style="font-size: 0.8rem; text-transform: uppercase; color: #aaa;">Correct</span>
+        </div>
+        <div style="margin-bottom: 30px;">
+            <h3 id="res-pct" style="color: var(--primary);">0% Accuracy</h3>
+            <p id="sync-status" style="font-size: 0.9rem; margin-top: 10px; opacity: 0.8;">Syncing score...</p>
+        </div>
+        <button class="btn" onclick="App.dash()">Back to Dashboard</button>
+    </div>
+</div>
+
+<script>
+/**
+ * ----------------------------------------------------
+ * CONFIGURATION - CHANGE ONLY THIS SECTION FOR NEW APPS
+ * ----------------------------------------------------
+ */
+const CFG = {
+    // UPDATED TOPIC NAME
+    topic: "MADHESH 5th Mock Test 14", 
+    
+    scoreScript: "https://script.google.com/macros/s/AKfycbztgOiYdZlPssBus6iXQ6LwokmA4LS2b7CzgcKS4gd1iv9lG7MB_N7SupsxSdYQedEZgA/exec",
+    authScript: "https://script.google.com/macros/s/AKfycbyUGMGXI7vml6jzJsCxhXvHgnq4V4Aq6sl6blkJkdfC8_haCxI__kx3EwFzZrW942E6/exec"
+};
+
+// --- AUTOMATIC KEY GENERATOR ---
+const _tid = CFG.topic.replace(/[^a-zA-Z0-9]/g, "_");
+const KEYS = {
+    user: "civil_eng_global_user",
+    mistakes: `mistakes_${_tid}`,
+    sent: `sent_status_${_tid}`,
+    pending: `pending_${_tid}`
+};
+
+// --- DATASET (Replace with your new MCQs here) ---
+const DB = [
+  {
+    "id": 1,
+    "q": "In case of a trapezoidal notch fall:",
+    "o": [
+      "Top width of the notch is kept between 3/4 th of full water depth above the sill of the notch",
+      "Top length of the piers should not be less than their thickness",
+      "Splay up stream from the notch section is 45°",
+      "Splay down stream from the notch section is also specified",
+      "All the above"
+    ],
+    "a": 4
+  },
+  {
+    "id": 2,
+    "q": "Water-shed line is abandoned for aligning an irrigation canal if:",
+    "o": [
+      "Water shed forms a sharp loop",
+      "Canal has to take off from a river",
+      "Towns and villages are located on the water-shed line",
+      "All the above"
+    ],
+    "a": 3
+  },
+  {
+    "id": 3,
+    "q": "A critical ratio scheduling:",
+    "o": [
+      "Establishes the relative priorities among various activities on a common basis",
+      "Determines the status of each activity",
+      "Adjusts automatically changes in activity progress",
+      "Is a dynamic system",
+      "None of these"
+    ],
+    "a": 4
+  },
+  {
+    "id": 4,
+    "q": "Completion of an activity on a CPM network diagram is generally known as:",
+    "o": [
+      "Event",
+      "Node",
+      "Connector",
+      "All the above"
+    ],
+    "a": 3
+  },
+  {
+    "id": 5,
+    "q": "The excavation exceeding 1.5 m in width and 10 sq.m in plan area with a depth not exceeding 30 cm, is termed as:",
+    "o": [
+      "Excavation",
+      "Surface dressing",
+      "Cutting",
+      "Surface excavation"
+    ],
+    "a": 3
+  },
+  {
+    "id": 6,
+    "q": "The measurement is made for stone work in square metre in case of:",
+    "o": [
+      "Wall facing",
+      "Columns, lintels, copings",
+      "Building work",
+      "Dressed stones in Chajjas",
+      "Both A and D"
+    ],
+    "a": 4
+  },
+  {
+    "id": 7,
+    "q": "The desirable camber for straight roads with water bound macadam (WBM) or gravel surface is:",
+    "o": [
+      "1 in 33 to 1 in 25",
+      "1 in 40 to 1 in 33",
+      "1 in 150 to 1 in 140",
+      "1 in 160 to 1 in 140"
+    ],
+    "a": 1
+  },
+  {
+    "id": 8,
+    "q": "If the cross slope of a country is 25% to 60%, the terrain is classified as:",
+    "o": [
+      "Plain",
+      "Rolling",
+      "Steep",
+      "Mountainous"
+    ],
+    "a": 3
+  },
+  {
+    "id": 9,
+    "q": "The storage capacity of a reservoir may be divided into three zones. The lowest zone is:",
+    "o": [
+      "Dead storage",
+      "Useful storage",
+      "Surcharge storage",
+      "None of these"
+    ],
+    "a": 0
+  },
+  {
+    "id": 10,
+    "q": "Surge tanks are used:",
+    "o": [
+      "For storage water",
+      "To increase the velocity in a pipeline",
+      "As overflow valves",
+      "To guard against water hammer"
+    ],
+    "a": 3
+  },
+  {
+    "id": 11,
+    "q": "A cut in frame of a door to receive the shutter, is called:",
+    "o": [
+      "Louver",
+      "Stop",
+      "Horn",
+      "Rebate"
+    ],
+    "a": 3
+  },
+  {
+    "id": 12,
+    "q": "The line of intersection of two surfaces of a sloping roof forming an internal angle less than 180°, is known as:",
+    "o": [
+      "Ridge",
+      "Hip",
+      "Valley",
+      "None of these"
+    ],
+    "a": 2
+  },
+  {
+    "id": 13,
+    "q": "Distribution of shear intensity over a rectangular section of a beam, follows:",
+    "o": [
+      "A circular curve",
+      "A straight line",
+      "A parabolic curve",
+      "An elliptical curve"
+    ],
+    "a": 2
+  },
+  {
+    "id": 14,
+    "q": "A T-beam behaves as a rectangular beam of a width equal to its flange if its neutral axis:",
+    "o": [
+      "Remains within the flange",
+      "Remains below the slab",
+      "Coincides the geometrical centre of the beam",
+      "None of these"
+    ],
+    "a": 0
+  },
+  {
+    "id": 15,
+    "q": "नेपालको नागरिकसँग वैवाहिक सम्बन्ध कायम गरेकी विदेशी महिलाले चाहेमा कुन नागरिकता प्राप्त गर्न सक्ने व्यवस्था छ?",
+    "o": [
+      "वंशजको नागरिकता",
+      "सम्मानार्थ नागरिकता",
+      "अङ्गीकृत नागरिकता",
+      "गैरआवासीय नागरिकता"
+    ],
+    "a": 2
+  },
+  {
+    "id": 16,
+    "q": "'५२ पोखरी ५३ ताल' को जिल्ला भनेर कुन जिल्लालाई चिनिन्छ?",
+    "o": [
+      "मुगु",
+      "कास्की",
+      "रुकुम",
+      "चितवन"
+    ],
+    "a": 2
+  },
+  {
+    "id": 17,
+    "q": "मधेस प्रदेशको कुल क्षेत्रफल कति छ?",
+    "o": [
+      "९,६६१ वर्ग किमी",
+      "६,७७८ वर्ग किमी",
+      "२,५३२ वर्ग किमी",
+      "१०,००० वर्ग किमी"
+    ],
+    "a": 0
+  },
+  {
+    "id": 18,
+    "q": "विद्युत पहुँच पुगेको जनसंख्या कति प्रतिशत पुर्‍याउने लक्ष्य छ?",
+    "o": [
+      "९२.८%",
+      "९५%",
+      "१००%",
+      "९९%"
+    ],
+    "a": 2
+  },
+  {
+    "id": 19,
+    "q": "सबैलाई समावेशी, समतामूलक गुणस्तरीय शिक्षा दिगो विकासको कुन लक्ष्यसँग सम्बन्धित छ ?",
+    "o": [
+      "लक्ष्य ३",
+      "लक्ष्य ४",
+      "लक्ष्य ७",
+      "लक्ष्य ८"
+    ],
+    "a": 1
+  },
+  {
+    "id": 20,
+    "q": "प्रेसर कुकुर को आविष्कार कसले गरेका थिए ?",
+    "o": [
+      "ए. एल. बिग्रेट",
+      "डेनेश पपिन",
+      "थोमस अल्वा एडिसन",
+      "जेम्स वाट"
+    ],
+    "a": 1
+  },
+  {
+    "id": 21,
+    "q": "मानव शरीरमा केको मात्रा कम भए निलोपन (Cyanosis) देखिन्छ?",
+    "o": [
+      "Carbon Dioxide",
+      "Nitrogen",
+      "Oxygen",
+      "Iron"
+    ],
+    "a": 2
+  },
+  {
+    "id": 22,
+    "q": "अन्तर्राष्ट्रिय न्यायालयको प्रधान कार्यालय कहाँ रहेको छ ?",
+    "o": [
+      "न्यूयोर्क",
+      "जेनेभा",
+      "हेग",
+      "पेरिस"
+    ],
+    "a": 2
+  },
+  {
+    "id": 23,
+    "q": "सार्क सचिवालयको उद्घाटन कसले गरेका थिए ?",
+    "o": [
+      "राजा वीरेन्द्र",
+      "राजीव गान्धी",
+      "रफी निजामी",
+      "महम्मद जियाउल हक"
+    ],
+    "a": 0
+  },
+  {
+    "id": 24,
+    "q": "नेपालको निर्वाचन आयोगले पछिल्लो पटक मतदाता नामावली दर्ता कहिले सार्वजनिक गर्यो?",
+    "o": [
+      "असोज ५",
+      "असोज ८",
+      "असोज ६",
+      "असोज १०"
+    ],
+    "a": 1
+  },
+  {
+    "id": 25,
+    "q": "If Δ is the angle of deflection of a simple curve of radius R, the length of its long chord, is",
+    "o": [
+      "R cos ∆/2",
+      "2R cos ∆/2",
+      "R sin ∆/2",
+      "2R sin ∆/2"
+    ],
+    "a": 3
+  },
+  {
+    "id": 26,
+    "q": "Determining the difference in elevation between two points on the surface of the earth, is known as",
+    "o": [
+      "levelling",
+      "simple levelling",
+      "differential levelling",
+      "longitudinal levelling."
+    ],
+    "a": 2
+  },
+  {
+    "id": 27,
+    "q": "Contours of different elevations may cross each other only in the case of",
+    "o": [
+      "an over hanging cliff",
+      "a vertical cliff",
+      "a saddle",
+      "an inclined plane."
+    ],
+    "a": 0
+  },
+  {
+    "id": 28,
+    "q": "If Cv, Cc, Cd and Cr are the hydraulic coefficients of an orifice, then",
+    "o": [
+      "Cd = Cc . Cv",
+      "Cr = 1 + Cv2/Cd",
+      "Cv = Cc + Cd",
+      "Cc = Cv/Cd"
+    ],
+    "a": 0
+  },
+  {
+    "id": 29,
+    "q": "If velocities of fluid particles vary from point to point in magnitude and direction, as well as from instant to instant, the flow is said to be",
+    "o": [
+      "laminar",
+      "turbulent flow",
+      "uniform flow",
+      "non-uniform flow."
+    ],
+    "a": 1
+  },
+  {
+    "id": 30,
+    "q": "Fluids change the volume under external presssure due to",
+    "o": [
+      "plasticity",
+      "viscosity",
+      "compressibility",
+      "none of these."
+    ],
+    "a": 2
+  },
+  {
+    "id": 31,
+    "q": "The vane shear test is used for the in-situ determination of the undrained strength of the intact fully saturated",
+    "o": [
+      "sands",
+      "clays",
+      "gravels",
+      "highly organic soils."
+    ],
+    "a": 1
+  },
+  {
+    "id": 32,
+    "q": "The specific gravity of quartz, is",
+    "o": [
+      "2.65",
+      "2.72",
+      "2.85",
+      "2.90"
+    ],
+    "a": 0
+  },
+  {
+    "id": 33,
+    "q": "Through a point in a loaded soil, the principal stress is maximum on",
+    "o": [
+      "minor principal plane",
+      "intermediate principal plane",
+      "major principal plane",
+      "none of these."
+    ],
+    "a": 2
+  },
+  {
+    "id": 34,
+    "q": "The process of manufacturing steel by heating short lengths of wrought iron bars mixed with charcoal in fire clay crucibles and collecting the molten iron into moulds, is known as",
+    "o": [
+      "Cementation process",
+      "Crucible process",
+      "Bessemer process",
+      "Open hearth process."
+    ],
+    "a": 1
+  },
+  {
+    "id": 35,
+    "q": "Varnish is a transparent or semi-transparent solution of resinuous substances in",
+    "o": [
+      "alcohol",
+      "linseed",
+      "turpentine",
+      "all the above."
+    ],
+    "a": 3
+  },
+  {
+    "id": 36,
+    "q": "If the Poisson's ratio of a material is 0.25, the ratio of Modulus of Rigidity to the Young's Modulus is",
+    "o": [
+      "2",
+      "0.4",
+      "2.5",
+      "4"
+    ],
+    "a": 1
+  },
+  {
+    "id": 37,
+    "q": "The method of increasing fatigue resistance by overstressing the metal by successively increasing the loading is known as",
+    "o": [
+      "compounding",
+      "coaxing",
+      "relaxing",
+      "enduring"
+    ],
+    "a": 1
+  },
+  {
+    "id": 38,
+    "q": "In a square beam loaded longitudinally, shear develops",
+    "o": [
+      "on middle fibre along horizontal plane",
+      "on lower fibre along horizontal plane",
+      "on top fibre along vertical plane",
+      "equally on each fibre along horizontal plane"
+    ],
+    "a": 3
+  },
+  {
+    "id": 39,
+    "q": "आर्थिक कार्यविधि तथा वित्तीय उत्तरदायित्व नियमावली २०७७, \"महालेखा परीक्षकले आफ्नो वार्षिक प्रतिवेदन कसलाई बुझाउनुपर्छ?\"",
+    "o": [
+      "अर्थमन्त्री",
+      "प्रधानमन्त्री",
+      "राष्ट्रपति",
+      "संसद"
+    ],
+    "a": 2,
+    "e": "ऐनको दफा ४६ (र संविधान) अनुसार राष्ट्रपति समक्ष बुझाउनुपर्छ। (स्रोत: ऐन, दफा ४६)"
+  },
+  {
+    "id": 40,
+    "q": "प्रदेश लोक सेवा आयोग नियमावली, २०७८ अनुसार 'दक्ष वा विशेषज्ञ' भन्नाले सम्बन्धित विषयमा कम्तीमा कुन शैक्षिक योग्यता भएको व्यक्तिलाई बुझिन्छ?",
+    "o": [
+      "प्रमाणपत्र तह",
+      "स्नातक तह",
+      "स्नातकोत्तर तह",
+      "विद्यावारिधि"
+    ],
+    "a": 1,
+    "e": "दक्ष/विज्ञ भन्नाले सम्बन्धित विषयमा कम्तीमा स्नातक शैक्षिक योग्यता तथा अनुभव भएको व्यक्ति सम्झनु पर्छ। (नियमावली नियम २ को खण्ड ङ)"
+  },
+  {
+    "id": 41,
+    "q": "\"बिरामी बिदा\" (Sick Leave) प्रत्येक वर्ष कति दिन पाइन्छ?",
+    "o": [
+      "६ दिन",
+      "१२ दिन",
+      "१५ दिन",
+      "१८ दिन"
+    ],
+    "a": 1,
+    "e": "नियम ५७ (१) अनुसार प्रत्येक वर्ष १२ दिन बिरामी बिदा पाइन्छ। (Source Page: 52)"
+  },
+  {
+    "id": 42,
+    "q": "मुख्यमन्त्रीले कुनै मन्त्रीलाई कति वटा मन्त्रालयको कार्यभार सुम्पन सक्ने व्यवस्था नियमावलीमा छ?",
+    "o": [
+      "बढीमा दुई वटा मात्र",
+      "एक वा एक भन्दा बढी",
+      "बढीमा तीन वटा मात्र",
+      "एउटा मात्र"
+    ],
+    "a": 1,
+    "e": "नियम ४ को उपनियम (२) मा \"मुख्यमन्त्रीले कुनै मन्त्रीलाई एक वा एक भन्दा बढी मन्त्रालयको कार्यभार सुम्पन सक्नेछ\" भनी उल्लेख गरिएको छ। (स्रोत: पृष्ठ २)"
+  },
+  {
+    "id": 43,
+    "q": "\"थारू आयोग नेपालको संविधानको कुन भाग र धारामा उल्लेख गरिएको छ?",
+    "o": [
+      "भाग २६, धारा २६२",
+      "भाग २७, धारा २६३",
+      "भाग २८, धारा २६४",
+      "भाग २९, धारा २६५"
+    ],
+    "a": 1
+  },
+  {
+    "id": 44,
+    "q": "प्रमुख सूचना आयुक्तले को समक्ष शपथ ग्रहण गर्नुपर्छ?",
+    "o": [
+      "राष्ट्रपति",
+      "प्रधानमन्त्री",
+      "प्रधानन्यायाधीश",
+      "सभामुख"
+    ],
+    "a": 1,
+    "e": "(नोट: अन्य आयुक्तले चाहिँ प्रमुख आयुक्त समक्ष शपथ लिन्छन्)"
+  },
+  {
+    "id": 45,
+    "q": "कुनै कार्यालय प्रमुखले कार्यान्वयन गरेको आयोजना समयमा पूरा नभएमा निज उपर विभागीय कारबाही कसले प्रारम्भ गर्छ?",
+    "o": [
+      "सचिवले",
+      "विभागीय प्रमुखले",
+      "प्रमुख जिल्ला अधिकारीले",
+      "मन्त्रीले"
+    ],
+    "a": 1,
+    "e": "ऐनको दफा १२ (२) (झ) अनुसार कार्यालय प्रमुखको लापरबाही देखिएमा विभागीय प्रमुखले निजउपर विभागीय कारबाही प्रारम्भ गर्नेछ।"
+  },
+  {
+    "id": 46,
+    "q": "सार्वजनिक खरिद अनुगमन कार्यालयले आचरण विपरीत काम गर्ने निर्माण व्यवसायीलाई कति अवधिसम्म कालोसूची (Blacklist) मा राख्न सक्छ?",
+    "o": [
+      "६ महिना देखि १ वर्ष",
+      "१ वर्ष देखि २ वर्ष",
+      "१ वर्ष देखि ३ वर्ष",
+      "अनिश्चित कालसम्म"
+    ],
+    "a": 2
+  },
+  {
+    "id": 47,
+    "q": "भवन निर्माण म्याद थप गर्दा प्रमुख प्रशासकीय अधिकृतले कति अवधिको लागि म्याद थप गरिदिन सक्नेछ?",
+    "o": [
+      "१ वर्ष",
+      "२ वर्ष",
+      "३ वर्ष",
+      "६ महिना"
+    ],
+    "a": 1
+  },
+  {
+    "id": 48,
+    "q": "विन्डोज अपरेटिङ सिस्टममा डिलिट गरिएका फाइलहरू कहाँ गएर बस्छन्?",
+    "o": [
+      "My Computer",
+      "Recycle Bin",
+      "Taskbar",
+      "Control Panel"
+    ],
+    "a": 1,
+    "e": "सधैँका लागि हटाउन Shift + Delete थिचिन्छ।"
+  },
+  {
+    "id": 49,
+    "q": "In a Rainwater Harvesting system, what is the primary function of a \"First Flush Device\"?",
+    "o": [
+      "To filter out microscopic bacteria and viruses from the stored water.",
+      "To divert the initial surface runoff aimed at removing accumulated dust, bird droppings, and debris from the roof.",
+      "To measure the total volume of rainfall collected during the monsoon season.",
+      "To pump water from the storage tank to the overhead distribution tank."
+    ],
+    "a": 1
+  },
+  {
+    "id": 50,
+    "q": "Which dedicated government body was established to implement the 20-year Master Plan for the conservation of the Chure region in Nepal?",
+    "o": [
+      "Department of Soil Conservation and Watershed Management (DSCWM)",
+      "National Trust for Nature Conservation (NTNC)",
+      "President Chure-Terai Madhesh Conservation Development Board",
+      "National Lake Conservation Development Committee"
+    ],
+    "a": 2
+  }
+];
+
+const PRAISE = {
+    good: ["You are a Genius", "Superb work", "Amazing", "Brilliant", "Fantastic", "Excellent"],
+    bad: ["Keep pushing", "Don't give up", "Stay focused", "You can do this"]
+};
+
+const App = {
+    state: { user: null, quiz: [], curr: 0, score: 0, mistakes: [], timer: null, submitted: false },
+
+    save: (k, v) => { try { localStorage.setItem(k, v) } catch(e) {} },
+    load: (k) => { try { return localStorage.getItem(k) } catch(e) { return null } },
+
+    verifyAndLogin: () => {
+        const n = document.getElementById('inp-name').value.trim();
+        const q = document.getElementById('inp-qual').value;
+        const c = document.getElementById('inp-code').value.trim();
+        const msg = document.getElementById('auth-msg');
+        const btn = document.getElementById('btn-verify');
+
+        if(!n || !c) {
+            msg.innerText = "Please enter Name and Code";
+            msg.style.display = 'block'; return;
+        }
+
+        btn.disabled = true; btn.innerText = "Verifying..."; msg.style.display = 'none';
+
+        fetch(`${CFG.authScript}?code=${c}&name=${n}&qual=${q}`)
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === 'success') {
+                document.getElementById('inp-pass').value = data.password;
+                App.state.user = { name: n, qual: q, code: c };
+                App.save(KEYS.user, JSON.stringify(App.state.user));
+                setTimeout(() => App.dash(), 800);
+            } else {
+                btn.disabled = false; btn.innerText = "Verify & Login";
+                msg.style.display = 'block'; msg.style.color = "#ff0055";
+                msg.innerHTML = data.message.includes("used") ? "Code already used or expired." : "Invalid Code";
+            }
+        })
+        .catch(() => {
+            btn.disabled = false; btn.innerText = "Verify & Login";
+            msg.style.display = 'block'; msg.innerText = "Connection Error";
+        });
+    },
+
+    dash: () => {
+        document.getElementById('title-display').innerText = CFG.topic;
+        document.getElementById('dash-topic-display').innerText = CFG.topic;
+
+        const stored = App.load(KEYS.user);
+        if(!stored) return;
+        
+        App.state.user = JSON.parse(stored);
+        
+        document.getElementById('greet-msg').innerText = `Namaste, ${App.state.user.name.split(' ')[0]}!`;
+        document.getElementById('view-login').classList.add('hidden');
+        document.getElementById('view-result').classList.add('hidden');
+        document.getElementById('view-dash').classList.remove('hidden');
+
+        if(App.load(KEYS.sent)) {
+            document.getElementById('btn-start').innerText = "Retake (Practice Mode)";
+            document.getElementById('submitted-msg').style.display = 'block';
+            document.getElementById('submitted-msg').innerText = "✅ Previous Score Submitted";
+        } else {
+            document.getElementById('btn-start').innerText = "Start Exam";
+            document.getElementById('submitted-msg').style.display = 'none';
+        }
+
+        const m = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        document.getElementById('btn-review').style.display = m.length > 0 ? 'inline-block' : 'none';
+    },
+
+    start: (review) => {
+        App.state.curr = 0; App.state.score = 0; App.state.mistakes = []; App.state.submitted = false;
+        const prevM = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        const flatDB = DB.flat ? DB.flat() : DB;
+        let source = review ? flatDB.filter(q => prevM.includes(q.id)) : [...flatDB];
+        
+        if(!source.length) return alert("No questions available.");
+
+        App.state.quiz = source.map(q => {
+            let opts = q.o.map((txt, i) => ({ t: txt, c: i === q.a }));
+            return { ...q, shuffledOpts: opts.sort(() => Math.random() - 0.5) };
+        }).sort(() => Math.random() - 0.5);
+
+        document.getElementById('view-dash').classList.add('hidden');
+        document.getElementById('view-quiz').classList.remove('hidden');
+        document.getElementById('q-total').innerText = App.state.quiz.length;
+        App.timer(45*60);
+        App.render();
+    },
+
+    render: () => {
+        const q = App.state.quiz[App.state.curr];
+        document.getElementById('q-idx').innerText = App.state.curr + 1;
+        document.getElementById('q-text').innerText = q.q;
+        document.getElementById('exp-box').style.display = 'none';
+        document.getElementById('btn-next').classList.add('hidden');
+        
+        const list = document.getElementById('opts-list');
+        list.innerHTML = '';
+        q.shuffledOpts.forEach((opt, i) => {
+            const btn = document.createElement('div');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<div class="option-marker">${String.fromCharCode(65+i)}</div>${opt.t}`;
+            btn.onclick = () => App.check(btn, opt, q);
+            list.appendChild(btn);
+        });
+    },
+
+    check: (btn, opt, q) => {
+        const all = document.querySelectorAll('.option-btn');
+        all.forEach(b => { b.onclick = null; b.style.opacity = '0.6'; });
+        btn.style.opacity = '1';
+        
+        const praise = document.getElementById('praise-txt');
+        praise.classList.remove('animate-praise');
+        void praise.offsetWidth; praise.classList.add('animate-praise');
+
+        // --- PERSONALIZATION UPDATE STARTS HERE ---
+        // Get the first name from the stored user object, fallback to empty string if missing
+        const userName = App.state.user ? App.state.user.name.split(' ')[0] : '';
+        // ------------------------------------------
+
+        if(opt.c) {
+            btn.classList.add('correct');
+            App.state.score++;
+            // Update: Append Name
+            praise.innerText = PRAISE.good[Math.floor(Math.random()*PRAISE.good.length)] + " ! " + userName;
+            praise.style.color = "#00f260";
+            
+            let m = JSON.parse(App.load(KEYS.mistakes) || "[]").filter(id => id !== q.id);
+            App.save(KEYS.mistakes, JSON.stringify(m));
+        } else {
+            btn.classList.add('wrong');
+            all.forEach((b, i) => { if(q.shuffledOpts[i].c) b.classList.add('correct'); });
+            App.state.mistakes.push(q.id);
+            // Update: Append Name
+            praise.innerText = PRAISE.bad[Math.floor(Math.random()*PRAISE.bad.length)] + " ! " + userName;
+            praise.style.color = "#ff0055";
+        }
+
+        if(q.e) {
+            document.getElementById('exp-box').innerHTML = `<strong>Explanation:</strong> ${q.e}`;
+            document.getElementById('exp-box').style.display = 'block';
+        }
+        document.getElementById('btn-next').classList.remove('hidden');
+        setTimeout(() => document.getElementById('btn-next').scrollIntoView({behavior:"smooth", block:"nearest"}), 100);
+    },
+
+    next: () => {
+        App.state.curr++;
+        if(App.state.curr < App.state.quiz.length) App.render();
+        else App.finish();
+    },
+
+    timer: (sec) => {
+        if(App.state.timer) clearInterval(App.state.timer);
+        App.state.timer = setInterval(() => {
+            sec--;
+            let m = Math.floor(sec/60), s = sec%60;
+            document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
+            if(sec<=0) App.finish();
+        }, 1000);
+    },
+
+    finish: () => {
+        clearInterval(App.state.timer);
+        document.getElementById('view-quiz').classList.add('hidden');
+        document.getElementById('view-result').classList.remove('hidden');
+
+        let m = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        m = [...new Set([...m, ...App.state.mistakes])];
+        App.save(KEYS.mistakes, JSON.stringify(m));
+
+        const pct = Math.round((App.state.score / App.state.quiz.length) * 100);
+        document.getElementById('res-score').innerText = App.state.score;
+        document.getElementById('res-pct').innerText = `${pct}% Accuracy`;
+        App.sync();
+    },
+
+    sync: () => {
+        if(App.state.submitted) return;
+        if(App.load(KEYS.sent)) {
+            document.getElementById('sync-status').innerText = "Practice score not sent.";
+            return;
+        }
+
+        App.state.submitted = true;
+        const data = {
+            date: new Date().toLocaleString(),
+            name: App.state.user.name,
+            qualification: App.state.user.qual,
+            topic: CFG.topic,
+            score: App.state.score
+        };
+
+        if(navigator.onLine) {
+            document.getElementById('sync-status').innerText = "Syncing...";
+            fetch(CFG.scoreScript, {
+                method: 'POST', mode: 'no-cors',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            }).then(() => {
+                App.save(KEYS.sent, "true");
+                document.getElementById('sync-status').innerText = "✅ Score Saved!";
+                document.getElementById('sync-status').style.color = "#00f260";
+            }).catch(() => App.offline(data));
+        } else {
+            App.offline(data);
+        }
+    },
+
+    offline: (d) => {
+        let p = JSON.parse(App.load(KEYS.pending) || "[]");
+        p.push(d);
+        App.save(KEYS.pending, JSON.stringify(p));
+        document.getElementById('sync-status').innerText = "Saved offline. Will sync later.";
+    }
+};
+
+window.onload = () => {
+    if(App.load(KEYS.user)) App.dash();
+};
+</script>
+</body>
+</html>
