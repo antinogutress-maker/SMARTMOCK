@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mock Test Portal</title>
+    <style>
+        :root {
+            --primary: #00f3ff;
+            --secondary: #bd00ff;
+            --success: #39ff14;
+            --error: #ff0099;
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text: #ffffff;
+            --font-main: 'Poppins', sans-serif;
+            --whatsapp: #25D366;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            font-family: var(--font-main);
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .glass-panel {
+            background: var(--glass);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .view { display: none; opacity: 0; transition: opacity 0.5s ease; width: 100%; }
+        .view.active { display: block; opacity: 1; }
+        .view.flex-center { display: flex; flex-direction: column; justify-content: center; height: 100%; }
+
+        .login-card { padding: 40px 30px; text-align: center; }
+        .logo { font-size: 2.5rem; font-weight: 700; margin-bottom: 10px; background: linear-gradient(to right, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: #ccc; }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: white;
+            outline: none;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 10px;
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary), #00c6ff);
+            color: #000;
+        }
+        .btn-whatsapp {
+            background: var(--whatsapp);
+            color: white;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+        }
+        .btn:active { transform: scale(0.98); }
+
+        .dash-header { margin-bottom: 30px; }
+        .welcome-text { font-size: 1.8rem; font-weight: 600; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
+        .stat-card { padding: 15px; text-align: center; background: rgba(0,0,0,0.2); border-radius: 15px; }
+        .stat-val { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+        .stat-label { font-size: 0.8rem; color: #aaa; }
+        
+        .history-list { max-height: 200px; overflow-y: auto; margin-top: 20px; }
+        .history-item {
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            margin-bottom: 8px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+        }
+
+        .quiz-top-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            background: rgba(0,0,0,0.3);
+            padding: 10px 20px;
+            border-radius: 50px;
+        }
+        
+        .feedback-area {
+            height: 0;
+            overflow: hidden;
+            transition: height 0.3s;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .feedback-area.show { height: 50px; margin-bottom: 20px; padding: 0 10px; border: 1px solid; }
+        .feedback-success { background: rgba(57, 255, 20, 0.2); color: var(--success); }
+        .feedback-error { background: rgba(255, 0, 153, 0.2); color: var(--error); }
+
+        .question-card { padding: 25px; margin-bottom: 20px; min-height: 200px; }
+        .options-grid { display: flex; flex-direction: column; gap: 12px; }
+        .option-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+        .option-btn.correct { background: rgba(57, 255, 20, 0.2); border-color: var(--success); }
+        .option-btn.wrong { background: rgba(255, 0, 153, 0.2); border-color: var(--error); }
+        .option-btn.disabled { pointer-events: none; }
+
+        .explanation-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 243, 255, 0.1);
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            display: none;
+        }
+
+        .next-btn {
+            padding: 12px 30px;
+            background: white;
+            color: black;
+            border-radius: 30px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            display: none;
+        }
+
+        .result-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .result-circle::before {
+            content: ''; position: absolute; width: 130px; height: 130px;
+            background: #24243e; border-radius: 50%;
+        }
+        .score-text { position: relative; font-size: 2.5rem; font-weight: 700; }
+        
+        .toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.8); color: white; padding: 10px 20px;
+            border-radius: 30px; z-index: 1000; display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="toast" id="toast"></div>
+
+    <div class="container">
+        
+        <div id="login-view" class="view active flex-center">
+            <div class="glass-panel login-card">
+                <div class="logo">MOCK TEST</div>
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <input type="text" id="uName" placeholder="Enter your name">
+                </div>
+                <div class="input-group">
+                    <label>Qualification</label>
+                    <select id="uQual">
+                        <option value="Engineer">Engineer</option>
+                        <option value="Sub-Engineer">Sub-Engineer</option>
+                        <option value="Asst. Sub-Engineer">Asst. Sub-Engineer</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="handleLogin()">ENTER PORTAL</button>
+            </div>
+        </div>
+
+        <div id="dashboard-view" class="view">
+            <div class="glass-panel" style="padding: 25px;">
+                <div class="dash-header">
+                    <h2 class="welcome-text">Welcome,<br><span id="dash-name" style="color:var(--primary)">User</span>!</h2>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-val" id="stat-accuracy">0%</div>
+                        <div class="stat-label">Accuracy</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-val" id="stat-attempts">0</div>
+                        <div class="stat-label">Total Attempts</div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="startQuiz()">START NEW QUIZ</button>
+                
+                <button class="btn btn-whatsapp" style="margin-top: 15px;" onclick="window.open('https://chat.whatsapp.com/IsxOQIOHD6UHnyuPmWpysK?mode=gi_t', '_blank')">
+                    More Test upcoming click
+                </button>
+
+                <div style="margin-top: 30px;">
+                    <h4 style="margin-bottom: 10px; border-bottom: 1px solid var(--glass-border);">History</h4>
+                    <div id="history-container" class="history-list"></div>
+                </div>
+                <button class="btn" onclick="logout()" style="background: transparent; border: 1px solid #aaa; color: #ccc; margin-top: 20px;">Logout</button>
+            </div>
+        </div>
+
+        <div id="quiz-view" class="view">
+            <div class="quiz-top-bar">
+                <div id="timer-display">45:00</div>
+                <div id="q-counter">1/50</div>
+            </div>
+            <div id="feedback-area" class="feedback-area"></div>
+            <div class="glass-panel question-card">
+                <div id="q-text" style="margin-bottom: 20px; font-weight: 500;"></div>
+                <div class="options-grid" id="options-container"></div>
+                <div class="explanation-box" id="explanation-box"></div>
+            </div>
+            <div style="text-align: right;"><button class="next-btn" id="next-btn" onclick="nextQuestion()">NEXT &rarr;</button></div>
+        </div>
+
+        <div id="result-view" class="view flex-center">
+            <div class="glass-panel" style="padding: 30px; text-align: center;">
+                <h2>Completed</h2>
+                <div class="result-circle" id="result-circle"><div class="score-text" id="final-score">0</div></div>
+                <p id="result-msg" style="margin-bottom: 20px;"></p>
+                <div class="action-btns">
+                    <button class="btn btn-primary" onclick="showView('dashboard-view')">Back to Dashboard</button>
+                    <button class="btn btn-whatsapp" onclick="window.open('https://chat.whatsapp.com/IsxOQIOHD6UHnyuPmWpysK?mode=gi_t', '_blank')">
+                        More Test upcoming click
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+const RAW_QUESTIONS = [
+    { q: "हाल नेपालको क्षेत्रफल वर्ग माइलमा कति रहेको छ?", o: ["५६,२७८ वर्ग माइल", "५६,८२७ वर्ग माइल", "५६,८७२ वर्ग माइल", "५८,६२७ वर्ग माइल"], a: 1, exp: "१४७,१८१ बर्ग कि.मि. = ५६,८२७ बर्ग माइल।" },
+    { q: "नेपालको पहिलो जलविद्युत आयोजना फर्पिङ उत्पादन कहिलेदेखि सुरु भएको थियो?", o: ["वि.सं. १९६५", "वि.सं. १९६८", "वि.सं. १९७०", "वि.सं. १९७२"], a: 1, exp: "वि.सं. १९६८" },
+    { q: "नालापानीको युद्धमा अंग्रेजको तर्फबाट कसले नेतृत्व गरेका थिए?", o: ["अक्टोलोनी", "जिलेस्पी", "गार्डनर", "उड"], a: 1, exp: "General Gillespie" },
+    { q: "संयुक्त राष्ट्र संघले निर्धारण गरेको दिगो विकास लक्ष्य (SDGs) का विश्वव्यापी सूचकहरू कतिवटा रहेका छन्?", o: ["१६९", "२३२", "३०४", "४९४"], a: 1, exp: "२३२ (लोकसेवामा २३२ लाई आधिकारिक मानिन्छ)" },
+    { q: "टेलिस्कोप (Telescope) को आविष्कार कसले गरेका हुन्?", o: ["ग्यालिलियो ग्यालिली", "हान्स लिपर्सी", "न्युटन", "कोपर्निकस"], a: 1, exp: "हान्स लिपर्सी (प्याटेन्ट लिपर्सीको नाममा छ)।" },
+    { q: "हाल बिमस्टेकका महासचिव (Secretary General) को हुन्?", o: ["तेन्जिन लेकफेल", "इन्द्र मणि पाण्डे", "सहिदुल इस्लाम", "सुमिच नाकन्दला"], a: 1, exp: "इन्द्र मणि पाण्डे" },
+    { q: "नेपाल सरकारले नयाँ १०० रुपैयाँको नोट (नयाँ नक्सा सहितको) निष्कासन गर्ने घोषणा कहिले गर्‍यो?", o: ["मङ्सिर ५", "मङ्सिर १", "मङ्सिर ११", "मङ्सिर १०"], a: 2, exp: "मङ्सिर ११" },
+    { q: "नेपालको संविधानको धारा ३५ मा कुन मौलिक हकको व्यवस्था छ?", o: ["शिक्षा सम्बन्धी हक", "स्वास्थ्य सम्बन्धी हक", "खाद्य सम्बन्धी हक", "रोजगारी सम्बन्धी हक"], a: 1, exp: "स्वास्थ्य सम्बन्धी हक" },
+    { q: "The cat jumped ______ the table.", o: ["in", "on", "upon", "at"], a: 2, exp: "Motion मा आउँदा 'upon' प्रयोग हुन्छ।" },
+    { q: "One of the students ______ absent today.", o: ["is", "are", "were", "have"], a: 0, exp: "'One' कर्ता भएकोले Singular Verb (is) हुन्छ।" },
+    { q: "तलका मध्ये शुद्ध शब्द कुन हो?", o: ["आर्शिवाद", "आशीर्वाद", "आशिर्बाद", "आशिर्वाद"], a: 1, exp: "'श' दीर्घ र 'व' मा रेफ (आशीर्वाद)।" },
+    { q: "तलका मध्ये व्याकरणका दृष्टिले शुद्ध वाक्य कुन हो?", o: ["मलाई स्याउ मन पर्छन्।", "मलाई स्याउहरू मन पर्छ।", "मलाई स्याउ मन पर्छ।", "मलाई स्याउहरू मन पर्छन्।"], a: 2, exp: "जातिवाचक एकवचन: 'मलाई स्याउ मन पर्छ'।" },
+    { q: "एउटा लाइनमा राम अगाडिबाट १५औँ स्थानमा र पछाडिबाट १४औँ स्थानमा छ भने, जम्मा कति मानिस होलान्?", o: ["28", "29", "30", "27"], a: 0, exp: "(15 + 14) - 1 = 28" },
+    { q: "यदि कुनै कोड भाषामा 'NEPAL' लाई 'ODQBM' लेखिन्छ भने, 'HIMAL' लाई कसरी लेखिन्छ?", o: ["IJNBK", "GHLZK", "IJNZM", "IHNBM"], a: 2, exp: "User Specified Answer: Option C" },
+    { q: "हरि आफ्नो घरबाट पूर्वतर्फ ४ कि.मी. हिँड्छ, त्यसपछि बायाँ फर्केर ३ कि.मी. हिँड्छ भने ऊ सुरुको बिन्दुबाट कति टाढा छ?", o: ["7 कि.मी.", "5 कि.मी.", "4 कि.मी.", "3 कि.मी."], a: 1, exp: "Pythagoras: √(4² + 3²) = 5" },
+    { q: "तलका नामहरूलाई वर्णानुक्रम अनुसार मिलाउँदा तेस्रो स्थानमा कुन नाम पर्दछ? (Manoj, Manish, Manita, Mandira)", o: ["Manoj", "Manish", "Manita", "Mandira"], a: 2, exp: "Order: Mandira, Manish, Manita, Manoj." },
+    { q: "30 जना मानिसले कुनै काम 12 दिनमा गर्न सक्छन् भने, सोही काम 20 जना मानिसले कति दिनमा गर्न सक्छन्?", o: ["18 दिन", "15 दिन", "20 दिन", "16 दिन"], a: 0, exp: "(30×12)/20 = 18 दिन" },
+    { q: "सुशासन नियमावली, २०६५ अनुसार तुरुन्त लेखिएको चिठीको कार्य फछ्र्यौट कति अवधि भित्र गर्नु पर्दछ?", o: ["१ दिन भित्र", "२ दिन भित्र", "३ दिन भित्र", "५ दिन भित्र"], a: 1, exp: "२ दिन भित्र" },
+    { q: "Who authorized the job description of chief secretary?", o: ["Government of Nepal", "Head of department", "President of Nepal", "None"], a: 0, exp: "Government of Nepal" },
+    { q: "विश्व बन्धुत्वको भावना, सहअस्तित्व बोध, र अनाक्रमण कस्तो मूल्य र मान्यता हो?", o: ["राष्ट्रिय", "नैतिक", "पारिवारिक", "अन्तर्राष्ट्रिय"], a: 3, exp: "अन्तर्राष्ट्रिय मूल्य मान्यता" },
+    { q: "जिल्ला प्रशासन कार्यालयमा नागरिक वडापत्र सम्बन्धी गुनासो भएमा कहाँ उजुरी गर्ने?", o: ["प्रमुख जिल्ला अधिकारी", "क्षेत्रीय प्रशासन कार्यालय", "प्रधानमन्त्रीको कार्यालय", "राष्ट्रपतिको कार्यालय"], a: 1, exp: "क्षेत्रीय प्रशासन कार्यालय" },
+    { q: "INTOSAI को पुरा रुप के हो?", o: ["International Organization of Supreme Audit Institutions", "International Organization of Audit Institutions", "Standard of Supreme Audit", "Organization for Supreme Audit"], a: 0, exp: "International Organization of Supreme Audit Institutions" },
+    { q: "संवैधानिक परिषद्को सचिवको रूपमा को रहने व्यवस्था छ?", o: ["नेपाल सरकारको मुख्य सचिव", "प्रधानमन्त्री कार्यालयको सचिव", "गृह सचिव", "कानुन सचिव"], a: 0, exp: "नेपाल सरकारको मुख्य सचिव" },
+    { q: "Who is also known as father of modern management?", o: ["Henry Fayol", "Maslow", "Herzberg", "Drucker"], a: 0, exp: "Henry Fayol (Admin/Process Management)" },
+    { q: "नेपालमा सर्वप्रथम कुन संविधानले सूचनाको हकलाई सुनिश्चित गरेको थियो?", o: ["२०१९ सालको संविधान", "२०४७ सालको संविधान", "२०६३ अन्तरिम", "२०७२ संविधान"], a: 1, exp: "२०४७ सालको संविधान" },
+    { q: "When it is not possible to set up the level, midway between the two points then the difference in elevation is measured by", o: ["Fly levelling", "precise levelling", "differential levelling", "reciprocal levelling"], a: 3, exp: "Reciprocal levelling" },
+    { q: "Due to curvature of earth the object", o: ["Looks higher than it is", "Looks lower than it is", "Looks as it is", "Looks curved"], a: 1, exp: "Looks lower than it is" },
+    { q: "Which of the following sedimentary rocks changes into quartzite by metamorphic action", o: ["Sand stone", "Lime stone", "Shale", "Gypsum"], a: 0, exp: "Sandstone -> Quartzite" },
+    { q: "Ultimate strength to cement is provided by", o: ["Tri-calcium silicate", "Di-calcium silicate", "Tri-Calcium aluminate", "Tetra calcium alumino ferrite"], a: 1, exp: "Di-calcium silicate (C2S) gives long term strength" },
+    { q: "The maximum deflection of a beam of length (L) simply supported beam at its ends with a point load (P) will be mid span", o: ["Pl^3/48EI", "Pl^2/48EI", "P^{2l}/48EI", "Pl/48 EI"], a: 0, exp: "Pl^3/48EI" },
+    { q: "When shear force is zero at point bending moment is", o: ["zero", "constant", "Maximum", "Either maximum or minimum"], a: 3, exp: "Maximum or Minimum (Maxima/Minima principle)" },
+    { q: "Pressure within a soap bubble is", o: ["equal to vapour pressure", "less than external pressure", "greater than external pressure", "equal to external pressure"], a: 2, exp: "Greater than external (Excess pressure)" },
+    { q: "Equation of continuity is based on the principle of conservation of", o: ["Mass", "Energy", "Momentum", "All of these"], a: 0, exp: "Conservation of Mass" },
+    { q: "The lateral earth pressure of the soil moves towards the retaining wall indicates", o: ["active earth pressure", "passive earth pressure", "pressure at rest", "All of the above"], a: 0, exp: "Active earth pressure" },
+    { q: "Talus is the soil transported by", o: ["Wind", "Water", "glacier", "gravitational force"], a: 3, exp: "Gravitational force (Colluvial)" },
+    { q: "The live load to be considered for an accessible roof is", o: ["Nil", "75 kg/m^2", "150 kg/m^2", "200 kg/cm^2"], a: 2, exp: "150 kg/m^2" },
+    { q: "The shear reinforcement in RC.C. is provided to resist", o: ["vertical shear", "horizontal shear", "diagonal compression", "diagonal tension"], a: 3, exp: "Diagonal tension" },
+    { q: "A stair should not have pitch more than", o: ["25°", "30°", "40°", "50°"], a: 2, exp: "Max 40 degrees" },
+    { q: "The process of proper and accurate measurement of concrete ingredient for uniformity of proportion, is known", o: ["grading", "curing", "mixing", "batching"], a: 3, exp: "Batching" },
+    { q: "BOD removal in a primary clarifier is", o: ["50% to 60%", "30% to 40%", "10% to 20%", "Nil"], a: 1, exp: "30% to 40%" },
+    { q: "Which of the following test reveals the amount of residual chlorine in treated water", o: ["amperometeric test", "orthotolodene test", "sodometric test", "any of these"], a: 1, exp: "Orthotolidine test" },
+    { q: "Crop water is proportional to", o: ["evapotranspiration", "effective rainfall", "Seepage of water", "all of the above"], a: 0, exp: "Evapotranspiration" },
+    { q: "Watershed line is abandoned for alignment aliging an irrigation canal if,", o: ["Watershed forms a sharp loop", "Canal has to take off from a river", "towns located on water shed", "all of the above"], a: 3, exp: "All of the above" },
+    { q: "According to NRS single lane road width is", o: ["10m", "7m", "5m", "3.75m"], a: 3, exp: "3.75m" },
+    { q: "Camber provided in bituminous road is", o: ["1.5%", "2.5%", "7%", "4%"], a: 1, exp: "2.5% (Standard for Bituminous)" },
+    { q: "The approximate weight of one cubic meter of mild steel is", o: ["1440 kg", "1600 kg", "2400kg", "7850 kg"], a: 3, exp: "7850 kg/m^3" },
+    { q: "The annual periodic payments made of the repayment of the capital invested is known as", o: ["annuity", "depreciation", "sinking fund", "none"], a: 0, exp: "Annuity" },
+    { q: "PERT IS", o: ["activity oriented", "event oriented", "time oriented", "resource oriented"], a: 1, exp: "Event oriented (CPM is Activity oriented)" },
+    { q: "The amounts of money deposited by interested bidders a tender as a guarantee is known as", o: ["earnest money", "performance bond", "security money", "retention money"], a: 0, exp: "Earnest Money" },
+    { q: "Civil Aviation Authority of Nepal (CAAN) was established in", o: ["1947", "1960", "1998", "2000"], a: 2, exp: "1998 AD" }
+];
+
+const STATE = {
+    user: JSON.parse(localStorage.getItem('bagmatiUser')) || null,
+    history: JSON.parse(localStorage.getItem('bagmatiHistory')) || [],
+    currentQuiz: [],
+    qIndex: 0,
+    score: 0,
+    timer: null,
+    timeLeft: 45 * 60
+};
+
+window.onload = () => {
+    if (STATE.user) showDashboard();
+    else showView('login-view');
+};
+
+function handleLogin() {
+    const name = document.getElementById('uName').value.trim();
+    if (!name) return showToast("Enter your name");
+    STATE.user = { name, qual: document.getElementById('uQual').value };
+    localStorage.setItem('bagmatiUser', JSON.stringify(STATE.user));
+    showDashboard();
+}
+
+function showDashboard() {
+    document.getElementById('dash-name').innerText = STATE.user.name.split(' ')[0];
+    const total = STATE.history.length;
+    let sum = 0;
+    STATE.history.forEach(h => sum += h.score);
+    document.getElementById('stat-attempts').innerText = total;
+    document.getElementById('stat-accuracy').innerText = (total > 0 ? Math.round((sum / (total * 50)) * 100) : 0) + "%";
+    
+    const histCont = document.getElementById('history-container');
+    histCont.innerHTML = STATE.history.slice().reverse().map(h => `
+        <div class="history-item"><span>Score</span><span style="color:var(--primary)">${h.score}/50</span></div>
+    `).join('');
+    showView('dashboard-view');
+}
+
+function startQuiz() {
+    STATE.score = 0; STATE.qIndex = 0; STATE.timeLeft = 45 * 60;
+    STATE.currentQuiz = [...RAW_QUESTIONS].sort(() => Math.random() - 0.5);
+    startTimer();
+    showView('quiz-view');
+    renderQuestion();
+}
+
+function renderQuestion() {
+    const q = STATE.currentQuiz[STATE.qIndex];
+    document.getElementById('q-text').innerText = `${STATE.qIndex + 1}. ${q.q}`;
+    document.getElementById('q-counter').innerText = `${STATE.qIndex + 1}/50`;
+    const optCont = document.getElementById('options-container');
+    optCont.innerHTML = '';
+    document.getElementById('explanation-box').style.display = 'none';
+    document.getElementById('next-btn').style.display = 'none';
+    document.getElementById('feedback-area').classList.remove('show');
+    
+    q.o.forEach((opt, idx) => {
+        const btn = document.createElement('div');
+        btn.className = 'option-btn';
+        btn.innerText = opt;
+        btn.onclick = () => checkAnswer(idx, btn);
+        optCont.appendChild(btn);
+    });
+}
+
+function checkAnswer(idx, btn) {
+    document.querySelectorAll('.option-btn').forEach(b => b.classList.add('disabled'));
+    const q = STATE.currentQuiz[STATE.qIndex];
+    const feedback = document.getElementById('feedback-area');
+    if (idx === q.a) {
+        btn.classList.add('correct');
+        STATE.score++;
+        feedback.innerText = "Correct!";
+        feedback.className = 'feedback-area show feedback-success';
+    } else {
+        btn.classList.add('wrong');
+        document.querySelectorAll('.option-btn')[q.a].classList.add('correct');
+        feedback.innerText = "Wrong!";
+        feedback.className = 'feedback-area show feedback-error';
+    }
+    document.getElementById('explanation-box').innerHTML = `<strong>Note:</strong> ${q.exp}`;
+    document.getElementById('explanation-box').style.display = 'block';
+    document.getElementById('next-btn').style.display = 'inline-block';
+}
+
+function nextQuestion() {
+    STATE.qIndex++;
+    if (STATE.qIndex < 50) renderQuestion();
+    else endQuiz();
+}
+
+function startTimer() {
+    clearInterval(STATE.timer);
+    STATE.timer = setInterval(() => {
+        STATE.timeLeft--;
+        const m = Math.floor(STATE.timeLeft / 60);
+        const s = STATE.timeLeft % 60;
+        document.getElementById('timer-display').innerText = `${m}:${s < 10 ? '0' + s : s}`;
+        if (STATE.timeLeft <= 0) endQuiz();
+    }, 1000);
+}
+
+function endQuiz() {
+    clearInterval(STATE.timer);
+    STATE.history.push({ score: STATE.score });
+    localStorage.setItem('bagmatiHistory', JSON.stringify(STATE.history));
+    document.getElementById('final-score').innerText = STATE.score;
+    document.getElementById('result-msg').innerText = STATE.score > 30 ? "Excellent!" : "Keep Practicing!";
+    showView('result-view');
+}
+
+function showView(id) {
+    document.querySelectorAll('.view').forEach(v => { v.classList.remove('active'); v.style.display = 'none'; });
+    const target = document.getElementById(id);
+    target.style.display = target.classList.contains('flex-center') ? 'flex' : 'block';
+    setTimeout(() => target.classList.add('active'), 10);
+}
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.innerText = msg; t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 2000);
+}
+
+function logout() { localStorage.removeItem('bagmatiUser'); location.reload(); }
+</script>
+</body>
+</html>
