@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Koshi 5th Mock Test 010</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00f260;
+            --secondary: #0575e6;
+            --accent: #ff00cc;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-color: #ffffff;
+            --card-bg: rgba(20, 20, 40, 0.95);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-color);
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        /* --- Glassmorphism Container --- */
+        .app-container {
+            width: 100%;
+            max-width: 650px;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        /* --- Typography --- */
+        h1 { font-size: 2rem; font-weight: 800; background: linear-gradient(to right, #00f260, #0575e6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+        h2 { font-size: 1.5rem; margin-bottom: 20px; }
+        p { color: #ccc; font-size: 0.95rem; line-height: 1.6; }
+
+        /* --- Inputs & Buttons --- */
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .label { display: block; font-size: 0.8rem; margin-bottom: 5px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+        .glass-input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+        .glass-input:focus { border-color: var(--primary); background: rgba(255,255,255,0.15); }
+        .glass-input:read-only { background: rgba(0,0,0,0.2); color: #888; cursor: not-allowed; }
+        
+        select.glass-input option { background: #141428; color: white; }
+
+        .btn {
+            background: linear-gradient(90deg, #00f260, #0575e6);
+            border: none;
+            color: white;
+            padding: 16px;
+            width: 100%;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 5px 20px rgba(0, 242, 96, 0.3);
+            min-height: 50px; 
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { filter: grayscale(1); cursor: wait; }
+        .btn-outline { background: transparent; border: 2px solid var(--glass-border); box-shadow: none; margin-top: 10px; }
+
+        /* --- Personalization Header --- */
+        .personal-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--glass-border);
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .animate-praise { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* --- Quiz UI --- */
+        .info-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.05);
+            padding: 10px 15px;
+            border-radius: 10px;
+        }
+        .timer-badge { font-family: monospace; font-weight: 700; color: var(--accent); font-size: 1.1rem; }
+
+        .question-text { font-size: 1.2rem; font-weight: 600; margin-bottom: 20px; line-height: 1.5; }
+
+        .option-btn {
+            width: 100%;
+            padding: 18px;
+            margin-bottom: 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            text-align: left;
+            color: #ddd;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        .option-marker {
+            width: 30px; height: 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin-right: 15px; font-weight: 700; flex-shrink: 0;
+        }
+
+        .correct { background: rgba(0, 242, 96, 0.2) !important; border-color: #00f260 !important; color: white !important; }
+        .correct .option-marker { background: #00f260; color: black; }
+        
+        .wrong { background: rgba(255, 0, 85, 0.2) !important; border-color: #ff0055 !important; color: white !important; }
+        .wrong .option-marker { background: #ff0055; color: white; }
+
+        .explanation-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(5, 117, 230, 0.15);
+            border-left: 4px solid var(--secondary);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Results --- */
+        .score-circle {
+            width: 160px; height: 160px;
+            border-radius: 50%;
+            border: 5px solid var(--primary);
+            margin: 0 auto 20px auto;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            box-shadow: 0 0 30px rgba(0, 242, 96, 0.2);
+        }
+        .score-val { font-size: 3.5rem; font-weight: 800; color: white; line-height: 1; }
+        
+        .hidden { display: none !important; }
+        
+        #opts-list { max-height: 50vh; overflow-y: auto; padding-right: 5px; }
+
+        /* Auth Message Style */
+        #auth-msg { 
+            text-align: center; 
+            margin-top: 15px; 
+            font-weight: 600; 
+            background: rgba(0,0,0,0.3); 
+            padding: 10px; 
+            border-radius: 8px; 
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="app">
+    <div id="view-login">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h1>Koshi 5th Mock Test 010</h1>
+            <p>5th Edition | Civil Engineering</p>
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Full Name</span>
+            <input type="text" id="inp-name" class="glass-input" placeholder="Enter your name">
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Qualification</span>
+            <select id="inp-qual" class="glass-input">
+                <option value="Engineer">Engineer</option>
+                <option value="Sub-Engineer">Sub-Engineer</option>
+                <option value="Asst. Sub-Engineer">Asst. Sub-Engineer</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <span class="label">Unique Code</span>
+            <input type="tel" id="inp-code" class="glass-input" placeholder="Enter 5-digit code">
+        </div>
+
+        <div class="input-group">
+            <span class="label">Password (Auto-Fill)</span>
+            <input type="password" id="inp-pass" class="glass-input" placeholder="Verifying..." readonly>
+        </div>
+
+        <button class="btn" id="btn-verify" onclick="App.verifyAndLogin()">Verify & Login</button>
+        
+        <p id="auth-msg"></p>
+    </div>
+
+    <div id="view-dash" class="hidden">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2 id="greet-msg" style="color: var(--primary);">Welcome!</h2>
+            <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 16px; margin-bottom: 20px;">
+                <p style="text-transform: uppercase; font-size: 0.8rem; color: #aaa;">Active Session</p>
+                <h3 style="font-size: 1.5rem; margin: 10px 0;">Koshi 5th Mock Test 010</h3>
+                <p>50 Questions • 45 Minutes</p>
+            </div>
+        </div>
+        <button class="btn" id="btn-start" onclick="App.start(false)">Start New Quiz</button>
+        <p id="submitted-msg" style="color: var(--primary); text-align: center; margin-top: 15px; display: none;">✅ Score Submitted Successfully</p>
+        <button class="btn btn-outline" id="btn-review" onclick="App.start(true)" style="display: none;">Review Mistakes</button>
+    </div>
+
+    <div id="view-quiz" class="hidden">
+        <div class="personal-header">
+            <div id="praise-txt" style="font-size: 1.2rem; font-weight: 700; color: white;">Good Luck!</div>
+        </div>
+
+        <div class="info-bar">
+            <span>Q: <span id="q-idx">1</span> / <span id="q-total">50</span></span>
+            <span class="timer-badge" id="timer">45:00</span>
+        </div>
+
+        <div id="q-container">
+            <div class="question-text" id="q-text">Loading...</div>
+            <div id="opts-list"></div>
+            <div class="explanation-box" id="exp-box"></div>
+        </div>
+
+        <button class="btn hidden" id="btn-next" onclick="App.next()">Next Question</button>
+    </div>
+
+    <div id="view-result" class="hidden" style="text-align: center;">
+        <h2>Quiz Completed!</h2>
+        <div class="score-circle">
+            <span class="score-val" id="res-score">0</span>
+            <span style="font-size: 0.8rem; text-transform: uppercase; color: #aaa;">Correct</span>
+        </div>
+        <div style="margin-bottom: 30px;">
+            <h3 id="res-pct" style="color: var(--primary);">0% Accuracy</h3>
+            <p id="sync-status" style="font-size: 0.9rem; margin-top: 10px; opacity: 0.8;">Syncing score...</p>
+        </div>
+        <button class="btn" onclick="App.dash()">Back to Dashboard</button>
+    </div>
+</div>
+
+<script>
+/**
+ * Gandaki 4th Mock Test 05- SECURE EDITION
+ */
+
+const CFG = {
+    // 1. Script for SCORE submission (Original)
+    scoreScript: "https://script.google.com/macros/s/AKfycbztgOiYdZlPssBus6iXQ6LwokmA4LS2b7CzgcKS4gd1iv9lG7MB_N7SupsxSdYQedEZgA/exec",
+    // 2. Script for LOGIN/AUTH (New)
+    authScript: "https://script.google.com/macros/s/AKfycbyUGMGXI7vml6jzJsCxhXvHgnq4V4Aq6sl6blkJkdfC8_haCxI__kx3EwFzZrW942E6/exec",
+    topic: "Koshi 5th Mock Test 010"
+};
+
+const PRAISE = {
+    good: ["You are a Genius", "Superb work", "Amazing", "Brilliant", "Fantastic", "Excellent", "Spot on", "Wow"],
+    bad: ["Keep pushing", "Don't give up", "Stay focused", "You can do this", "Nice try", "Learn from this"]
+};
+
+// --- DATASET ---
+const DB = [
+  {
+    "id": 1,
+    "q": "कोशी प्रदेशको जनघनत्व कति रहेको छ ?",
+    "o": [
+      "१७५ प्रति व.कि.मि.",
+      "१८० प्रति व.कि.मि.",
+      "१९२ प्रति व.कि.मि.",
+      "१७५ प्रति व.कि.मि."
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 2,
+    "q": "कार्यसम्पादन सम्झौता अनुसार काम गर्न नसकेमा प्रमुख पदको जिम्मेवारी कति वर्षसम्म दिइदैन ?",
+    "o": [
+      "एक वर्ष",
+      "दुई वर्ष",
+      "तिन वर्ष",
+      "चार वर्ष"
+    ],
+    "a": 1
+  },
+  {
+    "id": 3,
+    "q": "प्रदेश लोक सेवा आयोगको अधिकतम सदस्य संख्या कति हुन्छ ?",
+    "o": [
+      "८",
+      "३",
+      "५ जना",
+      "६ जना"
+    ],
+    "a": 1
+  },
+  {
+    "id": 4,
+    "q": "आयोगमा कम्तीमा कति जना महिला सदस्य अनिवार्य छन् ?",
+    "o": [
+      "१",
+      "२",
+      "३",
+      "०"
+    ],
+    "a": 0
+  },
+  {
+    "id": 5,
+    "q": "प्रसूति बिदा अधिकतम कति दिनको हुन्छ ?",
+    "o": [
+      "९८ दिन",
+      "९० दिन",
+      "१०५ दिन",
+      "१०० दिन"
+    ],
+    "a": 0
+  },
+  {
+    "id": 6,
+    "q": "सुशासन सूचकमा कुन समावेश छ ?",
+    "o": [
+      "औसत आयु",
+      "विधिको शासन",
+      "बेरोजगारी दर",
+      "गरिबीको रेखामुनी रहेको जनसंख्या"
+    ],
+    "a": 1
+  },
+  {
+    "id": 7,
+    "q": "आ.व. २०८५/८६ मा साक्षरता दरको लक्ष्य कति छ ?",
+    "o": [
+      "८०%",
+      "८५%",
+      "९०%",
+      "९५%"
+    ],
+    "a": 2
+  },
+  {
+    "id": 8,
+    "q": "प्रदेश सभाको कार्यकाल सामान्यतया कति वर्षको हुन्छ ?",
+    "o": [
+      "३ वर्ष",
+      "४ वर्ष",
+      "५ वर्ष",
+      "६ वर्ष"
+    ],
+    "a": 2
+  },
+  {
+    "id": 9,
+    "q": "नेपालको संविधानमा कतिवटा अनुसूचीहरु रहेका छन् ?",
+    "o": [
+      "१०",
+      "१२",
+      "९",
+      "८"
+    ],
+    "a": 2
+  },
+  {
+    "id": 10,
+    "q": "नेपालको राष्ट्रिय गान कुन हो ?",
+    "o": [
+      "सयौं थुँगा फूलका",
+      "श्रीमान गम्भीर नेपाली",
+      "गाउँछ गीत नेपाल",
+      "हामी नेपाली"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 11,
+    "q": "An ideal transition curve is",
+    "o": [
+      "cubic parabola",
+      "cubic spiral",
+      "clothoid spiral",
+      "true spiral."
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 12,
+    "q": "If the angular measurements of a traverse are more precise than its linear measurements, balancing of the traverse, is done by",
+    "o": [
+      "Bowditch's rule",
+      "Transit rule",
+      "Empirical rule",
+      "all of the above."
+    ],
+    "a": 1
+  },
+  {
+    "id": 13,
+    "q": "The angle between two plane mirrors of optical square, is",
+    "o": [
+      "20°",
+      "30°",
+      "45°",
+      "60°"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 14,
+    "q": "For a curve of radius 100 m and normal chord 10 m, the Rankine's deflection angle, is",
+    "o": [
+      "0°25'95''",
+      "0°35'95''",
+      "1°25'53''",
+      "2°51'.53''"
+    ],
+    "a": 3
+  },
+  {
+    "id": 15,
+    "q": "Wrought iron contains carbon upto",
+    "o": [
+      "0.25%",
+      "1.0%",
+      "1.5%",
+      "2%."
+    ],
+    "a": 0
+  },
+  {
+    "id": 16,
+    "q": "Pick up the incorrect statement from the following:",
+    "o": [
+      "For thin structures subjected to wetting and drying, the water cement ratio should be 0.45",
+      "For mass concrete structures subjected to wetting and drying, the water ratio should be 0.55",
+      "For thin structures which remain continuously under water, the water-cement ratio by weight should be 0.55",
+      "None of these"
+    ],
+    "a": 3
+  },
+  {
+    "id": 17,
+    "q": "The clay to be used for manufacturing bricks for a large project, is dugout and allowed to weather throughout",
+    "o": [
+      "the monsoon",
+      "the winter",
+      "the summer",
+      "none of these"
+    ],
+    "a": 0
+  },
+  {
+    "id": 18,
+    "q": "The initial setting time of lime-pozzolana, is",
+    "o": [
+      "30 minutes",
+      "60 minutes",
+      "90 minutes",
+      "120 minutes."
+    ],
+    "a": 3
+  },
+  {
+    "id": 19,
+    "q": "During a tensile test on a ductile material",
+    "o": [
+      "nominal stress at fracture is higher than the ultimate stress",
+      "true stress at fracture is higher than the ultimate stress",
+      "true stress at fracture is the same as the ultimate stress",
+      "none of these"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 20,
+    "q": "The limit of proportionality depends upon",
+    "o": [
+      "area of cross-section",
+      "types of loading",
+      "types of material",
+      "none of the above"
+    ],
+    "a": 2
+  },
+  {
+    "id": 21,
+    "q": "The bending moment acting on the plane of an element will cause the following type of stress on the plane",
+    "o": [
+      "normal stress",
+      "tension stress",
+      "axial stress",
+      "transverse shear stress"
+    ],
+    "a": 0
+  },
+  {
+    "id": 22,
+    "q": "For a continuous slab of 3mx3.5m in size, the minimum overall depth of the slab to satisfy the vertical deflection limit is",
+    "o": [
+      "5cm",
+      "7.5cm",
+      "9cm",
+      "12cm"
+    ],
+    "a": 1
+  },
+  {
+    "id": 23,
+    "q": "The minimum load which will cause failure of a foundation is called of the soil.",
+    "o": [
+      "ultimate tensile strength",
+      "nominal strength",
+      "ultimate bearing power",
+      "ultimate compressive strength"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 24,
+    "q": "The dimensional formula of compressibility is:",
+    "o": [
+      "M-¹L¹T²",
+      "MLT-²",
+      "M-¹L²T-²",
+      "M-¹L-¹T²"
+    ],
+    "a": 3
+  },
+  {
+    "id": 25,
+    "q": "The relative density for mercury is ___ times of water.",
+    "o": [
+      "10",
+      "12",
+      "13.6",
+      "15"
+    ],
+    "a": 2
+  },
+  {
+    "id": 26,
+    "q": "If the force of buoyancy is less than the weight of the liquid displaced, then the body will",
+    "o": [
+      "Float",
+      "Sink",
+      "Remain",
+      "Partially float and partially sink"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 27,
+    "q": "For determining the specific gravity of soil using the density bottle method, what is the typical capacity (size) of the density bottle used?",
+    "o": [
+      "10 ml",
+      "100 ml",
+      "50 ml",
+      "250 ml"
+    ],
+    "a": 2
+  },
+  {
+    "id": 28,
+    "q": "The ratio of the liquid limit minus the natural water content to the plasticity index is known as the...",
+    "o": [
+      "Plasticity Index",
+      "Liquidity Index",
+      "Shrinkage Index",
+      "Consistency Index"
+    ],
+    "a": 3,
+    "e":"
+  },
+  {
+    "id": 29,
+    "q": "The volume of mold used in standard product proctor test of lab test for compaction is",
+    "o": [
+      "500 cc",
+      "250 cc",
+      "750 cc",
+      "1000cc"
+    ],
+    "a": 3,
+    "e": "1000 cc = 1 litre"
+  },
+  {
+    "id": 30,
+    "q": "In which type of soil is compaction typically conducted?",
+    "o": [
+      "Saturated soil",
+      "Dry soil",
+      "Partially saturated soil",
+      "Organic soil"
+    ],
+    "a": 2
+  },
+  {
+    "id": 31,
+    "q": "Aggregates should not absorb water more than ____ percent of their weight in 24 hours.",
+    "o": [
+      "3%",
+      "5%",
+      "10%",
+      "1%"
+    ],
+    "a": 2,
+    "e": "Good quality stones should not absorb more than 5% and reject if absorbs more than 10 %"
+  },
+  {
+    "id": 32,
+    "q": "The total lateral earth pressure force on a retaining wall is directly proportional to the:",
+    "o": [
+      "Depth of the soil",
+      "Square root of the depth of soil",
+      "Angle of internal friction",
+      "Square of the depth of soil"
+    ],
+    "a": 3,
+    "e": "lateral earth pressure = only depth of soil"
+  },
+  {
+    "id": 33,
+    "q": "The outer slope of a retaining wall is generally:",
+    "o": [
+      "1:5",
+      "1:10",
+      "1:20",
+      "1:2"
+    ],
+    "a": 1
+  },
+  {
+    "id": 34,
+    "q": "Soil transported by the force of gravity (often found at the foot of cliffs) is called:",
+    "o": [
+      "Glacial till",
+      "Colluvial soil",
+      "Loess",
+      "Bentonite"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 35,
+    "q": "According to the Nepal's Drinking Water Quality Standard 2079, the maximum concentration limit for arsenic is : (mg/l)",
+    "o": [
+      "0.05",
+      "0.5",
+      "0.1",
+      "0.01"
+    ],
+    "a": 0,
+    "e": "According to WHO = 0.01"
+  },
+  {
+    "id": 36,
+    "q": "Which part of the tubewell is responsible for allowing water to enter while keeping the sand out?",
+    "o": [
+      "Blind Pipe",
+      "Housing Pipe",
+      "Strainer",
+      "Socket"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 37,
+    "q": "The digested sludge production rate (Cds) for one year of cleaning period is:",
+    "o": [
+      "0.0490",
+      "0.0283",
+      "0.0708",
+      "0.0850"
+    ],
+    "a": 0
+  },
+  {
+    "id": 38,
+    "q": "A \"Disadvantage\" of irrigation, if not managed properly, is:",
+    "o": [
+      "Generation of hydroelectric power",
+      "Breeding of mosquitoes and waterborne diseases",
+      "Growth of canal plantations",
+      "Improvement of soil chemistry"
+    ],
+    "a": 1
+  },
+  {
+    "id": 39,
+    "q": "A \"Ridge Canal\" (Watershed Canal) is preferred because:",
+    "o": [
+      "It can irrigate on both sides by gravity",
+      "It is the cheapest to build",
+      "It crosses many rivers",
+      "It avoids the use of a headwork"
+    ],
+    "a": 0
+  },
+  {
+    "id": 40,
+    "q": "Which structure is used to remove excess water from a canal into a natural drain?",
+    "o": [
+      "Canal Siphon",
+      "Canal Escape",
+      "Aqueduct",
+      "Cross regulator"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 41,
+    "q": "The minimum distance visible to a driver to stop the vehicle safely before hitting an obstruction is:",
+    "o": [
+      "Overtaking Sight Distance (OSD)",
+      "Stopping Sight Distance (SSD)",
+      "Intermediate Sight Distance (ISD)",
+      "Headlight Sight Distance"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 42,
+    "q": "Which layer of the pavement is considered the \"Foundation\" and must be highly compacted?",
+    "o": [
+      "Wearing Course",
+      "Sub grade",
+      "Base Course",
+      "Seal Coat"
+    ],
+    "a": 1,
+    "e": "[attachment_1](attachment)"
+  },
+  {
+    "id": 43,
+    "q": "A \"Retaining Wall\" is built to:",
+    "o": [
+      "Support the filling on the valley side of a road",
+      "Protect the hill side from falling",
+      "Collect water",
+      "Only for decoration"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 44,
+    "q": "\"Depreciation\" refers to:",
+    "o": [
+      "The increase in property value over time",
+      "The gradual decrease in the value of a structure due to wear, tear, and age",
+      "The profit earned from renting",
+      "The cost of painting a building"
+    ],
+    "a": 1
+  },
+  {
+    "id": 45,
+    "q": "\"Deduction\" in masonry measurement is NOT made for which of the following?",
+    "o": [
+      "Large windows",
+      "Door openings",
+      "Ends of beams/rafters",
+      "Large structural arches"
+    ],
+    "a": 2,
+    "e": "Ends of beams/rafters up to 0.05 m^2 in cross-section"
+  },
+  {
+    "id": 46,
+    "q": "The \"Contractual Triangle\" in construction management consists of:",
+    "o": [
+      "Labor, Supplier, and Transporter",
+      "Owner , Contractor, and Engineer",
+      "Engineer, Sub-engineer, and Supervisor",
+      "Government, Bank, and Public"
+    ],
+    "a": 1,
+    "e": "Owner (Client), Contractor, and Engineer (Consultant) "
+  },
+  {
+    "id": 47,
+    "q": "Which document is signed by both Owner and Contractor to make the work legally binding?",
+    "o": [
+      "Estimate",
+      "Agreement",
+      "Site Plan",
+      "Bar Chart"
+    ],
+    "a": 1
+  },
+  {
+    "id": 48,
+    "q": "\"Variations\" in a contract refer to:",
+    "o": [
+      "Changes in the scope or design during the construction period",
+      "Different colors of paint",
+      "Changes in the engineer's office",
+      "Different types of laborers"
+    ],
+    "a": 0
+  },
+  {
+    "id": 49,
+    "q": "The international body that sets standards and regulations for civil aviation is:",
+    "o": [
+      "FAA",
+      "ICAO",
+      "NASA",
+      "IATA"
+    ],
+    "a": 1,
+    "e": "ICAO (International Civil Aviation Organization)"
+  },
+  {
+    "id": 50,
+    "q": "Airport pavements are generally classified into two types:",
+    "o": [
+      "Steel and Timber",
+      "Flexible and Rigid",
+      "Plastic and Rubber",
+      "Brick and Stone"
+    ],
+    "a": 1,
+    "e": ""
+  }
+];
+
+const App = {
+    state: { user: null, quiz: [], curr: 0, score: 0, mistakes: [], timer: null, submitted: false },
+
+    // Safe Storage Wrappers
+    save: (k, v) => { try { localStorage.setItem(k, v) } catch(e) {} },
+    load: (k) => { try { return localStorage.getItem(k) } catch(e) { return null } },
+
+    // --- REPLACED: NEW VERIFICATION LOGIC ---
+    verifyAndLogin: () => {
+        const n = document.getElementById('inp-name').value.trim();
+        const q = document.getElementById('inp-qual').value;
+        const c = document.getElementById('inp-code').value.trim();
+        const msg = document.getElementById('auth-msg');
+        const btn = document.getElementById('btn-verify');
+        const passBox = document.getElementById('inp-pass');
+
+        // Validation
+        if(!n || !c) {
+            msg.innerText = "Please enter Name and Code";
+            msg.style.display = 'block';
+            msg.style.color = '#ff9900';
+            return;
+        }
+
+        // Loading UI
+        btn.disabled = true;
+        btn.innerText = "Verifying...";
+        msg.style.display = 'none';
+
+        // CALL GOOGLE SHEET
+        fetch(`${CFG.authScript}?code=${c}&name=${n}&qual=${q}`)
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === 'success') {
+                // SUCCESS!
+                passBox.value = data.password; // Auto-fill Password
+                
+                // Save User Locally
+                App.state.user = { name: n, qual: q, code: c };
+                App.save('civilUserG_Secure', JSON.stringify(App.state.user));
+                
+                // Delay slightly for effect then go to Dash
+                setTimeout(() => App.dash(), 800);
+            } else {
+                // ERROR (Used or Invalid)
+                btn.disabled = false;
+                btn.innerText = "Verify & Login";
+                msg.style.display = 'block';
+                msg.style.color = "#ff0055";
+
+                if(data.message.includes("used") || data.message.includes("Sent")) {
+                     msg.innerHTML = "Subscribe to get 62 SMART mock test monthly: <br>Contact the admin";
+                } else {
+                     msg.innerText = data.message || "Invalid Code";
+                }
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            btn.disabled = false;
+            btn.innerText = "Verify & Login";
+            msg.innerText = "Network Error. Check connection.";
+            msg.style.display = 'block';
+            msg.style.color = "#ff0055";
+        });
+    },
+
+    dash: () => {
+        const stored = App.load('civilUserG_Secure');
+        const u = App.state.user || (stored ? JSON.parse(stored) : null);
+        
+        if(!u) return; // Stay on login if no user
+        App.state.user = u;
+        
+        window.scrollTo(0,0);
+        document.getElementById('greet-msg').innerText = `Namaste, ${u.name.split(' ')[0]}!`;
+        document.getElementById('view-login').classList.add('hidden');
+        document.getElementById('view-result').classList.add('hidden');
+        document.getElementById('view-dash').classList.remove('hidden');
+
+        // Check if sent
+        const sentKey = `sent_${CFG.topic}_${u.name}`;
+        if(App.load(sentKey)) {
+            document.getElementById('btn-start').innerText = "Retake Quiz (Practice Mode)";
+            document.getElementById('submitted-msg').style.display = 'block';
+        } else {
+            document.getElementById('btn-start').innerText = "Start New Quiz";
+            document.getElementById('submitted-msg').style.display = 'none';
+        }
+
+        const mString = App.load('mistakesG4');
+        const m = mString ? JSON.parse(mString) : [];
+        document.getElementById('btn-review').style.display = m.length > 0 ? 'inline-block' : 'none';
+    },
+
+    start: (review) => {
+        App.state.curr = 0; App.state.score = 0; App.state.mistakes = []; App.state.submitted = false;
+
+        const mString = App.load('mistakesG4');
+        const prevM = mString ? JSON.parse(mString) : [];
+        
+        const flatDB = DB.flat ? DB.flat() : DB;
+        
+        let source = review ? flatDB.filter(q => prevM.includes(q.id)) : [...flatDB];
+        
+        if(!source.length) return alert("No questions available.");
+
+        // SHUFFLE Options & Questions
+        App.state.quiz = source.map(q => {
+            let opts = q.o.map((txt, i) => ({ t: txt, c: i === q.a }));
+            // Fisher-Yates Shuffle for Options
+            for(let i = opts.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [opts[i], opts[j]] = [opts[j], opts[i]];
+            }
+            return { ...q, shuffledOpts: opts };
+        }).sort(() => Math.random() - 0.5);
+
+        window.scrollTo(0,0);
+        document.getElementById('view-dash').classList.add('hidden');
+        document.getElementById('view-quiz').classList.remove('hidden');
+        document.getElementById('q-total').innerText = App.state.quiz.length;
+        
+        App.timer(45*60);
+        App.render();
+    },
+
+    render: () => {
+        if(!App.state.quiz.length) return;
+        
+        const q = App.state.quiz[App.state.curr];
+        const fname = App.state.user.name.split(' ')[0];
+
+        document.getElementById('q-idx').innerText = App.state.curr + 1;
+        document.getElementById('q-text').innerText = q.q || "Question text missing";
+        
+        document.getElementById('exp-box').style.display = 'none';
+        document.getElementById('btn-next').classList.add('hidden');
+        
+        const praise = document.getElementById('praise-txt');
+        praise.innerText = `Focus, ${fname}!`;
+        praise.style.color = "white";
+        praise.classList.remove('animate-praise');
+
+        const list = document.getElementById('opts-list');
+        list.innerHTML = '';
+        
+        if(q.shuffledOpts) {
+            q.shuffledOpts.forEach((opt, i) => {
+                const btn = document.createElement('div');
+                btn.className = 'option-btn';
+                btn.innerHTML = `<div class="option-marker">${String.fromCharCode(65+i)}</div>${opt.t}`;
+                btn.onclick = () => App.check(btn, opt, q);
+                list.appendChild(btn);
+            });
+        }
+    },
+
+    check: (btn, opt, q) => {
+        const all = document.querySelectorAll('.option-btn');
+        all.forEach(b => { b.onclick = null; b.style.opacity = '0.6'; });
+        btn.style.opacity = '1';
+
+        const praise = document.getElementById('praise-txt');
+        const fname = App.state.user.name.split(' ')[0];
+        
+        void praise.offsetWidth; // Trigger reflow
+        praise.classList.add('animate-praise');
+
+        if(opt.c) {
+            btn.classList.add('correct');
+            App.state.score++;
+            const word = PRAISE.good[Math.floor(Math.random()*PRAISE.good.length)];
+            praise.innerText = `${word}, ${fname}!`;
+            praise.style.color = "#00f260";
+            
+            // Clear from mistakes
+            let mString = App.load('mistakesG4');
+            let m = mString ? JSON.parse(mString) : [];
+            m = m.filter(id => id !== q.id);
+            App.save('mistakesG4', JSON.stringify(m));
+        } else {
+            btn.classList.add('wrong');
+            all.forEach((b, i) => { if(q.shuffledOpts[i].c) b.classList.add('correct'); });
+            
+            App.state.mistakes.push(q.id);
+            const word = PRAISE.bad[Math.floor(Math.random()*PRAISE.bad.length)];
+            praise.innerText = `${word}, ${fname}!`;
+            praise.style.color = "#ff0055";
+        }
+
+        if(q.e) {
+            const exp = document.getElementById('exp-box');
+            exp.innerHTML = `<strong>Explanation:</strong> ${q.e}`;
+            exp.style.display = 'block';
+        }
+        
+        document.getElementById('btn-next').classList.remove('hidden');
+        
+        setTimeout(() => {
+             document.getElementById('btn-next').scrollIntoView({behavior: "smooth", block: "nearest"});
+        }, 100);
+    },
+
+    next: () => {
+        App.state.curr++;
+        if(App.state.curr < App.state.quiz.length) App.render();
+        else App.finish();
+    },
+
+    timer: (sec) => {
+        if(App.state.timer) clearInterval(App.state.timer);
+        const el = document.getElementById('timer');
+        App.state.timer = setInterval(() => {
+            sec--;
+            let m = Math.floor(sec/60), s = sec%60;
+            if(el) el.innerText = `${m}:${s<10?'0':''}${s}`;
+            if(sec<=0) App.finish();
+        }, 1000);
+    },
+
+    finish: () => {
+        clearInterval(App.state.timer);
+        window.scrollTo(0,0);
+        document.getElementById('view-quiz').classList.add('hidden');
+        document.getElementById('view-result').classList.remove('hidden');
+
+        // Update Mistakes
+        let mString = App.load('mistakesG4');
+        let m = mString ? JSON.parse(mString) : [];
+        m = [...new Set([...m, ...App.state.mistakes])];
+        App.save('mistakesG4', JSON.stringify(m));
+
+        const pct = Math.round((App.state.score / App.state.quiz.length) * 100);
+        document.getElementById('res-score').innerText = App.state.score;
+        document.getElementById('res-pct').innerText = `${pct}% Accuracy`;
+
+        App.sync();
+    },
+
+    sync: () => {
+        if(App.state.submitted) return;
+        
+        const sentKey = `sent_${CFG.topic}_${App.state.user.name}`;
+        if(App.load(sentKey)) {
+            document.getElementById('sync-status').innerText = "Practice score not sent.";
+            return;
+        }
+
+        App.state.submitted = true;
+        App.save(sentKey, "true"); 
+
+        const data = {
+            date: new Date().toISOString(),
+            name: App.state.user.name,
+            qualification: App.state.user.qual,
+            topic: CFG.topic,
+            score: App.state.score, 
+            percentage: 0 
+        };
+
+        if(navigator.onLine) {
+            // UPDATED: USES 'CFG.scoreScript'
+            fetch(CFG.scoreScript, {
+                method: 'POST', mode: 'no-cors',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            }).then(() => {
+                document.getElementById('sync-status').innerText = "Score saved to Cloud!";
+                document.getElementById('sync-status').style.color = "#00f260";
+            }).catch(() => App.offline(data));
+        } else {
+            App.offline(data);
+        }
+    },
+
+    offline: (d) => {
+        let pString = App.load('pendingG4');
+        let p = pString ? JSON.parse(pString) : [];
+        p.push(d);
+        App.save('pendingG4', JSON.stringify(p));
+        document.getElementById('sync-status').innerText = "Saved offline.";
+    },
+
+    autoSync: () => {
+        if(navigator.onLine) {
+            let pString = App.load('pendingG4');
+            let p = pString ? JSON.parse(pString) : [];
+            if(p.length) {
+                p.forEach(d => fetch(CFG.scoreScript, {method:'POST', mode:'no-cors', body:JSON.stringify(d)}));
+                localStorage.removeItem('pendingG4');
+            }
+        }
+    }
+};
+
+window.onload = () => {
+    // UPDATED CHECK: Uses the secure key
+    if(App.load('civilUserGandaki_Secure')) {
+        App.dash();
+    }
+    window.addEventListener('online', App.autoSync);
+};
+</script>
+</body>
+</html>

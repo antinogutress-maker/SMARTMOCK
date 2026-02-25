@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gandaki Smart Mock Test 19</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* [UPDATED BRIGHT COLOR PALETTE - STRUCTURE REMAINS EXACTLY THE SAME] */
+        :root { --primary: #00E5FF; --secondary: #B400FB; --accent: #FFEA00; --glass-bg: rgba(255, 255, 255, 0.1); --glass-border: rgba(255, 255, 255, 0.2); --text-color: #ffffff; --card-bg: rgba(15, 15, 30, 0.95); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: linear-gradient(135deg, #FF007A, #4300B1); min-height: 100vh; display: flex; align-items: center; justify-content: center; color: var(--text-color); padding: 15px; overflow-x: hidden; }
+        .app-container { width: 100%; max-width: 650px; background: var(--card-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 24px; padding: 2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative; overflow: hidden; transition: all 0.4s ease; }
+        h1 { font-size: 2rem; font-weight: 800; background: linear-gradient(to right, #00E5FF, #B400FB); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+        h2 { font-size: 1.5rem; margin-bottom: 20px; }
+        p { color: #ccc; font-size: 0.95rem; line-height: 1.6; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .label { display: block; font-size: 0.8rem; margin-bottom: 5px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+        .glass-input { width: 100%; padding: 15px; background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); border-radius: 12px; color: white; font-size: 1rem; outline: none; transition: 0.3s; }
+        .glass-input:focus { border-color: var(--primary); background: rgba(255,255,255,0.15); }
+        .glass-input:read-only { background: rgba(0,0,0,0.2); color: #888; cursor: not-allowed; }
+        select.glass-input option { background: #0F0F1E; color: white; }
+        .btn { background: linear-gradient(90deg, #00E5FF, #B400FB); border: none; color: white; padding: 16px; width: 100%; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-top: 20px; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 5px 20px rgba(0, 229, 255, 0.3); min-height: 50px; }
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { filter: grayscale(1); cursor: wait; }
+        .btn-outline { background: transparent; border: 2px solid var(--glass-border); box-shadow: none; margin-top: 10px; }
+        .personal-header { text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--glass-border); min-height: 50px; display: flex; align-items: center; justify-content: center; }
+        .animate-praise { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .info-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: rgba(255,255,255,0.05); padding: 10px 15px; border-radius: 10px; }
+        .timer-badge { font-family: monospace; font-weight: 700; color: var(--accent); font-size: 1.1rem; }
+        .question-text { font-size: 1.2rem; font-weight: 600; margin-bottom: 20px; line-height: 1.5; }
+        .option-btn { width: 100%; padding: 18px; margin-bottom: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 12px; text-align: left; color: #ddd; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; -webkit-user-select: none; user-select: none; }
+        .option-marker { width: 30px; height: 30px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-weight: 700; flex-shrink: 0; }
+        .correct { background: rgba(0, 255, 136, 0.2) !important; border-color: #00FF88 !important; color: white !important; }
+        .correct .option-marker { background: #00FF88; color: black; }
+        .wrong { background: rgba(255, 51, 102, 0.2) !important; border-color: #FF3366 !important; color: white !important; }
+        .wrong .option-marker { background: #FF3366; color: white; }
+        .explanation-box { margin-top: 20px; padding: 15px; background: rgba(180, 0, 251, 0.15); border-left: 4px solid var(--secondary); border-radius: 8px; font-size: 0.9rem; display: none; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .score-circle { width: 160px; height: 160px; border-radius: 50%; border: 5px solid var(--primary); margin: 0 auto 20px auto; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 0 30px rgba(0, 229, 255, 0.2); }
+        .score-val { font-size: 3.5rem; font-weight: 800; color: white; line-height: 1; }
+        .hidden { display: none !important; }
+        #opts-list { max-height: 50vh; overflow-y: auto; padding-right: 5px; }
+        #auth-msg { text-align: center; margin-top: 15px; font-weight: 600; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="app">
+    <div id="view-login">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h1 id="title-display">Gandaki Smart Mock Test 19</h1>
+            <p>5th Edition | Civil Engineering</p>
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Full Name</span>
+            <input type="text" id="inp-name" class="glass-input" placeholder="Enter your name">
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Qualification</span>
+            <select id="inp-qual" class="glass-input">
+                <option value="Engineer">Engineer</option>
+                <option value="Sub-Engineer">Sub-Engineer</option>
+                <option value="Asst. Sub-Engineer">Asst. Sub-Engineer</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <span class="label">Unique Code</span>
+            <input type="tel" id="inp-code" class="glass-input" placeholder="Enter 5-digit code">
+        </div>
+
+        <div class="input-group">
+            <span class="label">Password (Auto-Fill)</span>
+            <input type="password" id="inp-pass" class="glass-input" placeholder="Verifying..." readonly>
+        </div>
+
+        <button class="btn" id="btn-verify" onclick="App.verifyAndLogin()">Verify & Login</button>
+        <p id="auth-msg"></p>
+    </div>
+
+    <div id="view-dash" class="hidden">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2 id="greet-msg" style="color: var(--primary);">Welcome!</h2>
+            <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 16px; margin-bottom: 20px;">
+                <p style="text-transform: uppercase; font-size: 0.8rem; color: #aaa;">Active Session</p>
+                <h3 id="dash-topic-display" style="font-size: 1.5rem; margin: 10px 0;"></h3>
+                <p>50 Questions • 45 Minutes</p>
+            </div>
+        </div>
+        <button class="btn" id="btn-start" onclick="App.start(false)">Start Exam</button>
+        <p id="submitted-msg" style="color: var(--primary); text-align: center; margin-top: 15px; display: none;">✅ Score Submitted Successfully</p>
+        <button class="btn btn-outline" id="btn-review" onclick="App.start(true)" style="display: none;">Review Mistakes</button>
+    </div>
+
+    <div id="view-quiz" class="hidden">
+        <div class="personal-header">
+            <div id="praise-txt" style="font-size: 1.2rem; font-weight: 700; color: white;">Good Luck!</div>
+        </div>
+
+        <div class="info-bar">
+            <span>Q: <span id="q-idx">1</span> / <span id="q-total">50</span></span>
+            <span class="timer-badge" id="timer">45:00</span>
+        </div>
+
+        <div id="q-container">
+            <div class="question-text" id="q-text">Loading...</div>
+            <div id="opts-list"></div>
+            <div class="explanation-box" id="exp-box"></div>
+        </div>
+
+        <button class="btn hidden" id="btn-next" onclick="App.next()">Next Question</button>
+    </div>
+
+    <div id="view-result" class="hidden" style="text-align: center;">
+        <h2>Quiz Completed!</h2>
+        <div class="score-circle">
+            <span class="score-val" id="res-score">0</span>
+            <span style="font-size: 0.8rem; text-transform: uppercase; color: #aaa;">Correct</span>
+        </div>
+        <div style="margin-bottom: 30px;">
+            <h3 id="res-pct" style="color: var(--primary);">0% Accuracy</h3>
+            <p id="sync-status" style="font-size: 0.9rem; margin-top: 10px; opacity: 0.8;">Syncing score...</p>
+        </div>
+        <button class="btn" onclick="App.dash()">Back to Dashboard</button>
+    </div>
+</div>
+
+<script>
+/**
+ * ----------------------------------------------------
+ * CONFIGURATION - CHANGE ONLY THIS SECTION FOR NEW APPS
+ * ----------------------------------------------------
+ */
+const CFG = {
+    topic: "Gandaki Smart Mock Test 19", 
+    
+    // UPDATED WITH YOUR NEW GOOGLE APPS SCRIPT URL
+    scoreScript: "https://script.google.com/macros/s/AKfycbwlARXNg2vbAH3-xPgt4Mt_MlPydwuZOtA7dkjyD0LVQlYX2IBDUKULT8rlZVIy034H/exec",
+    authScript: "https://script.google.com/macros/s/AKfycbyUGMGXI7vml6jzJsCxhXvHgnq4V4Aq6sl6blkJkdfC8_haCxI__kx3EwFzZrW942E6/exec"
+};
+
+// --- AUTOMATIC KEY GENERATOR ---
+const _tid = CFG.topic.replace(/[^a-zA-Z0-9]/g, "_");
+const KEYS = {
+    user: "civil_eng_global_user",
+    mistakes: `mistakes_${_tid}`,
+    sent: `sent_status_${_tid}`,
+    pending: `pending_${_tid}`
+};
+
+// --- DATASET ---
+const DB = [
+  {
+    "id": 1,
+    "q": "जिल्लास्थित कार्यालयमा नागरिक वडापत्र बमोजिम काम नभएमा क्षतिपूर्तिको लागि कहाँ निवेदन दिनु पर्दछ?",
+    "o": [
+      "जिल्ला अदालत",
+      "जिल्ला समन्वय समिति",
+      "जिल्ला प्रशासन कार्यालय",
+      "अख्तियार दुरुपयोग अनुसन्धान आयोग"
+    ],
+    "a": 2
+  },
+  {
+    "id": 2,
+    "q": "मानव अधिकार भित्र तलका मध्ये कुन कुरा पर्दछ?",
+    "o": [
+      "प्रकृति प्रदत्त र जन्मसिद्ध अधिकार",
+      "व्यक्तिका आधारभूत अधिकार र स्वतन्त्रता",
+      "मानवीय मर्यादा र कानुनी तथा मौलिक अधिकार",
+      "माथिका सबै"
+    ],
+    "a": 3
+  },
+  {
+    "id": 3,
+    "q": "सुशासन कायम गर्न अपनाइने \"प्रविधिमैत्री प्रणाली\" को मुख्य उद्देश्य के हो?",
+    "o": [
+      "कर्मचारीको संख्या बढाउनु",
+      "सुशासनलाई उजागर र पारदर्शी बनाउनु",
+      "कार्यालयको सजावटमा ध्यान दिनु",
+      "सूचनाहरूलाई लुकाएर राख्नु"
+    ],
+    "a": 1
+  },
+  {
+    "id": 4,
+    "q": "सार्वजनिक सेवा प्रवाहलाई बजारका माध्यमबाट नागरिक समक्ष पुऱ्याउने कार्यलाई के भनिन्छ?",
+    "o": [
+      "निजीकरण",
+      "अर्ध-बजारीकरण",
+      "उदारीकरण",
+      "व्यापारीकरण"
+    ],
+    "a": 1
+  },
+  {
+    "id": 5,
+    "q": "निजामती कर्मचारीको सरुवा, बढुवा र अध्ययन छात्रवृत्तिको सम्पूर्ण व्यवस्थापन गर्ने मुख्य मन्त्रालय कुन हो?",
+    "o": [
+      "गृह मन्त्रालय",
+      "अर्थ मन्त्रालय",
+      "संघीय मामिला तथा सामान्य प्रशासन मन्त्रालय",
+      "प्रधानमन्त्री तथा मन्त्रिपरिषद्को कार्यालय"
+    ],
+    "a": 2
+  },
+  {
+    "id": 6,
+    "q": "सरकारको राजनीतिक, सामाजिक र आर्थिक घोषणापत्रलाई के भनिन्छ?",
+    "o": [
+      "आवधिक योजना",
+      "सरकारी बजेट",
+      "नेपालको संविधान",
+      "आर्थिक ऐन"
+    ],
+    "a": 1
+  },
+  {
+    "id": 7,
+    "q": "नेपालले कहिलेदेखि आन्तरिक र बाह्य ऋण लिन सुरु गर्यो?",
+    "o": [
+      "वि.सं. २०१३/१४",
+      "वि.सं. २०१७/१८",
+      "वि.सं. २०२०/२१",
+      "वि.सं. २०२५/२६"
+    ],
+    "a": 1
+  },
+  {
+    "id": 8,
+    "q": "भ्रष्टाचार निवारण ऐन, २०५९ अनुसार ५० हजार रुपैयाँसम्म विगो भएमा कति कैद सजाय हुने व्यवस्था छ?",
+    "o": [
+      "१ महिनादेखि ३ महिनासम्म",
+      "१ महिनादेखि ६ महिनासम्म",
+      "३ महिनादेखि ६ महिनासम्म",
+      "६ महिनादेखि १ वर्षसम्म"
+    ],
+    "a": 1
+  },
+  {
+    "id": 9,
+    "q": "'नागरिक एप' को मुख्य उद्देश्य के हो?",
+    "o": [
+      "मनोरञ्जन",
+      "सरकारी सेवा एकीकृत गर्नु",
+      "सामाजिक सञ्जाल",
+      "सपिङ"
+    ],
+    "a": 1,
+    "e": "सबै सेवा मोबाइलमा।"
+  },
+  {
+    "id": 10,
+    "q": "पदपूर्ति सम्बन्धी विशेष व्यवस्थामा कुन समूहको लागि ४ प्रतिशत आरक्षण छ?",
+    "o": [
+      "आदिवासी/जनजाति",
+      "दलित",
+      "थारू",
+      "मुस्लिम"
+    ],
+    "a": 2
+  },
+  {
+    "id": 11,
+    "q": "नेपालको सबैभन्दा ठूलो राष्ट्रिय निकुञ्ज कुन हो?",
+    "o": [
+      "चितवन राष्ट्रिय निकुञ्ज",
+      "सगरमाथा राष्ट्रिय निकुञ्ज",
+      "शे-फोक्सुण्डो राष्ट्रिय निकुञ्ज",
+      "बर्दिया राष्ट्रिय निकुञ्ज"
+    ],
+    "a": 2
+  },
+  {
+    "id": 12,
+    "q": "'न्याय नपाए गोर्खा जानु' भन्ने प्रख्यात भनाइ नेपालका कुन राजासँग सम्बन्धित छ?",
+    "o": [
+      "पृथ्वीनारायण शाह",
+      "राम शाह",
+      "द्रव्य शाह",
+      "प्रताप मल्ल"
+    ],
+    "a": 1
+  },
+  {
+    "id": 13,
+    "q": "नेपालको वर्तमान संविधानमा कतिवटा मौलिक हकहरूको व्यवस्था गरिएको छ?",
+    "o": [
+      "२१",
+      "२५",
+      "३१",
+      "३५"
+    ],
+    "a": 2
+  },
+  {
+    "id": 14,
+    "q": "मानव शरीरको प्रत्येक कोषमा सामान्यतया कति जोडी क्रोमोजोम (Chromosomes) हुन्छन्?",
+    "o": [
+      "२१ जोडी",
+      "२२ जोडी",
+      "२३ जोडी",
+      "२४ जोडी"
+    ],
+    "a": 2
+  },
+  {
+    "id": 15,
+    "q": "दक्षिण एसियाली क्षेत्रीय सहयोग संगठन (SAARC - सार्क) को स्थापना कहिले भएको हो?",
+    "o": [
+      "सन् १९८० डिसेम्बर ८",
+      "सन् १९८५ डिसेम्बर ८",
+      "सन् १९९० डिसेम्बर ८",
+      "सन् १९९५ डिसेम्बर ८"
+    ],
+    "a": 1
+  },
+  {
+    "id": 16,
+    "q": "नेपाली साहित्यका महाकवि लक्ष्मीप्रसाद देवकोटाद्वारा रचित सर्वाधिक लोकप्रिय खण्डकाव्य कुन हो?",
+    "o": [
+      "तरुण तपसी",
+      "मुनामदन",
+      "ऋतुविचार",
+      "गौरी"
+    ],
+    "a": 1
+  },
+  {
+    "id": 17,
+    "q": "विश्वको सबैभन्दा ठूलो र गहिरो महासागर कुन हो?",
+    "o": [
+      "प्रशान्त महासागर",
+      "आन्ध्र महासागर",
+      "हिन्द महासागर",
+      "सुमेरु महासागर"
+    ],
+    "a": 0
+  },
+  {
+    "id": 18,
+    "q": "टेलिफोनको आविष्कार कुन वैज्ञानिकले गरेका हुन्?",
+    "o": [
+      "थोमस अल्भा एडिसन",
+      "अल्बर्ट आइन्स्टाइन",
+      "अलेक्जेन्डर ग्राहम बेल",
+      "गुग्लिल्मो मार्कोनी"
+    ],
+    "a": 2
+  },
+  {
+    "id": 19,
+    "q": "नेपालको कुन जिल्लालाई 'कफी खेतीका लागि प्रसिद्ध जिल्ला' मानिन्छ?",
+    "o": [
+      "इलाम",
+      "गुल्मी",
+      "पाल्पा",
+      "सिन्धुपाल्चोक"
+    ],
+    "a": 1
+  },
+  {
+    "id": 20,
+    "q": "२०२२ मा कतारमा आयोजना भएको फिफा विश्वकप (FIFA World Cup) फुटबलको उपाधि कुन राष्ट्रले जितेको थियो?",
+    "o": [
+      "फ्रान्स",
+      "अर्जेन्टिना",
+      "ब्राजिल",
+      "क्रोएसिया"
+    ],
+    "a": 1
+  },
+  {
+    "id": 21,
+    "q": "The physical quantities which depend on any other quantities for their measurement are called",
+    "o": [
+      "mathematical quantities",
+      "fundamental quantities",
+      "Derived physical quantities",
+      "chemical quantities"
+    ],
+    "a": 2
+  },
+  {
+    "id": 22,
+    "q": "The primary unit of engineering drawing in civil engineering is the?",
+    "o": [
+      "Millimeter",
+      "Meter",
+      "Foot",
+      "All of the above"
+    ],
+    "a": 0
+  },
+  {
+    "id": 23,
+    "q": "An area of 36 sq.km. is represented by 144 square centimeters on a map. The R.F. is",
+    "o": [
+      "1/4",
+      "1/2",
+      "1/5000",
+      "1/50000"
+    ],
+    "a": 3
+  },
+  {
+    "id": 24,
+    "q": "Contractor tax is",
+    "o": [
+      "1.5%",
+      "2.5%",
+      "5%",
+      "10%"
+    ],
+    "a": 0
+  },
+  {
+    "id": 25,
+    "q": "Which of the following is very rough estimate?",
+    "o": [
+      "Preliminary estimate",
+      "Plinth area estimate",
+      "Detailed estimate",
+      "Revised estimate"
+    ],
+    "a": 0
+  },
+  {
+    "id": 26,
+    "q": "For 2.5 cm C.C. floor for 100 sq metre of area, the quantity of cement concrete is",
+    "o": [
+      "2.5 cu m",
+      "2.5 sq m",
+      "0.25 cu m",
+      "0.25 sq m"
+    ],
+    "a": 0
+  },
+  {
+    "id": 27,
+    "q": "The field records of the chain survey is entered in a/an",
+    "o": [
+      "exercise book",
+      "level book",
+      "measurement book",
+      "field book"
+    ],
+    "a": 3
+  },
+  {
+    "id": 28,
+    "q": "Survey stations are of......kinds",
+    "o": [
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "a": 0
+  },
+  {
+    "id": 29,
+    "q": "In ornamental work, stone used is",
+    "o": [
+      "Hard rock",
+      "Soft rock",
+      "Heavy rock",
+      "Light rock"
+    ],
+    "a": 1
+  },
+  {
+    "id": 30,
+    "q": "The bricks after moulding should be dried in",
+    "o": [
+      "open air",
+      "sun for 3 to 8 days",
+      "air for 3 to 8 days but not in sun",
+      "hot air for 3 days"
+    ],
+    "a": 2
+  },
+  {
+    "id": 31,
+    "q": "In manpower mobilization records, what is the primary purpose of recording 'Idle Time' alongside active working hours?",
+    "o": [
+      "To justify a reduction in the total contract price to the client.",
+      "To analyze the cause of delays, such as equipment failure or material shortages.",
+      "To identify specific workers who are not performing well.",
+      "To satisfy local labor union requirements for break times."
+    ],
+    "a": 1
+  },
+  {
+    "id": 32,
+    "q": "When managing material storage, which document is essential for maintaining the 'Chain of Custody' for high-value items like specialized MEP equipment?",
+    "o": [
+      "The Purchase Order (PO).",
+      "The Material Requisition and Issue Slip (MRIS).",
+      "The Vendor Invoice.",
+      "The Daily Work Report."
+    ],
+    "a": 1
+  },
+  {
+    "id": 33,
+    "q": "Which inventory method is most critical for storing perishable materials like cement or certain chemical admixtures at a construction site?",
+    "o": [
+      "JIT (Just-In-Time).",
+      "LIFO (Last-In, First-Out).",
+      "FIFO (First-In, First-Out).",
+      "HIFO (Highest-In, First-Out)."
+    ],
+    "a": 2
+  },
+  {
+    "id": 34,
+    "q": "Which storage tank material is most susceptible to UV degradation if not treated or painted?",
+    "o": [
+      "PVC",
+      "RCC",
+      "Stainless Steel",
+      "Cast Iron"
+    ],
+    "a": 0
+  },
+  {
+    "id": 35,
+    "q": "A 'Check Valve' (Non-Return Valve) is installed in a pumping system to:",
+    "o": [
+      "Stop the pump automatically",
+      "Allow water to flow in only one direction",
+      "Increase the pressure of the water",
+      "Measure the volume of water"
+    ],
+    "a": 1
+  },
+  {
+    "id": 36,
+    "q": "Residual Chlorine in drinking water is maintained to:",
+    "o": [
+      "Improve the taste of water",
+      "Ensure protection against re-contamination during distribution",
+      "Make the water look clearer",
+      "Increase the mineral content"
+    ],
+    "a": 1
+  },
+  {
+    "id": 37,
+    "q": "A 'Gully Trap' is generally used to disconnect:",
+    "o": [
+      "The soil pipe from the vent pipe",
+      "The waste pipe from the underground drain",
+      "The septic tank from the soak pit",
+      "The water meter from the main line"
+    ],
+    "a": 1
+  },
+  {
+    "id": 38,
+    "q": "The value of maximum gradient for hill roads is .............",
+    "o": [
+      "1 in 5",
+      "1 in 10",
+      "1 in 15",
+      "1 in 20"
+    ],
+    "a": 2
+  },
+  {
+    "id": 39,
+    "q": "The rate of rise or fall of the road surface along its length, is called .............",
+    "o": [
+      "cant",
+      "super-elevation",
+      "gradient",
+      "banking"
+    ],
+    "a": 2
+  },
+  {
+    "id": 40,
+    "q": "The camber of road should be approximately equal to ............. the longitudinal gradient.",
+    "o": [
+      "one-half",
+      "two times",
+      "three times",
+      "four times"
+    ],
+    "a": 0
+  },
+  {
+    "id": 41,
+    "q": "On Kankar road, the camber generally provided is .............",
+    "o": [
+      "1 in 24 to 1 in 30",
+      "1 in 30 to 1 in 48",
+      "1 in 48 to 1 in 60",
+      "1 in 60 to 1 in 80"
+    ],
+    "a": 0
+  },
+  {
+    "id": 42,
+    "q": "The super structure of a road is called .............",
+    "o": [
+      "wearing layer",
+      "wearing course",
+      "road surfacing",
+      "any one of these"
+    ],
+    "a": 3
+  },
+  {
+    "id": 43,
+    "q": "A natural method of disposal of sewage is ............",
+    "o": [
+      "sewage irrigation",
+      "septic tank treatment",
+      "composting",
+      "aerated Lagooning"
+    ],
+    "a": 0
+  },
+  {
+    "id": 44,
+    "q": "\"Mass action\" during sedimentation is the property of ............",
+    "o": [
+      "increase in mass of sludge",
+      "decrease in mass of sludge",
+      "settling of a particle along with the neighbouring particle",
+      "quick spreading of floc"
+    ],
+    "a": 2
+  },
+  {
+    "id": 45,
+    "q": "Grit obtained in a grit chamber is used ............",
+    "o": [
+      "as a manure",
+      "as a soil conditioner",
+      "as a coarse aggregate",
+      "as a substitute for sand"
+    ],
+    "a": 2
+  },
+  {
+    "id": 46,
+    "q": "Self-purification of a stream is quite rapid when ............",
+    "o": [
+      "stream hand sluggish flow",
+      "straight course with uniform cross-section",
+      "course is full of rapids and waterfalls",
+      "more bacterial pollution exists"
+    ],
+    "a": 2
+  },
+  {
+    "id": 47,
+    "q": "Lacey's regime condition is obtained if ............",
+    "o": [
+      "silt grade in the channel is variable",
+      "discharge in the channel is variable",
+      "silt charge in the channel is variable",
+      "channel flows in unlimited, incoherent alluvium of the same character as that transported material"
+    ],
+    "a": 3
+  },
+  {
+    "id": 48,
+    "q": "Pick up the incorrect statement from the following. Culturable commanded area is the gross area of an irrigation canal system less ............",
+    "o": [
+      "populated area",
+      "alkaline area",
+      "forest area",
+      "fallow land"
+    ],
+    "a": 3
+  },
+  {
+    "id": 49,
+    "q": "When the levels are such that the F.S.L. of the canal is much above the bed level of the drainage trough, so that the canal runs under syphonic action under the trough, the structure provided is known as ............",
+    "o": [
+      "siphon aqueduct",
+      "level crossing",
+      "canal siphon",
+      "super-aqueduct"
+    ],
+    "a": 2
+  },
+  {
+    "id": 50,
+    "q": "A levee on flood ............",
+    "o": [
+      "increases the water surface elevation of the river at flood",
+      "decreases the surface slope of the stream above the leveed portion",
+      "increases the velocity and scouring action through leveed section",
+      "all of the above"
+    ],
+    "a": 3
+  }
+];
+
+const PRAISE = {
+    good: ["You are a Genius", "Superb work", "Amazing", "Brilliant", "Fantastic", "Excellent"],
+    bad: ["Keep pushing", "Don't give up", "Stay focused", "You can do this"]
+};
+
+const App = {
+    state: { user: null, quiz: [], curr: 0, score: 0, mistakes: [], timer: null, submitted: false },
+
+    save: (k, v) => { try { localStorage.setItem(k, v) } catch(e) {} },
+    load: (k) => { try { return localStorage.getItem(k) } catch(e) { return null } },
+
+    verifyAndLogin: () => {
+        const n = document.getElementById('inp-name').value.trim();
+        const q = document.getElementById('inp-qual').value;
+        const c = document.getElementById('inp-code').value.trim();
+        const msg = document.getElementById('auth-msg');
+        const btn = document.getElementById('btn-verify');
+
+        if(!n || !c) {
+            msg.innerText = "Please enter Name and Code";
+            msg.style.display = 'block'; return;
+        }
+
+        btn.disabled = true; btn.innerText = "Verifying..."; msg.style.display = 'none';
+
+        fetch(`${CFG.authScript}?code=${c}&name=${n}&qual=${q}`)
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === 'success') {
+                document.getElementById('inp-pass').value = data.password;
+                App.state.user = { name: n, qual: q, code: c };
+                App.save(KEYS.user, JSON.stringify(App.state.user));
+                setTimeout(() => App.dash(), 800);
+            } else {
+                btn.disabled = false; btn.innerText = "Verify & Login";
+                msg.style.display = 'block'; msg.style.color = "#FF3366";
+                msg.innerHTML = data.message.includes("used") ? "Code already used or expired." : "Invalid Code";
+            }
+        })
+        .catch(() => {
+            btn.disabled = false; btn.innerText = "Verify & Login";
+            msg.style.display = 'block'; msg.innerText = "Connection Error";
+        });
+    },
+
+    dash: () => {
+        document.getElementById('title-display').innerText = CFG.topic;
+        document.getElementById('dash-topic-display').innerText = CFG.topic;
+
+        const stored = App.load(KEYS.user);
+        if(!stored) return;
+        
+        App.state.user = JSON.parse(stored);
+        
+        document.getElementById('greet-msg').innerText = `Namaste, ${App.state.user.name.split(' ')[0]}!`;
+        document.getElementById('view-login').classList.add('hidden');
+        document.getElementById('view-result').classList.add('hidden');
+        document.getElementById('view-dash').classList.remove('hidden');
+
+        if(App.load(KEYS.sent)) {
+            document.getElementById('btn-start').innerText = "Retake (Practice Mode)";
+            document.getElementById('submitted-msg').style.display = 'block';
+            document.getElementById('submitted-msg').innerText = "✅ Previous Score Submitted";
+        } else {
+            document.getElementById('btn-start').innerText = "Start Exam";
+            document.getElementById('submitted-msg').style.display = 'none';
+        }
+
+        const m = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        document.getElementById('btn-review').style.display = m.length > 0 ? 'inline-block' : 'none';
+    },
+
+    start: (review) => {
+        App.state.curr = 0; App.state.score = 0; App.state.mistakes = []; App.state.submitted = false;
+        const prevM = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        const flatDB = DB.flat ? DB.flat() : DB;
+        let source = review ? flatDB.filter(q => prevM.includes(q.id)) : [...flatDB];
+        
+        if(!source.length) return alert("No questions available.");
+
+        App.state.quiz = source.map(q => {
+            let opts = q.o.map((txt, i) => ({ t: txt, c: i === q.a }));
+            return { ...q, shuffledOpts: opts.sort(() => Math.random() - 0.5) };
+        }).sort(() => Math.random() - 0.5);
+
+        document.getElementById('view-dash').classList.add('hidden');
+        document.getElementById('view-quiz').classList.remove('hidden');
+        document.getElementById('q-total').innerText = App.state.quiz.length;
+        App.timer(45*60);
+        App.render();
+    },
+
+    render: () => {
+        const q = App.state.quiz[App.state.curr];
+        document.getElementById('q-idx').innerText = App.state.curr + 1;
+        document.getElementById('q-text').innerText = q.q;
+        document.getElementById('exp-box').style.display = 'none';
+        document.getElementById('btn-next').classList.add('hidden');
+        
+        const list = document.getElementById('opts-list');
+        list.innerHTML = '';
+        q.shuffledOpts.forEach((opt, i) => {
+            const btn = document.createElement('div');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<div class="option-marker">${String.fromCharCode(65+i)}</div>${opt.t}`;
+            btn.onclick = () => App.check(btn, opt, q);
+            list.appendChild(btn);
+        });
+    },
+
+    check: (btn, opt, q) => {
+        const all = document.querySelectorAll('.option-btn');
+        all.forEach(b => { b.onclick = null; b.style.opacity = '0.6'; });
+        btn.style.opacity = '1';
+        
+        const praise = document.getElementById('praise-txt');
+        praise.classList.remove('animate-praise');
+        void praise.offsetWidth; praise.classList.add('animate-praise');
+
+        const userName = App.state.user ? App.state.user.name.split(' ')[0] : '';
+
+        if(opt.c) {
+            btn.classList.add('correct');
+            App.state.score++;
+            praise.innerText = PRAISE.good[Math.floor(Math.random()*PRAISE.good.length)] + " ! " + userName;
+            praise.style.color = "#00FF88";
+            
+            let m = JSON.parse(App.load(KEYS.mistakes) || "[]").filter(id => id !== q.id);
+            App.save(KEYS.mistakes, JSON.stringify(m));
+        } else {
+            btn.classList.add('wrong');
+            all.forEach((b, i) => { if(q.shuffledOpts[i].c) b.classList.add('correct'); });
+            App.state.mistakes.push(q.id);
+            praise.innerText = PRAISE.bad[Math.floor(Math.random()*PRAISE.bad.length)] + " ! " + userName;
+            praise.style.color = "#FF3366";
+        }
+
+        if(q.e) {
+            document.getElementById('exp-box').innerHTML = `<strong>Explanation:</strong> ${q.e}`;
+            document.getElementById('exp-box').style.display = 'block';
+        }
+        document.getElementById('btn-next').classList.remove('hidden');
+        setTimeout(() => document.getElementById('btn-next').scrollIntoView({behavior:"smooth", block:"nearest"}), 100);
+    },
+
+    next: () => {
+        App.state.curr++;
+        if(App.state.curr < App.state.quiz.length) App.render();
+        else App.finish();
+    },
+
+    timer: (sec) => {
+        if(App.state.timer) clearInterval(App.state.timer);
+        App.state.timer = setInterval(() => {
+            sec--;
+            let m = Math.floor(sec/60), s = sec%60;
+            document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
+            if(sec<=0) App.finish();
+        }, 1000);
+    },
+
+    finish: () => {
+        clearInterval(App.state.timer);
+        document.getElementById('view-quiz').classList.add('hidden');
+        document.getElementById('view-result').classList.remove('hidden');
+
+        let m = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        m = [...new Set([...m, ...App.state.mistakes])];
+        App.save(KEYS.mistakes, JSON.stringify(m));
+
+        const pct = Math.round((App.state.score / App.state.quiz.length) * 100);
+        document.getElementById('res-score').innerText = App.state.score;
+        document.getElementById('res-pct').innerText = `${pct}% Accuracy`;
+        App.sync();
+    },
+
+    // --- REWRITTEN SYNC FUNCTION FOR APPS SCRIPT COMPATIBILITY ---
+    sync: () => {
+        if(App.state.submitted) return;
+        if(App.load(KEYS.sent)) {
+            document.getElementById('sync-status').innerText = "Practice score not sent.";
+            return;
+        }
+
+        App.state.submitted = true;
+        
+        // Use FormData exactly as the Google Script expects
+        const formData = new FormData();
+        formData.append("name", App.state.user.name);
+        formData.append("qualification", App.state.user.qual);
+        formData.append("examTitle", CFG.topic); // Send CFG.topic as 'examTitle'
+        formData.append("score", App.state.score);
+
+        const offlineData = {
+            name: App.state.user.name,
+            qualification: App.state.user.qual,
+            examTitle: CFG.topic,
+            score: App.state.score
+        };
+
+        if(navigator.onLine) {
+            document.getElementById('sync-status').innerText = "Syncing...";
+            
+            fetch(CFG.scoreScript, {
+                method: 'POST', 
+                mode: 'no-cors',
+                body: formData // Sending FormData instead of JSON
+            }).then(() => {
+                App.save(KEYS.sent, "true");
+                document.getElementById('sync-status').innerText = "✅ Score Saved!";
+                document.getElementById('sync-status').style.color = "#00FF88";
+            }).catch(() => App.offline(offlineData));
+        } else {
+            App.offline(offlineData);
+        }
+    },
+
+    offline: (d) => {
+        let p = JSON.parse(App.load(KEYS.pending) || "[]");
+        p.push(d);
+        App.save(KEYS.pending, JSON.stringify(p));
+        document.getElementById('sync-status').innerText = "Saved offline. Will sync later.";
+    }
+};
+
+window.onload = () => {
+    if(App.load(KEYS.user)) App.dash();
+};
+</script>
+</body>
+</html>
