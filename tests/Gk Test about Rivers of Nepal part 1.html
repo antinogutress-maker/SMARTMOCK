@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title> (HARD + SMART) ² </title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent: #00f2ff;
+            --accent-glow: rgba(0, 242, 255, 0.5);
+            --secondary: #7000ff;
+            --success: #00ff88;
+            --error: #ff2d55;
+            --bg-dark: #050505;
+            --glass: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background: radial-gradient(circle at top right, #1a1a2e, #050505);
+            min-height: 100vh;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate { animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 30px 25px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .glass-input, .glass-select {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+        .glass-select option { background: #1a1a2e; color: white; }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            margin-top: 12px;
+            border-radius: 18px;
+            border: none;
+            font-weight: 800;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary { background: linear-gradient(135deg, var(--accent), #00a2ff); color: #000; box-shadow: 0 10px 20px rgba(0, 242, 255, 0.2); }
+        .btn-mistake { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--glass-border); }
+        .btn-group { background: linear-gradient(135deg, #25D366, #128C7E); color: #fff; text-decoration: none; }
+
+        .q-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 0.85rem; font-weight: bold; }
+        .timer { color: var(--error); background: rgba(255, 45, 85, 0.1); padding: 4px 12px; border-radius: 20px; border: 1px solid var(--error); }
+        
+        .question-text { font-size: 1.2rem; font-weight: 600; line-height: 1.5; margin-bottom: 25px; }
+        
+        .option {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            padding: 16px;
+            border-radius: 15px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            gap: 12px;
+            font-weight: 500;
+        }
+        .option.correct { background: rgba(0, 255, 136, 0.2) !important; border-color: var(--success) !important; color: var(--success); }
+        .option.wrong { background: rgba(255, 45, 85, 0.2) !important; border-color: var(--error) !important; color: var(--error); }
+
+        /* Feedback Styling */
+        .feedback-text {
+            font-weight: 800;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            display: none;
+        }
+
+        .explanation {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(0, 242, 255, 0.05);
+            border-left: 3px solid var(--accent);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .hidden { display: none !important; }
+
+        .progress-bar { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--accent); transition: width 0.3s ease; }
+
+        /* Result Specifics */
+        .res-stat { font-size: 0.9rem; opacity: 0.7; margin-top: 5px; }
+        .advice-box { margin-top: 20px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 20px; line-height: 1.6; border: 1px dashed var(--glass-border); }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <div id="view-login" class="glass-card animate">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h1 style="font-size: 1.8rem; color: var(--accent);"> (HARD + SMART) ² </h1>
+                <p style="opacity: 0.6; font-size: 0.9rem;">Loksewa Technical Series</p>
+            </div>
+            
+            <div class="input-group">
+                <label>Full Name</label>
+                <input type="text" id="in-name" class="glass-input" placeholder="Your Name">
+            </div>
+            <div class="input-group">
+                <label>Qualification</label>
+                <select id="in-qual" class="glass-select">
+                    <option value="" disabled selected>Select Qualification</option>
+                    <option value="Engineer">Engineer</option>
+                    <option value="Sub Engineer">Sub Engineer</option>
+                    <option value="Assistant Sub Engineer">Assistant Sub Engineer</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="in-pass" class="glass-input" placeholder="••••">
+            </div>
+            
+            <button class="btn btn-primary" onclick="engine.login()">ENTER SYSTEM</button>
+        </div>
+
+        <div id="view-dash" class="glass-card animate hidden">
+            <h2 id="dash-welcome">Namaste!</h2>
+            <p style="opacity: 0.6; margin-bottom: 30px;">Technical Knowledge Hub</p>
+            
+            <button class="btn btn-primary" onclick="engine.startTest(false)"> START TEST</button>
+            <button class="btn btn-mistake" onclick="engine.startTest(true)"> REVIEW MISTAKES <span id="mistake-count">(0)</span></button>
+            <a href="https://chat.whatsapp.com/GpMpVmBo71RBZqLOf1l4PM?mode=gi_t" class="btn btn-group" target="_blank"> JOIN STUDY GROUP</a>
+        </div>
+
+        <div id="view-quiz" class="glass-card animate hidden">
+            <div class="q-header">
+                <span>Q: <span id="q-idx">1</span>/<span id="q-total">0</span></span>
+                <span id="timer" class="timer">45:00</span>
+            </div>
+            <div class="progress-bar"><div id="p-bar" class="progress-fill"></div></div>
+            
+            <div id="question-area">
+                <div id="feedback-msg" class="feedback-text"></div>
+                <p class="question-text" id="q-text">Loading...</p>
+                <div id="options-area"></div>
+                <div id="explanation-box" class="explanation"></div>
+            </div>
+
+            <button id="next-btn" class="btn btn-primary hidden" onclick="engine.next()">NEXT QUESTION</button>
+        </div>
+
+        <div id="view-result" class="glass-card animate hidden" style="text-align:center;">
+            <h1 id="res-score" style="font-size: 3.5rem; color: var(--accent); margin-bottom: 0;">0/0</h1>
+            <p id="res-name-display" style="font-weight: bold; font-size: 1.2rem;"></p>
+            <div id="res-accuracy" class="res-stat">Accuracy: 0%</div>
+            
+            <div class="advice-box">
+                <p id="res-advice">Hard work is the key to success!</p>
+            </div>
+
+            <button class="btn btn-primary" style="margin-top: 25px;" onclick="location.reload()">RETAKE TEST</button>
+        </div>
+
+    </div>
+
+<script>
+    const CONFIG = {
+        password: "2040",
+        timer: 45 * 60
+    };
+
+    const QUESTIONS_DATA = [
+  {
+    "id": 1,
+    "q": "बहाव क्षेत्रका आधारमा नेपालका नदीहरूलाई कति भागमा विभाजन गरिएको छ?",
+    "o": [
+      "२ भागमा",
+      "३ भागमा",
+      "४ भागमा",
+      "५ भागमा"
+    ],
+    "a": 1
+  },
+  {
+    "id": 2,
+    "q": "कोशी नदीको बहाव क्षेत्र कुन-कुन हिमालसम्म फैलिएको छ?",
+    "o": [
+      "पूर्वमा कञ्चनजंघा देखि पश्चिममा लामटाङसम्म",
+      "पूर्वमा लामटाङ देखि पश्चिममा धवलागिरीसम्म",
+      "पूर्वमा धवलागिरी देखि पश्चिममा व्याससम्म",
+      "पूर्वमा सगरमाथा देखि पश्चिममा अन्नपूर्णसम्म"
+    ],
+    "a": 0
+  },
+  {
+    "id": 3,
+    "q": "गण्डकी नदीको बहाव क्षेत्र कुन-कुन हिमालसम्म फैलिएको छ?",
+    "o": [
+      "पूर्वमा कञ्चनजंघा देखि पश्चिममा लामटाङसम्म",
+      "पूर्वमा लामटाङ देखि पश्चिममा धवलागिरीसम्म",
+      "पूर्वमा धवलागिरी देखि पश्चिममा व्याससम्म",
+      "पूर्वमा मकालु देखि पश्चिममा धवलागिरीसम्म"
+    ],
+    "a": 1
+  },
+  {
+    "id": 4,
+    "q": "कर्णाली नदीको बहाव क्षेत्र कुन-कुन हिमालसम्म फैलिएको छ?",
+    "o": [
+      "पूर्वमा कञ्चनजंघा देखि पश्चिममा लामटाङसम्म",
+      "पूर्वमा लामटाङ देखि पश्चिममा धवलागिरीसम्म",
+      "पूर्वमा धवलागिरी देखि पश्चिममा व्याससम्म",
+      "पूर्वमा गणेश हिमाल देखि पश्चिममा अपि हिमालसम्म"
+    ],
+    "a": 2
+  },
+  {
+    "id": 5,
+    "q": "कोशी नदीको लम्बाई कति छ?",
+    "o": [
+      "३३८ कि.मि.",
+      "५०७ कि.मि.",
+      "७२० कि.मि.",
+      "८२० कि.मि."
+    ],
+    "a": 2
+  },
+  {
+    "id": 6,
+    "q": "गण्डकी नदीको लम्बाई कति छ?",
+    "o": [
+      "३३८ कि.मि.",
+      "५०७ कि.मि.",
+      "७२० कि.मि.",
+      "३८० कि.मि."
+    ],
+    "a": 0
+  },
+  {
+    "id": 7,
+    "q": "कर्णाली नदीको लम्बाई कति छ?",
+    "o": [
+      "३३८ कि.मि.",
+      "५०७ कि.मि.",
+      "७२० कि.मि.",
+      "६०७ कि.मि."
+    ],
+    "a": 1
+  },
+  {
+    "id": 8,
+    "q": "कर्णाली नदीको सिञ्चित क्षमता (जलधार क्षेत्र) कति रहेको छ?",
+    "o": [
+      "३३ हजार वर्ग कि.मि.",
+      "३८ हजार वर्ग कि.मि.",
+      "४९ हजार वर्ग कि.मि.",
+      "५२ हजार वर्ग कि.मि."
+    ],
+    "a": 2
+  },
+  {
+    "id": 9,
+    "q": "कोशी नदीको वहाव क्षमता कति रहेको छ?",
+    "o": [
+      "१५६४ क्युविक मिटर प्रतिसेकेण्ड",
+      "१७१३ क्युविक मिटर प्रतिसेकेण्ड",
+      "१३१६ क्युविक मिटर प्रतिसेकेण्ड",
+      "१८०० क्युविक मिटर प्रतिसेकेण्ड"
+    ],
+    "a": 0
+  },
+  {
+    "id": 10,
+    "q": "नेपालको कुन नदीको वहाव क्षमता सबैभन्दा बढी (१७१३ क्युविक मिटर प्रतिसेकेण्ड) छ?",
+    "o": [
+      "कोशी",
+      "गण्डकी",
+      "कर्णाली",
+      "नारायणी"
+    ],
+    "a": 1
+  },
+  {
+    "id": 11,
+    "q": "कर्णाली नदीको विद्युत उत्पादन क्षमता कति रहेको छ?",
+    "o": [
+      "२१ हजार मे.वा.",
+      "२२ हजार मे.वा.",
+      "३२ हजार मे.वा.",
+      "४२ हजार मे.वा."
+    ],
+    "a": 2
+  },
+  {
+    "id": 12,
+    "q": "कोशी नदीको विद्युत उत्पादन क्षमता कति रहेको छ?",
+    "o": [
+      "२१ हजार मे.वा.",
+      "२२ हजार मे.वा.",
+      "३२ हजार मे.वा.",
+      "८३ हजार मे.वा."
+    ],
+    "a": 1
+  },
+  {
+    "id": 13,
+    "q": "नेपालको सबैभन्दा ठूलो नदी कुन हो?",
+    "o": [
+      "कर्णाली",
+      "गण्डकी",
+      "कोशी",
+      "बागमती"
+    ],
+    "a": 2
+  },
+  {
+    "id": 14,
+    "q": "कोशी नदीलाई भारतमा कुन नामले चिनिन्छ?",
+    "o": [
+      "घाँघरा",
+      "दामोदर",
+      "नारायणी",
+      "शारदा"
+    ],
+    "a": 1
+  },
+  {
+    "id": 15,
+    "q": "तलका मध्ये कोशी नदीको सहायक नदी कुन होइन?",
+    "o": [
+      "तमोर",
+      "अरुण",
+      "लिखु",
+      "दरौंदी"
+    ],
+    "a": 3
+  },
+  {
+    "id": 16,
+    "q": "कोशी नदीका सहायक नदीहरूमध्ये सबैभन्दा ठूलो नदी कुन हो?",
+    "o": [
+      "सुनकोशी",
+      "तामाकोशी",
+      "अरुण",
+      "तमोर"
+    ],
+    "a": 2
+  },
+  {
+    "id": 17,
+    "q": "विश्वको सबैभन्दा उच्च ठाउँबाट बग्ने नदी कुन हो?",
+    "o": [
+      "दुधकोशी",
+      "अरुण",
+      "त्रिशूली",
+      "कालिगण्डकी"
+    ],
+    "a": 1
+  },
+  {
+    "id": 18,
+    "q": "विश्वको उच्च ठाउँबाट बग्ने अरुण नदी कति उचाइबाट बग्दछ?",
+    "o": [
+      "८०१२ मिटर",
+      "८८४८ मिटर",
+      "७९०० मिटर",
+      "८५१६ मिटर"
+    ],
+    "a": 0
+  },
+  {
+    "id": 19,
+    "q": "कोशी नदीका सहायक नदीहरूमध्ये सबैभन्दा सानो नदी कुन हो?",
+    "o": [
+      "इन्द्रावती",
+      "लिखु",
+      "सुनकोशी",
+      "तामाकोशी"
+    ],
+    "a": 1
+  },
+  {
+    "id": 20,
+    "q": "कुन नदीलाई 'विहारको दुःख' भनेर पनि चिनिन्छ?",
+    "o": [
+      "बागमती",
+      "गण्डकी",
+      "कोशी",
+      "मेची"
+    ],
+    "a": 2
+  },
+  {
+    "id": 21,
+    "q": "बालुवा ओसार्ने एसियाको दोस्रो ठूलो नदी कुन हो?",
+    "o": [
+      "ह्वाङ्‌हो",
+      "कोशी",
+      "याङ्जे",
+      "गंगा"
+    ],
+    "a": 1
+  },
+  {
+    "id": 22,
+    "q": "नेपालको सबैभन्दा गहिरो नदी कुन हो?",
+    "o": [
+      "कोशी",
+      "कर्णाली",
+      "गण्डकी",
+      "महाकाली"
+    ],
+    "a": 2
+  },
+  {
+    "id": 23,
+    "q": "गण्डकी नदीलाई तराईमा के भनिन्छ?",
+    "o": [
+      "दामोदर",
+      "घाँघरा",
+      "नारायणी",
+      "बागमती"
+    ],
+    "a": 2
+  },
+  {
+    "id": 24,
+    "q": "पूर्वदेखि पश्चिम क्रम मिलाउँदा गण्डकी नदीको सबैभन्दा पश्चिमी सहायक नदी कुन हो?",
+    "o": [
+      "त्रिसुली",
+      "बुढिगण्डकी",
+      "मर्स्याङ्दी",
+      "कालिगण्डकी"
+    ],
+    "a": 3
+  },
+  {
+    "id": 25,
+    "q": "गण्डकी नदीका सहायक नदीहरूमध्ये सबैभन्दा ठूलो नदी कुन हो?",
+    "o": [
+      "त्रिसुली",
+      "बुढिगण्डकी",
+      "कालिगण्डकी",
+      "सेती"
+    ],
+    "a": 2
+  },
+  {
+    "id": 26,
+    "q": "गण्डकी नदीका सहायक नदीहरूमध्ये सबैभन्दा सानो नदी कुन हो?",
+    "o": [
+      "मादी",
+      "दरौंदी",
+      "सेती",
+      "मर्स्याङ्दी"
+    ],
+    "a": 1
+  },
+  {
+    "id": 27,
+    "q": "नेपालको सबैभन्दा लामो नदी कुन हो?",
+    "o": [
+      "कोशी",
+      "गण्डकी",
+      "कर्णाली",
+      "राप्ती"
+    ],
+    "a": 2
+  },
+  {
+    "id": 28,
+    "q": "कर्णाली नदीलाई भारतमा के भनिन्छ?",
+    "o": [
+      "दामोदर",
+      "नारायणी",
+      "घाँघरा",
+      "कोशी"
+    ],
+    "a": 2
+  },
+  {
+    "id": 29,
+    "q": "कर्णाली नदीका सहायक नदीहरूमध्ये सबैभन्दा ठूलो नदी कुन हो?",
+    "o": [
+      "तिला",
+      "हुम्ला कर्णाली",
+      "मुगु कर्णाली",
+      "ठूलो भेरी"
+    ],
+    "a": 1
+  },
+  {
+    "id": 30,
+    "q": "कर्णाली नदीका सहायक नदीहरूमध्ये सबैभन्दा सानो नदी कुन हो?",
+    "o": [
+      "सानो भेरी",
+      "सेती",
+      "तिला",
+      "बुढिगंगा"
+    ],
+    "a": 2
+  }
+    ];
+
+    let state = {
+        user: "",
+        firstName: "",
+        score: 0,
+        idx: 0,
+        time: CONFIG.timer,
+        mistakes: JSON.parse(localStorage.getItem('mistakeBank')) || [],
+        currentSet: [],
+        timerInt: null
+    };
+
+    const engine = {
+        login: () => {
+            const user = document.getElementById('in-name').value;
+            const pass = document.getElementById('in-pass').value;
+            const qual = document.getElementById('in-qual').value;
+
+            if(pass !== CONFIG.password) return alert("Incorrect Password!");
+            if(!user || !qual) return alert("Please complete your profile!");
+            
+            state.user = user;
+            state.firstName = user.split(' ')[0]; // Extract first name
+            document.getElementById('view-login').classList.add('hidden');
+            document.getElementById('view-dash').classList.remove('hidden');
+            document.getElementById('dash-welcome').innerText = `Namaste, ${state.firstName}!`;
+            document.getElementById('mistake-count').innerText = `(${state.mistakes.length})`;
+        },
+
+        startTest: (reviewMode) => {
+            if(QUESTIONS_DATA.length === 0 && !reviewMode) return alert("Question bank is empty!");
+            
+            state.score = 0;
+            state.idx = 0;
+            state.time = CONFIG.timer;
+            
+            if(reviewMode) {
+                if(state.mistakes.length === 0) return alert("No mistakes to review!");
+                state.currentSet = QUESTIONS_DATA.filter(q => state.mistakes.includes(q.id));
+            } else {
+                state.currentSet = [...QUESTIONS_DATA].sort(() => 0.5 - Math.random());
+            }
+
+            document.getElementById('q-total').innerText = state.currentSet.length;
+            document.getElementById('view-dash').classList.add('hidden');
+            document.getElementById('view-quiz').classList.remove('hidden');
+            engine.render();
+            engine.timer();
+        },
+
+        render: () => {
+            const q = state.currentSet[state.idx];
+            document.getElementById('q-idx').innerText = state.idx + 1;
+            document.getElementById('q-text').innerText = q.q;
+            document.getElementById('next-btn').classList.add('hidden');
+            document.getElementById('explanation-box').style.display = 'none';
+            document.getElementById('feedback-msg').style.display = 'none';
+            
+            const optArea = document.getElementById('options-area');
+            optArea.innerHTML = "";
+            
+            q.o.forEach((opt, i) => {
+                const div = document.createElement('div');
+                div.className = 'option animate';
+                div.innerHTML = `<span>${String.fromCharCode(65+i)}.</span> ${opt}`;
+                div.onclick = () => engine.check(i, div);
+                optArea.appendChild(div);
+            });
+
+            document.getElementById('p-bar').style.width = `${((state.idx+1)/state.currentSet.length)*100}%`;
+        },
+
+        check: (choice, el) => {
+            const q = state.currentSet[state.idx];
+            const opts = document.querySelectorAll('.option');
+            const feedback = document.getElementById('feedback-msg');
+            opts.forEach(o => o.style.pointerEvents = 'none');
+
+            const compliments = ["Amazing", "Wow", "Fantastic", "Well Done", "Lovely", "Superb", "Brilliant"];
+            const motivation = ["Don't give up", "Keep trying", "You've got this", "Stay focused", "Almost there", "Keep going"];
+
+            feedback.style.display = 'block';
+
+            if(choice === q.a) {
+                el.classList.add('correct');
+                state.score++;
+                state.mistakes = state.mistakes.filter(id => id !== q.id);
+                
+                const randomComp = compliments[Math.floor(Math.random() * compliments.length)];
+                feedback.innerText = ` ${randomComp}, ${state.firstName}!`;
+                feedback.style.color = "var(--success)";
+            } else {
+                el.classList.add('wrong');
+                opts[q.a].classList.add('correct');
+                if(!state.mistakes.includes(q.id)) state.mistakes.push(q.id);
+                
+                const randomMot = motivation[Math.floor(Math.random() * motivation.length)];
+                feedback.innerText = ` ${randomMot}, ${state.firstName}!`;
+                feedback.style.color = "var(--error)";
+            }
+            
+            if(q.e) {
+                const exp = document.getElementById('explanation-box');
+                exp.innerHTML = "<strong>Explanation:</strong><br>" + q.e;
+                exp.style.display = 'block';
+            }
+
+            localStorage.setItem('mistakeBank', JSON.stringify(state.mistakes));
+            document.getElementById('mistake-count').innerText = `(${state.mistakes.length})`;
+            document.getElementById('next-btn').classList.remove('hidden');
+        },
+
+        next: () => {
+            state.idx++;
+            if(state.idx < state.currentSet.length) engine.render();
+            else engine.end();
+        },
+
+        timer: () => {
+            clearInterval(state.timerInt);
+            state.timerInt = setInterval(() => {
+                state.time--;
+                let m = Math.floor(state.time / 60);
+                let s = state.time % 60;
+                document.getElementById('timer').innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+                if(state.time <= 0) engine.end();
+            }, 1000);
+        },
+
+        end: () => {
+            clearInterval(state.timerInt);
+            document.getElementById('view-quiz').classList.add('hidden');
+            document.getElementById('view-result').classList.remove('hidden');
+            
+            const total = state.currentSet.length;
+            const accuracy = Math.round((state.score / total) * 100);
+            
+            // Normalize score to 50 for advice logic as requested
+            const normalizedScore = (state.score / total) * 50;
+            
+            document.getElementById('res-score').innerText = `${state.score}/${total}`;
+            document.getElementById('res-name-display').innerText = state.user;
+            document.getElementById('res-accuracy').innerText = `Accuracy Percentage: ${accuracy}%`;
+
+            let advice = "";
+            if(normalizedScore <= 25) {
+                advice = `You need to work much harder in your preparation, ${state.firstName}. Consistency is the bridge between goals and accomplishment.`;
+            } else if (normalizedScore > 25 && normalizedScore <= 35) {
+                advice = `That is a good score, ${state.firstName}, but aim for more to secure your position in the top ranks!`;
+            } else {
+                advice = `Excellent work, ${state.firstName}! Your technical grasp is superb. Maintain this momentum for the final exams.`;
+            }
+            
+            document.getElementById('res-advice').innerText = advice;
+        }
+    };
+</script>
+</body>
+</html>
