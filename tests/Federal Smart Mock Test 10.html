@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Federal Smart Mock test 10</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* [UPDATED BRIGHT COLOR PALETTE - STRUCTURE REMAINS EXACTLY THE SAME] */
+        :root { --primary: #00E5FF; --secondary: #B400FB; --accent: #FFEA00; --glass-bg: rgba(255, 255, 255, 0.1); --glass-border: rgba(255, 255, 255, 0.2); --text-color: #ffffff; --card-bg: rgba(15, 15, 30, 0.95); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: linear-gradient(135deg, #FF007A, #4300B1); min-height: 100vh; display: flex; align-items: center; justify-content: center; color: var(--text-color); padding: 15px; overflow-x: hidden; }
+        .app-container { width: 100%; max-width: 650px; background: var(--card-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 24px; padding: 2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative; overflow: hidden; transition: all 0.4s ease; }
+        h1 { font-size: 2rem; font-weight: 800; background: linear-gradient(to right, #00E5FF, #B400FB); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+        h2 { font-size: 1.5rem; margin-bottom: 20px; }
+        p { color: #ccc; font-size: 0.95rem; line-height: 1.6; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .label { display: block; font-size: 0.8rem; margin-bottom: 5px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+        .glass-input { width: 100%; padding: 15px; background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); border-radius: 12px; color: white; font-size: 1rem; outline: none; transition: 0.3s; }
+        .glass-input:focus { border-color: var(--primary); background: rgba(255,255,255,0.15); }
+        .glass-input:read-only { background: rgba(0,0,0,0.2); color: #888; cursor: not-allowed; }
+        select.glass-input option { background: #0F0F1E; color: white; }
+        .btn { background: linear-gradient(90deg, #00E5FF, #B400FB); border: none; color: white; padding: 16px; width: 100%; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-top: 20px; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 5px 20px rgba(0, 229, 255, 0.3); min-height: 50px; }
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { filter: grayscale(1); cursor: wait; }
+        .btn-outline { background: transparent; border: 2px solid var(--glass-border); box-shadow: none; margin-top: 10px; }
+        .personal-header { text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--glass-border); min-height: 50px; display: flex; align-items: center; justify-content: center; }
+        .animate-praise { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .info-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: rgba(255,255,255,0.05); padding: 10px 15px; border-radius: 10px; }
+        .timer-badge { font-family: monospace; font-weight: 700; color: var(--accent); font-size: 1.1rem; }
+        .question-text { font-size: 1.2rem; font-weight: 600; margin-bottom: 20px; line-height: 1.5; }
+        .option-btn { width: 100%; padding: 18px; margin-bottom: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 12px; text-align: left; color: #ddd; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; -webkit-user-select: none; user-select: none; }
+        .option-marker { width: 30px; height: 30px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-weight: 700; flex-shrink: 0; }
+        .correct { background: rgba(0, 255, 136, 0.2) !important; border-color: #00FF88 !important; color: white !important; }
+        .correct .option-marker { background: #00FF88; color: black; }
+        .wrong { background: rgba(255, 51, 102, 0.2) !important; border-color: #FF3366 !important; color: white !important; }
+        .wrong .option-marker { background: #FF3366; color: white; }
+        .explanation-box { margin-top: 20px; padding: 15px; background: rgba(180, 0, 251, 0.15); border-left: 4px solid var(--secondary); border-radius: 8px; font-size: 0.9rem; display: none; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .score-circle { width: 160px; height: 160px; border-radius: 50%; border: 5px solid var(--primary); margin: 0 auto 20px auto; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 0 30px rgba(0, 229, 255, 0.2); }
+        .score-val { font-size: 3.5rem; font-weight: 800; color: white; line-height: 1; }
+        .hidden { display: none !important; }
+        #opts-list { max-height: 50vh; overflow-y: auto; padding-right: 5px; }
+        #auth-msg { text-align: center; margin-top: 15px; font-weight: 600; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="app">
+    <div id="view-login">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h1 id="title-display">Federal Smart Mock test 10</h1>
+            <p>5th Edition | Civil Engineering</p>
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Full Name</span>
+            <input type="text" id="inp-name" class="glass-input" placeholder="Enter your name">
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Qualification</span>
+            <select id="inp-qual" class="glass-input">
+                <option value="Engineer">Engineer</option>
+                <option value="Sub-Engineer">Sub-Engineer</option>
+                <option value="Asst. Sub-Engineer">Asst. Sub-Engineer</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <span class="label">Unique Code</span>
+            <input type="tel" id="inp-code" class="glass-input" placeholder="Enter 5-digit code">
+        </div>
+
+        <div class="input-group">
+            <span class="label">Password (Auto-Fill)</span>
+            <input type="password" id="inp-pass" class="glass-input" placeholder="Verifying..." readonly>
+        </div>
+
+        <button class="btn" id="btn-verify" onclick="App.verifyAndLogin()">Verify & Login</button>
+        <p id="auth-msg"></p>
+    </div>
+
+    <div id="view-dash" class="hidden">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2 id="greet-msg" style="color: var(--primary);">Welcome!</h2>
+            <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 16px; margin-bottom: 20px;">
+                <p style="text-transform: uppercase; font-size: 0.8rem; color: #aaa;">Active Session</p>
+                <h3 id="dash-topic-display" style="font-size: 1.5rem; margin: 10px 0;"></h3>
+                <p>50 Questions • 45 Minutes</p>
+            </div>
+        </div>
+        <button class="btn" id="btn-start" onclick="App.start(false)">Start Exam</button>
+        <p id="submitted-msg" style="color: var(--primary); text-align: center; margin-top: 15px; display: none;">✅ Score Submitted Successfully</p>
+        <button class="btn btn-outline" id="btn-review" onclick="App.start(true)" style="display: none;">Review Mistakes</button>
+    </div>
+
+    <div id="view-quiz" class="hidden">
+        <div class="personal-header">
+            <div id="praise-txt" style="font-size: 1.2rem; font-weight: 700; color: white;">Good Luck!</div>
+        </div>
+
+        <div class="info-bar">
+            <span>Q: <span id="q-idx">1</span> / <span id="q-total">50</span></span>
+            <span class="timer-badge" id="timer">45:00</span>
+        </div>
+
+        <div id="q-container">
+            <div class="question-text" id="q-text">Loading...</div>
+            <div id="opts-list"></div>
+            <div class="explanation-box" id="exp-box"></div>
+        </div>
+
+        <button class="btn hidden" id="btn-next" onclick="App.next()">Next Question</button>
+    </div>
+
+    <div id="view-result" class="hidden" style="text-align: center;">
+        <h2>Quiz Completed!</h2>
+        <div class="score-circle">
+            <span class="score-val" id="res-score">0</span>
+            <span style="font-size: 0.8rem; text-transform: uppercase; color: #aaa;">Correct</span>
+        </div>
+        <div style="margin-bottom: 30px;">
+            <h3 id="res-pct" style="color: var(--primary);">0% Accuracy</h3>
+            <p id="sync-status" style="font-size: 0.9rem; margin-top: 10px; opacity: 0.8;">Syncing score...</p>
+        </div>
+        <button class="btn" onclick="App.dash()">Back to Dashboard</button>
+    </div>
+</div>
+
+<script>
+/**
+ * ----------------------------------------------------
+ * CONFIGURATION - CHANGE ONLY THIS SECTION FOR NEW APPS
+ * ----------------------------------------------------
+ */
+const CFG = {
+    topic: "Federal Smart Mock test 10", 
+    
+    // UPDATED WITH YOUR NEW GOOGLE APPS SCRIPT URL
+    scoreScript: "https://script.google.com/macros/s/AKfycbwlARXNg2vbAH3-xPgt4Mt_MlPydwuZOtA7dkjyD0LVQlYX2IBDUKULT8rlZVIy034H/exec",
+    authScript: "https://script.google.com/macros/s/AKfycbyUGMGXI7vml6jzJsCxhXvHgnq4V4Aq6sl6blkJkdfC8_haCxI__kx3EwFzZrW942E6/exec"
+};
+
+// --- AUTOMATIC KEY GENERATOR ---
+const _tid = CFG.topic.replace(/[^a-zA-Z0-9]/g, "_");
+const KEYS = {
+    user: "civil_eng_global_user",
+    mistakes: `mistakes_${_tid}`,
+    sent: `sent_status_${_tid}`,
+    pending: `pending_${_tid}`
+};
+
+// --- DATASET ---
+const DB = [
+  {
+    "id": 1,
+    "q": "फाइलिङ प्रणालीमा 'क्रस-रेफरेन्सिङ' (Cross-referencing) भन्नाले के बुझिन्छ?",
+    "o": [
+      "फाइलहरूलाई क्रस (X) आकारमा बाँधेर राख्ने तरिका",
+      "एउटा विषयको कागजात अर्को कुन फाइलमा छ भनी सङ्केत वा जानकारी राख्ने कार्य",
+      "अनावश्यक कागजातहरूलाई च्यातेर नष्ट गर्ने प्रक्रिया",
+      "एउटा कार्यालयको फाइल अर्को कार्यालयमा पठाउने प्रक्रिया"
+    ],
+    "a": 1
+  },
+  {
+    "id": 2,
+    "q": "अब्राहम मास्लोको आवश्यकता शृंखलाको सिद्धान्त (Hierarchy of Needs Theory) अनुसार सबैभन्दा तल्लो तहको र प्राथमिक आवश्यकता कुन हो?",
+    "o": [
+      "सुरक्षाको आवश्यकता (Safety Needs)",
+      "सामाजिक आवश्यकता (Social Needs)",
+      "शारीरिक आवश्यकता (Physiological Needs - जस्तै: गाँस, बास, कपास)",
+      "सम्मानको आवश्यकता (Esteem Needs)"
+    ],
+    "a": 2
+  },
+  {
+    "id": 3,
+    "q": "'नवीन सार्वजनिक व्यवस्थापन' (New Public Management - NPM) को अवधारणाले सार्वजनिक सेवा प्रवाहमा मुख्यतया कुन कुरामा जोड दिन्छ?",
+    "o": [
+      "कर्मचारीतन्त्रका कडा नियमहरूको पालना र प्रक्रियामुखी शैली",
+      "नागरिकलाई 'ग्राहक' मानेर सेवाको नतिजा, प्रभावकारिता र दक्षतामा वृद्धि",
+      "सम्पूर्ण अधिकारहरू केन्द्रीय स्तरमा मात्र सीमित राख्ने",
+      "सरकारी कार्यालयहरूमा कर्मचारीको संख्या अत्यधिक बढाउने"
+    ],
+    "a": 1
+  },
+  {
+    "id": 4,
+    "q": "निजामती सेवा ऐनअनुसार एक निजामती कर्मचारीले गर्न नहुने आचरण कुन हो?",
+    "o": [
+      "साहित्य, कला वा विज्ञानको क्षेत्रमा लेख प्रकाशन गर्ने",
+      "निर्वाचनमा मतदान गर्ने",
+      "राजनीतिक दलको सदस्यता लिने वा राजनीतिमा भाग लिने",
+      "सरकारले सञ्चालन गरेको तालिम कार्यक्रममा सहभागी हुने"
+    ],
+    "a": 2
+  },
+  {
+    "id": 5,
+    "q": "हाल संघीय मामिला तथा सामान्य प्रशासन मन्त्रालयमा जम्मा कति वटा महाशाखाहरू रहेका छन्?",
+    "o": [
+      "४ वटा",
+      "५ वटा",
+      "६ वटा",
+      "७ वटा"
+    ],
+    "a": 2
+  },
+  {
+    "id": 6,
+    "q": "कुनै निजामती कर्मचारी सेवा अवधि नपुग्दै हराई बेपत्ता भएमा निजको परिवारले कति अवधिसम्म पूरा निवृत्तिभरण पाउँछन्?",
+    "o": [
+      "३ वर्षसम्म",
+      "५ वर्षसम्म",
+      "७ वर्षसम्म",
+      "१० वर्षसम्म"
+    ],
+    "a": 2,
+    "e": "दफा ३९क (२) अनुसार निवृत्तिभरण पाउने व्यक्ति बेपत्ता भएमा सात वर्षसम्म पूरै रकम र त्यसपछि आधा रकम परिवारले पाउँछन्।"
+  },
+  {
+    "id": 7,
+    "q": "निजामती सेवा ऐन, २०४९ अनुसार खुला प्रतियोगितात्मक परीक्षाद्वारा पूर्ति हुने पदमध्ये ४५ प्रतिशत पदलाई समावेशी कोटा (१००%) मानी छुट्याउँदा पिछडिएको क्षेत्र लागि कति प्रतिशत सिट आरक्षित गरिएको छ?",
+    "o": [
+      "२२%",
+      "२७%",
+      "५%",
+      "४%"
+    ],
+    "a": 3
+  },
+  {
+    "id": 8,
+    "q": "सूचनाको हक सम्बन्धी ऐन, २०६४ अनुसार सूचना माग गरिएको निवेदन प्राप्त भएपछि सूचना अधिकारीले सामान्यतया कति दिनभित्र माग भएको सूचना उपलब्ध गराउनुपर्ने व्यवस्था छ?",
+    "o": [
+      "७ दिनभित्र",
+      "१५ दिनभित्र",
+      "२१ दिनभित्र",
+      "३५ दिनभित्र"
+    ],
+    "a": 1,
+    "e": "व्यक्तिको जीउज्यानसँग सम्बन्धित भएमा २४ घण्टाभित्र दिनुपर्छ।"
+  },
+  {
+    "id": 9,
+    "q": "नेपालको संविधानको कुन भागदेखि कुन भागसम्म १३ वटा संवैधानिक निकाय सम्बन्धी व्यवस्था गरिएको छ?",
+    "o": [
+      "भाग २० देखि २६ सम्म",
+      "भाग २१ देखि २७ सम्म",
+      "भाग २२ देखि २८ सम्म",
+      "भाग १९ देखि २५ सम्म"
+    ],
+    "a": 1
+  },
+  {
+    "id": 10,
+    "q": "नेपालको चालु आवधिक १६औँ योजनामा महिलाको नाममा घर वा जग्गा वा घरजग्गा दर्ता भएको परिवारको संख्या कति प्रतिशत पुर्याउने लक्ष्य राखिएको छ?",
+    "o": [
+      "३३%",
+      "३४%",
+      "३५%",
+      "३६%"
+    ],
+    "a": 2
+  },
+  {
+    "id": 11,
+    "q": "सुकु ताल कुन जिल्लामा रहेको छ?",
+    "o": [
+      "कास्की",
+      "मुस्ताङ",
+      "पाल्पा",
+      "रसुवा"
+    ],
+    "a": 2
+  },
+  {
+    "id": 12,
+    "q": "पञ्चम वेद भन्नाले केलाई चिनिन्छ?",
+    "o": [
+      "आयुर्वेद",
+      "इतिहास",
+      "पुराण",
+      "उपनिषद"
+    ],
+    "a": 1
+  },
+  {
+    "id": 13,
+    "q": "नेपालमा मूल्य अभिवृद्धि कर (VAT) लागू कहिले भयो?",
+    "o": [
+      "वि.सं. २०५२",
+      "वि.सं. २०५४",
+      "वि.सं. २०५६",
+      "वि.सं. २०५८"
+    ],
+    "a": 1
+  },
+  {
+    "id": 14,
+    "q": "'लभ वेभ्स' (Love waves) केसँग सम्बन्धित छ?",
+    "o": [
+      "ज्वालामुखी",
+      "सुनामी",
+      "भूकम्प",
+      "समुद्री छाल"
+    ],
+    "a": 2
+  },
+  {
+    "id": 15,
+    "q": "डाइनामाइटको आविष्कार कसले गरेका हुन्?",
+    "o": [
+      "थोमस एडिसन",
+      "अल्बर्ट आइन्स्टाइन",
+      "माइकल फराडे",
+      "अल्फ्रेड नोबेल"
+    ],
+    "a": 3
+  },
+  {
+    "id": 16,
+    "q": "'रतन्धो' र 'स्कर्भी' क्रमशः कुन कुन भिटामिनको कमीले लाग्दछ?",
+    "o": [
+      "भिटामिन 'बी' र 'डी'",
+      "भिटामिन 'सी' र 'के'",
+      "भिटामिन 'ए' र 'सी'",
+      "भिटामिन 'डी' र 'ई'"
+    ],
+    "a": 2
+  },
+  {
+    "id": 17,
+    "q": "स्थानीय तहको एकल अधिकार संविधानको कुन अनुसूचीमा छ?",
+    "o": [
+      "अनुसूची ५",
+      "अनुसूची ६",
+      "अनुसूची ७",
+      "अनुसूची ८"
+    ],
+    "a": 3
+  },
+  {
+    "id": 18,
+    "q": "संयुक्त राष्ट्रसंघको वडापत्रमा कतिवटा शब्दहरु रहेका छन्?",
+    "o": [
+      "५,०००",
+      "८,०००",
+      "१०,०००",
+      "१२,०००"
+    ],
+    "a": 2
+  },
+  {
+    "id": 19,
+    "q": "सार्क शिखर सम्मेलन नेपालले हालसम्म कति पटक आयोजना गरेको छ?",
+    "o": [
+      "२ पटक",
+      "३ पटक",
+      "४ पटक",
+      "५ पटक"
+    ],
+    "a": 1
+  },
+  {
+    "id": 20,
+    "q": "राष्ट्रिय सहकारी दिवस कहिले मनाइन्छ?",
+    "o": [
+      "फागुन २०",
+      "चैत्र २०",
+      "वैशाख २०",
+      "जेठ २०"
+    ],
+    "a": 1
+  },
+  {
+    "id": 21,
+    "q": "A pile, which by itself does not carry any load but improves the bearing capacity of the soil is called .................",
+    "o": [
+      "sheet pile",
+      "friction pile",
+      "bearing pile",
+      "compaction pile"
+    ],
+    "a": 3
+  },
+  {
+    "id": 22,
+    "q": "The plate loading test gives .................",
+    "o": [
+      "the ultimate bearing capacity of the soil",
+      "safe bearing capacity of the soil",
+      "the depth of underlying rock",
+      "none of above"
+    ],
+    "a": 0
+  },
+  {
+    "id": 23,
+    "q": "The slope of a canal, for a discharge of 300 cumec, should be .............",
+    "o": [
+      "1 in 4000",
+      "1 in 6000",
+      "1 in 8000",
+      "1 in 10000"
+    ],
+    "a": 2
+  },
+  {
+    "id": 24,
+    "q": "A sudden fall of level of ground along the alignment of a canal joined by an inclined bed is called a .............",
+    "o": [
+      "rapid fall",
+      "cylinder fall",
+      "sudden fall",
+      "glacis fall"
+    ],
+    "a": 0
+  },
+  {
+    "id": 25,
+    "q": "The growth of population may be conveniently represented by .............",
+    "o": [
+      "semi-logarithmic curve",
+      "logistic curve",
+      "straight liner curve",
+      "all of these"
+    ],
+    "a": 1
+  },
+  {
+    "id": 26,
+    "q": "The earth's water circulatory system is known as .............",
+    "o": [
+      "water cycle",
+      "hydrological cycle",
+      "precipitation cycle",
+      "all of these"
+    ],
+    "a": 1
+  },
+  {
+    "id": 27,
+    "q": "The reaction time of a driver ............. with the increase in speed.",
+    "o": [
+      "remains constant",
+      "increases",
+      "decreases",
+      "none of these"
+    ],
+    "a": 2
+  },
+  {
+    "id": 28,
+    "q": "The main advantage of providing super-elevation is .............",
+    "o": [
+      "to decrease the intensity of stresses on the foundation",
+      "to increase the stability of the fast moving vehicles, when they negotiate a horizontal curve",
+      "to achieve higher speed of vehicles",
+      "all of the above"
+    ],
+    "a": 3
+  },
+  {
+    "id": 29,
+    "q": "The salient feature of the organization evolved by F.W. Taylor is ............",
+    "o": [
+      "strict adherence to specification",
+      "separation of planning and design part for field work",
+      "each individual maintains functional efficiency",
+      "all of the above"
+    ],
+    "a": 3
+  },
+  {
+    "id": 30,
+    "q": "Which of the following is an example of parallel activities?",
+    "o": [
+      "construction of walls and casting of roof",
+      "construction of walls and carpentry work of doors and window",
+      "casting of roof and construction of septic tank",
+      "digging of well and construction of septic tank"
+    ],
+    "a": 1
+  },
+  {
+    "id": 31,
+    "q": "For night landing, the thresholds are lighted ...",
+    "o": [
+      "green",
+      "red",
+      "white",
+      "yellow"
+    ],
+    "a": 0
+  },
+  {
+    "id": 32,
+    "q": "The maximum value of angle of turning of the nose gear for large jet aircrafts, is limited to ...",
+    "o": [
+      "20°",
+      "30°",
+      "45°",
+      "60°"
+    ],
+    "a": 3
+  },
+  {
+    "id": 33,
+    "q": "The thickness of 25 gauge sheet is ............",
+    "o": [
+      "less than 1 mm",
+      "1 mm",
+      "between 1 mm and 1.5 mm",
+      "2 mm"
+    ],
+    "a": 0
+  },
+  {
+    "id": 34,
+    "q": "The process of evaluating cost of construction of a project is called ............",
+    "o": [
+      "estimate",
+      "rough cost",
+      "actual cost",
+      "workable cost"
+    ],
+    "a": 0
+  },
+  {
+    "id": 35,
+    "q": "Workability of concrete can be improved by the addition of.......",
+    "o": [
+      "Iron",
+      "Sodium",
+      "Zinc",
+      "Sulphur"
+    ],
+    "a": 2
+  },
+  {
+    "id": 36,
+    "q": "Retarder is used in concreting in",
+    "o": [
+      "cold weather",
+      "hot weather",
+      "both of above",
+      "none of above"
+    ],
+    "a": 1
+  },
+  {
+    "id": 37,
+    "q": "The paint which has high reflective property is",
+    "o": [
+      "cellulose paint",
+      "casein paint",
+      "bronze paint",
+      "enamel paint"
+    ],
+    "a": 2
+  },
+  {
+    "id": 38,
+    "q": "If the plane table is not horizontal in a direction at right angles to the alidade, the line of sight is parallel to the fiducial edge only for",
+    "o": [
+      "horizontal sights",
+      "inclined sights upward",
+      "inclined sight downward",
+      "none of these"
+    ],
+    "a": 0
+  },
+  {
+    "id": 39,
+    "q": "The chaining on sloping ground is",
+    "o": [
+      "easier along the falling gradient",
+      "easier along the up gradient",
+      "equally convenient along falling as well as up gradient",
+      "all the above"
+    ],
+    "a": 0
+  },
+  {
+    "id": 40,
+    "q": "In geodetic surveys higher accuracy is achieved, if",
+    "o": [
+      "curvature of the earth surface is ignored",
+      "curvature of the earth surface is taken into account",
+      "angles between the curved lines are treated as plane angles",
+      "none of these"
+    ],
+    "a": 1
+  },
+  {
+    "id": 41,
+    "q": "A non-yielding support implies that the",
+    "o": [
+      "Support is frictionless",
+      "Support can take any amount of reaction",
+      "Support holds member firmly",
+      "Slope of the beam at the support is zero"
+    ],
+    "a": 3
+  },
+  {
+    "id": 42,
+    "q": "The bending stress in a beam is..............section modulus.",
+    "o": [
+      "Inversely proportional to two times",
+      "Directly proportional to",
+      "Inversely proportional to",
+      "None of the above"
+    ],
+    "a": 2,
+    "e": "Formula: $\\sigma = \\frac{M}{Z}$"
+  },
+  {
+    "id": 43,
+    "q": "The buckling load for a given material depends on",
+    "o": [
+      "Slenderness ratio and area of cross-section",
+      "Poisson's ratio and modulus of elasticity",
+      "Slenderness ratio and modulus of elasticity",
+      "Slenderness ratio, area of cross-section and modulus of elasticity"
+    ],
+    "a": 3
+  },
+  {
+    "id": 44,
+    "q": "What is the maximum number of times the pathlines of two particles can intersect in an one dimensional flow?",
+    "o": [
+      "0",
+      "1",
+      "2",
+      "infinity"
+    ],
+    "a": 1
+  },
+  {
+    "id": 45,
+    "q": "Which among the following have the same forces acting on them?",
+    "o": [
+      "Dynamic similarity",
+      "Geometric similarity",
+      "Conditional similarity",
+      "Kinematic similarity"
+    ],
+    "a": 0
+  },
+  {
+    "id": 46,
+    "q": "The imaginary line joining the each head of water is called",
+    "o": [
+      "Hydraulic gradient line",
+      "Residual line",
+      "Loss of gradient line",
+      "None of the above"
+    ],
+    "a": 0
+  },
+  {
+    "id": 47,
+    "q": "All columns shall be designed for an eccentricity not less than",
+    "o": [
+      "10mm",
+      "20mm",
+      "30mm",
+      "40mm"
+    ],
+    "a": 1
+  },
+  {
+    "id": 48,
+    "q": "The allowable bond stress in tension for plain bars in the limit state method for M 15 grade concrete is",
+    "o": [
+      "0.6N/mm²",
+      "1.2N/mm²",
+      "1.0N/mm²",
+      "15N/mm²"
+    ],
+    "a": 2
+  },
+  {
+    "id": 49,
+    "q": "Void ratio with usual notations is given by",
+    "o": [
+      "Vv/V",
+      "Vs/V",
+      "Va/Vv",
+      "Vv/Vs"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 50,
+    "q": "The ratio of the weight of given volume of soil solids to the weight of an equal volume of distilled water at the given temperature, is known",
+    "o": [
+      "porosity",
+      "specific gravity",
+      "void ratio",
+      "water content"
+    ],
+    "a": 1
+  }
+];
+
+const PRAISE = {
+    good: ["You are a Genius", "क्या बात है", "Amazing", "बहुत अच्छा", "Fantastic", "Excellent", "You are Awesome"],
+    bad: ["कोई बात नहीं", "Don't give up", " है राम ! ये क्या होगया", "You can do this" ]
+};
+
+const App = {
+    state: { user: null, quiz: [], curr: 0, score: 0, mistakes: [], timer: null, submitted: false },
+
+    save: (k, v) => { try { localStorage.setItem(k, v) } catch(e) {} },
+    load: (k) => { try { return localStorage.getItem(k) } catch(e) { return null } },
+
+    verifyAndLogin: () => {
+        const n = document.getElementById('inp-name').value.trim();
+        const q = document.getElementById('inp-qual').value;
+        const c = document.getElementById('inp-code').value.trim();
+        const msg = document.getElementById('auth-msg');
+        const btn = document.getElementById('btn-verify');
+
+        if(!n || !c) {
+            msg.innerText = "Please enter Name and Code";
+            msg.style.display = 'block'; return;
+        }
+
+        btn.disabled = true; btn.innerText = "Verifying..."; msg.style.display = 'none';
+
+        fetch(`${CFG.authScript}?code=${c}&name=${n}&qual=${q}`)
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === 'success') {
+                document.getElementById('inp-pass').value = data.password;
+                App.state.user = { name: n, qual: q, code: c };
+                App.save(KEYS.user, JSON.stringify(App.state.user));
+                setTimeout(() => App.dash(), 800);
+            } else {
+                btn.disabled = false; btn.innerText = "Verify & Login";
+                msg.style.display = 'block'; msg.style.color = "#FF3366";
+                msg.innerHTML = data.message.includes("used") ? "Code already used or expired." : "Invalid Code";
+            }
+        })
+        .catch(() => {
+            btn.disabled = false; btn.innerText = "Verify & Login";
+            msg.style.display = 'block'; msg.innerText = "Connection Error";
+        });
+    },
+
+    dash: () => {
+        document.getElementById('title-display').innerText = CFG.topic;
+        document.getElementById('dash-topic-display').innerText = CFG.topic;
+
+        const stored = App.load(KEYS.user);
+        if(!stored) return;
+        
+        App.state.user = JSON.parse(stored);
+        
+        document.getElementById('greet-msg').innerText = `Namaste, ${App.state.user.name.split(' ')[0]}!`;
+        document.getElementById('view-login').classList.add('hidden');
+        document.getElementById('view-result').classList.add('hidden');
+        document.getElementById('view-dash').classList.remove('hidden');
+
+        if(App.load(KEYS.sent)) {
+            document.getElementById('btn-start').innerText = "Retake (Practice Mode)";
+            document.getElementById('submitted-msg').style.display = 'block';
+            document.getElementById('submitted-msg').innerText = "✅ Previous Score Submitted";
+        } else {
+            document.getElementById('btn-start').innerText = "Start Exam";
+            document.getElementById('submitted-msg').style.display = 'none';
+        }
+
+        const m = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        document.getElementById('btn-review').style.display = m.length > 0 ? 'inline-block' : 'none';
+    },
+
+    start: (review) => {
+        App.state.curr = 0; App.state.score = 0; App.state.mistakes = []; App.state.submitted = false;
+        const prevM = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        const flatDB = DB.flat ? DB.flat() : DB;
+        let source = review ? flatDB.filter(q => prevM.includes(q.id)) : [...flatDB];
+        
+        if(!source.length) return alert("No questions available.");
+
+        App.state.quiz = source.map(q => {
+            let opts = q.o.map((txt, i) => ({ t: txt, c: i === q.a }));
+            return { ...q, shuffledOpts: opts.sort(() => Math.random() - 0.5) };
+        }).sort(() => Math.random() - 0.5);
+
+        document.getElementById('view-dash').classList.add('hidden');
+        document.getElementById('view-quiz').classList.remove('hidden');
+        document.getElementById('q-total').innerText = App.state.quiz.length;
+        App.timer(45*60);
+        App.render();
+    },
+
+    render: () => {
+        const q = App.state.quiz[App.state.curr];
+        document.getElementById('q-idx').innerText = App.state.curr + 1;
+        document.getElementById('q-text').innerText = q.q;
+        document.getElementById('exp-box').style.display = 'none';
+        document.getElementById('btn-next').classList.add('hidden');
+        
+        const list = document.getElementById('opts-list');
+        list.innerHTML = '';
+        q.shuffledOpts.forEach((opt, i) => {
+            const btn = document.createElement('div');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<div class="option-marker">${String.fromCharCode(65+i)}</div>${opt.t}`;
+            btn.onclick = () => App.check(btn, opt, q);
+            list.appendChild(btn);
+        });
+    },
+
+    check: (btn, opt, q) => {
+        const all = document.querySelectorAll('.option-btn');
+        all.forEach(b => { b.onclick = null; b.style.opacity = '0.6'; });
+        btn.style.opacity = '1';
+        
+        const praise = document.getElementById('praise-txt');
+        praise.classList.remove('animate-praise');
+        void praise.offsetWidth; praise.classList.add('animate-praise');
+
+        const userName = App.state.user ? App.state.user.name.split(' ')[0] : '';
+
+        if(opt.c) {
+            btn.classList.add('correct');
+            App.state.score++;
+            praise.innerText = PRAISE.good[Math.floor(Math.random()*PRAISE.good.length)] + " ! " + userName;
+            praise.style.color = "#00FF88";
+            
+            let m = JSON.parse(App.load(KEYS.mistakes) || "[]").filter(id => id !== q.id);
+            App.save(KEYS.mistakes, JSON.stringify(m));
+        } else {
+            btn.classList.add('wrong');
+            all.forEach((b, i) => { if(q.shuffledOpts[i].c) b.classList.add('correct'); });
+            App.state.mistakes.push(q.id);
+            praise.innerText = PRAISE.bad[Math.floor(Math.random()*PRAISE.bad.length)] + " ! " + userName;
+            praise.style.color = "#FF3366";
+        }
+
+        if(q.e) {
+            document.getElementById('exp-box').innerHTML = `<strong>Explanation:</strong> ${q.e}`;
+            document.getElementById('exp-box').style.display = 'block';
+        }
+        document.getElementById('btn-next').classList.remove('hidden');
+        setTimeout(() => document.getElementById('btn-next').scrollIntoView({behavior:"smooth", block:"nearest"}), 100);
+    },
+
+    next: () => {
+        App.state.curr++;
+        if(App.state.curr < App.state.quiz.length) App.render();
+        else App.finish();
+    },
+
+    timer: (sec) => {
+        if(App.state.timer) clearInterval(App.state.timer);
+        App.state.timer = setInterval(() => {
+            sec--;
+            let m = Math.floor(sec/60), s = sec%60;
+            document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
+            if(sec<=0) App.finish();
+        }, 1000);
+    },
+
+    finish: () => {
+        clearInterval(App.state.timer);
+        document.getElementById('view-quiz').classList.add('hidden');
+        document.getElementById('view-result').classList.remove('hidden');
+
+        let m = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        m = [...new Set([...m, ...App.state.mistakes])];
+        App.save(KEYS.mistakes, JSON.stringify(m));
+
+        const pct = Math.round((App.state.score / App.state.quiz.length) * 100);
+        document.getElementById('res-score').innerText = App.state.score;
+        document.getElementById('res-pct').innerText = `${pct}% Accuracy`;
+        App.sync();
+    },
+
+    // --- REWRITTEN SYNC FUNCTION FOR APPS SCRIPT COMPATIBILITY ---
+    sync: () => {
+        if(App.state.submitted) return;
+        if(App.load(KEYS.sent)) {
+            document.getElementById('sync-status').innerText = "Practice score not sent.";
+            return;
+        }
+
+        App.state.submitted = true;
+        
+        // Use FormData exactly as the Google Script expects
+        const formData = new FormData();
+        formData.append("name", App.state.user.name);
+        formData.append("qualification", App.state.user.qual);
+        formData.append("examTitle", CFG.topic); // Send CFG.topic as 'examTitle'
+        formData.append("score", App.state.score);
+
+        const offlineData = {
+            name: App.state.user.name,
+            qualification: App.state.user.qual,
+            examTitle: CFG.topic,
+            score: App.state.score
+        };
+
+        if(navigator.onLine) {
+            document.getElementById('sync-status').innerText = "Syncing...";
+            
+            fetch(CFG.scoreScript, {
+                method: 'POST', 
+                mode: 'no-cors',
+                body: formData // Sending FormData instead of JSON
+            }).then(() => {
+                App.save(KEYS.sent, "true");
+                document.getElementById('sync-status').innerText = "✅ Score Saved!";
+                document.getElementById('sync-status').style.color = "#00FF88";
+            }).catch(() => App.offline(offlineData));
+        } else {
+            App.offline(offlineData);
+        }
+    },
+
+    offline: (d) => {
+        let p = JSON.parse(App.load(KEYS.pending) || "[]");
+        p.push(d);
+        App.save(KEYS.pending, JSON.stringify(p));
+        document.getElementById('sync-status').innerText = "Saved offline. Will sync later.";
+    }
+};
+
+window.onload = () => {
+    if(App.load(KEYS.user)) App.dash();
+};
+</script>
+</body>
+</html>
