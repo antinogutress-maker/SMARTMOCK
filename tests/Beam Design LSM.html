@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beam Design Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --accent: #f59e0b;
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --math-font: 'Times New Roman', serif;
+        }
+
+        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); padding-bottom: 80px; }
+        .container { max-width: 720px; margin: 0 auto; padding: 20px; }
+        
+        /* Header */
+        .header { text-align: center; margin: 30px 0; }
+        .header h1 { font-weight: 800; font-size: 2.2rem; color: var(--primary); letter-spacing: -0.5px; }
+
+        /* Input Card */
+        .card { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .input-group { margin-bottom: 5px; }
+        .input-group label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 5px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-control { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 1rem; font-family: 'Outfit', sans-serif; transition: 0.2s; font-weight: 600; }
+        .form-control:focus { outline: none; border-color: var(--primary); background: #f8fafc; }
+
+        /* Checkbox Switch */
+        .switch-container { grid-column: span 2; display: flex; align-items: center; gap: 10px; background: #eff6ff; padding: 12px; border-radius: 10px; margin-top: 5px; border: 1px solid #dbeafe; }
+        .switch-container input { width: 18px; height: 18px; accent-color: var(--primary); }
+        .switch-label { font-size: 0.95rem; font-weight: 700; color: #1e40af; }
+
+        /* Button */
+        .btn { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 800; font-size: 1.1rem; margin-top: 25px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); }
+        .btn:hover { background: #1d4ed8; transform: translateY(-1px); }
+
+        /* Whatsapp Button */
+        .btn-whatsapp {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            width: 100%; padding: 16px; background: #25D366; color: white; 
+            border: none; border-radius: 12px; font-weight: 800; font-size: 1.1rem; 
+            margin-top: 20px; text-decoration: none; box-shadow: 0 4px 6px -1px rgba(37, 211, 102, 0.2);
+            transition: 0.2s;
+        }
+        .btn-whatsapp:hover { background: #20bd5a; transform: translateY(-1px); }
+
+        /* Results */
+        .step { background: white; border-radius: 16px; padding: 25px; margin-bottom: 20px; border-left: 6px solid #cbd5e1; box-shadow: 0 2px 4px -1px rgba(0,0,0,0.06); animation: fadeIn 0.5s; }
+        .step h3 { font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1.2px; color: #64748b; margin-bottom: 20px; display: flex; justify-content: space-between; font-weight: 800; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
+        
+        /* Realistic Math Typography */
+        .math { 
+            font-family: var(--math-font); font-size: 1.25rem; background: #fff; 
+            border: 1px dashed #cbd5e1; padding: 15px; margin: 12px 0; border-radius: 8px;
+            overflow-x: auto; line-height: 1.8; color: #334155;
+        }
+        .var { font-style: italic; font-weight: bold; color: #0f172a; } 
+        .sub { font-size: 0.7em; vertical-align: sub; font-style: normal; font-weight: 600; color: #475569; }
+        .val { color: var(--primary); font-family: 'Outfit', sans-serif; font-weight: 700; } 
+        .op { margin: 0 4px; color: #94a3b8; }
+        
+        /* Fractions */
+        .frac { display: inline-block; text-align: center; vertical-align: middle; margin: 0 6px; }
+        .frac-top { border-bottom: 1.5px solid #1e293b; display: block; padding: 2px 4px; }
+        .frac-bot { display: block; padding: 2px 4px; }
+
+        /* Colors for Singly/Doubly */
+        .step.doubly { border-left-color: var(--accent); }
+        .highlight-box { background: #f0fdf4; color: #166534; padding: 15px; border-radius: 8px; font-weight: 700; margin-top: 15px; border: 1px solid #bbf7d0; font-size: 1rem; }
+        .highlight-box.warn { background: #fffbeb; color: #b45309; border-color: #fcd34d; }
+
+        /* Reference Info Box */
+        .info-tag { background: #f1f5f9; padding: 8px 12px; border-radius: 6px; font-size: 0.9rem; color: #475569; font-weight: 600; margin-bottom: 8px; display: inline-block; }
+
+        /* Table */
+        .ref-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.95rem; border: 1px solid #e2e8f0; font-family: 'Outfit', sans-serif; }
+        .ref-table th { background: #f1f5f9; padding: 12px; text-align: left; font-weight: 700; color: #475569; }
+        .ref-table td { padding: 12px; border-top: 1px solid #e2e8f0; font-weight: 500; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Beam Designer Pro</h1>
+        <p style="color:#64748b; font-size:1rem; font-weight: 600;">Limit State Method (IS 456:2000)</p>
+    </div>
+
+    <div class="card">
+        <div class="input-grid">
+            <div class="input-group">
+                <label>Bending Moment (M)</label>
+                <input type="number" id="M" class="form-control" placeholder="e.g. 50" step="0.1">
+            </div>
+            <div class="input-group">
+                <label>Effective Cover (d')</label>
+                <input type="number" id="cc" class="form-control" value="40">
+            </div>
+            <div class="input-group">
+                <label>Width (b)</label>
+                <input type="number" id="b" class="form-control" placeholder="230">
+            </div>
+            <div class="input-group">
+                <label>Total Depth (D)</label>
+                <input type="number" id="D" class="form-control" placeholder="450">
+            </div>
+            <div class="input-group">
+                <label>Concrete Grade</label>
+                <select id="fck" class="form-control">
+                    <option value="20">M20</option>
+                    <option value="25">M25</option>
+                    <option value="30">M30</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Steel Grade</label>
+                <select id="fy" class="form-control">
+                    <option value="250">Fe 250</option>
+                    <option value="415" selected>Fe 415</option>
+                    <option value="500">Fe 500</option>
+                </select>
+            </div>
+            
+            <div class="switch-container">
+                <input type="checkbox" id="isFactored">
+                <label for="isFactored" class="switch-label">Input Moment is already Factored (Mu)</label>
+            </div>
+        </div>
+        <button class="btn" onclick="calculate()">Design Beam</button>
+    </div>
+
+    <div id="results"></div>
+
+    <div id="table-container" style="display:none; margin-top:20px;">
+        <div class="card" id="table-content">
+            </div>
+    </div>
+
+    <a href="https://chat.whatsapp.com/GpMpVmBo71RBZqLOf1l4PM?mode=gi_t" target="_blank" class="btn-whatsapp">
+        <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c1.009.55 2.119.842 3.228.842.001 0 .001 0 .002 0 3.178 0 5.764-2.587 5.765-5.766.001-1.541-.6-2.99-1.686-4.076-1.086-1.086-2.536-1.685-4.076-1.686zm-9.069 5.77c0 2.193.57 3.868 1.637 5.763l-1.741 6.361 6.521-1.71c1.83 1.011 3.493 1.565 5.681 1.565 5.922 0 10.74-4.818 10.741-10.74.001-2.87-1.116-5.567-3.146-7.597-2.029-2.03-4.723-3.148-7.593-3.149-5.92 0-10.738 4.818-10.738 10.739z"/></svg>
+        Join Study Group
+    </a>
+
+</div>
+
+<script>
+    function fmt(num) { return `<span class="val">${parseFloat(num).toFixed(2)}</span>`; }
+    function variable(v, sub) { return `<span class="var">${v}<span class="sub">${sub||''}</span></span>`; }
+
+    function getBarDetailing(area, label) {
+        const diams = [12, 16, 20, 25];
+        let bestD = 12, bestN = 100;
+        for(let d of diams) {
+            let n = Math.ceil(area / (Math.PI*d*d/4));
+            if(n >= 2 && n <= 6) { bestD = d; bestN = n; break; }
+            if(n < bestN) { bestD = d; bestN = n; }
+        }
+        return `<div class="highlight-box" style="border-left:4px solid #16a34a">
+            🏗️ ${label}: Provide <b>${bestN}</b> bars of <b>${bestD}mm Ø</b>
+        </div>`;
+    }
+
+    function calculate() {
+        const M_in = parseFloat(document.getElementById('M').value);
+        const b = parseFloat(document.getElementById('b').value);
+        const D = parseFloat(document.getElementById('D').value);
+        const cover = parseFloat(document.getElementById('cc').value);
+        const fck = parseFloat(document.getElementById('fck').value);
+        const fy = parseFloat(document.getElementById('fy').value);
+        const isFactored = document.getElementById('isFactored').checked;
+
+        if(!M_in || !b || !D) { alert("Please fill all fields"); return; }
+
+        const d = D - cover;
+        const Mu = isFactored ? M_in : (1.5 * M_in);
+        
+        // Constants Logic
+        let Q, Xu_max_ratio;
+        if(fy == 250) { Q = 0.148; Xu_max_ratio = 0.53; }
+        else if(fy == 415) { Q = 0.138; Xu_max_ratio = 0.48; }
+        else { Q = 0.133; Xu_max_ratio = 0.46; } // Fe500
+
+        const Mu_lim = (Q * fck * b * d * d) / 1e6;
+        const isDoubly = Mu > Mu_lim;
+
+        let html = '';
+
+        // --- STEP 1: FACTORED LOAD ---
+        html += `<div class="step">
+            <h3>Step 1: Design Load & Depth</h3>
+            ${ !isFactored ? 
+                `<div class="math">${variable('M','u')} = 1.5 × ${variable('M')}</div>
+                 <div class="math">= 1.5 × ${fmt(M_in)} = ${fmt(Mu)} kNm</div>` 
+                : `<div class="math">${variable('M','u')} = ${fmt(Mu)} kNm (Already Factored)</div>`
+            }
+            <div class="math">${variable('d')} = ${variable('D')} - ${variable("d'")}</div>
+            <div class="math">= ${fmt(D)} - ${fmt(cover)} = ${fmt(d)} mm</div>
+        </div>`;
+
+        // --- STEP 2: CHECK SECTION ---
+        html += `<div class="step">
+            <h3>Step 2: Check Section Capacity</h3>
+            <div class="info-tag">For Fe ${fy}, Limiting Coefficient (Q) = <b>${Q}</b></div>
+            
+            <div class="math">${variable('M','u,lim')} = <b>${Q}</b> ${variable('f','ck')} ${variable('b')} ${variable('d')}²</div>
+            <div class="math">= <b>${Q}</b> × ${fmt(fck)} × ${fmt(b)} × ${fmt(d)}²</div>
+            <div class="math">= ${fmt(Mu_lim)} kNm</div>
+            
+            <div class="highlight-box ${isDoubly ? 'warn' : ''}">
+                ${isDoubly ? `⚠️ Mu (${fmt(Mu)}) > Mu,lim (${fmt(Mu_lim)}) → Design Doubly Reinforced` : `✅ Mu (${fmt(Mu)}) < Mu,lim (${fmt(Mu_lim)}) → Design Singly Reinforced`}
+            </div>
+        </div>`;
+
+        if(!isDoubly) {
+            // === SINGLY ===
+            document.getElementById('table-container').style.display = 'none';
+
+            const A = 0.36 * fck * b; 
+            const B = 0.36 * fck * b * d; 
+            const a_quad = 0.1512 * fck * b;
+            const b_quad = -0.36 * fck * b * d;
+            const c_quad = Mu * 1e6;
+            const Xu = (-b_quad - Math.sqrt(b_quad*b_quad - 4*a_quad*c_quad)) / (2*a_quad);
+            const Ast = (0.36 * fck * b * Xu) / (0.87 * fy);
+
+            html += `<div class="step">
+                <h3>Step 3: Calculate Required Neutral Axis (${variable('X','u')})</h3>
+                <div style="font-size:0.95rem; color:#475569; margin-bottom:10px; font-weight:600;">Equating Compressive Moment to Factored Moment:</div>
+                <div class="math">${variable('M','u')} = 0.36 ${variable('f','ck')} ${variable('b')} ${variable('X','u')} (${variable('d')} - 0.42 ${variable('X','u')})</div>
+                <div class="math">${fmt(Mu)}×10⁶ = 0.36 × ${fmt(fck)} × ${fmt(b)} × ${variable('X','u')} (${fmt(d)} - 0.42 ${variable('X','u')})</div>
+                <div class="highlight-box" style="background:#f1f5f9; border-color:#cbd5e1; color:#334155;">
+                    Solving Quadratic Eq... <br>Required ${variable('X','u')} = <b>${fmt(Xu)} mm</b>
+                </div>
+            </div>`;
+
+            html += `<div class="step">
+                <h3>Step 4: Calculate Steel (${variable('A','st')})</h3>
+                <div class="math">
+                    ${variable('A','st')} = <div class="frac"><span class="frac-top">0.36 ${variable('f','ck')} ${variable('b')} ${variable('X','u')}</span><span class="frac-bot">0.87 ${variable('f','y')}</span></div>
+                </div>
+                <div class="math">
+                     = <div class="frac"><span class="frac-top">0.36 × ${fmt(fck)} × ${fmt(b)} × ${fmt(Xu)}</span><span class="frac-bot">0.87 × ${fmt(fy)}</span></div>
+                </div>
+                <div class="math">= <b>${fmt(Ast)} mm²</b></div>
+                ${getBarDetailing(Ast, 'Tension Steel')}
+            </div>`;
+
+        } else {
+            // === DOUBLY ===
+            // 1. Show correct table
+            const tableDiv = document.getElementById('table-container');
+            const tableContent = document.getElementById('table-content');
+            tableDiv.style.display = 'block';
+
+            if(fy == 250) {
+                tableContent.innerHTML = `
+                <h4 style="margin-bottom:10px; color:#475569; font-weight: 800;">ℹ️ Steel Stress for Fe 250</h4>
+                <div class="highlight-box" style="margin-top:0;">
+                    For Mild Steel (Fe 250), table is not required.<br>
+                    Stress is constant: <b>fsc = 0.87 × 250 = 217.5 N/mm²</b>
+                </div>`;
+            } else if(fy == 415) {
+                tableContent.innerHTML = `
+                <h4 style="margin-bottom:10px; color:#475569; font-weight: 800;">📖 Reference Table (For Fe 415)</h4>
+                <table class="ref-table">
+                    <tr><th>d'/d Ratio</th><th>fsc (Fe 415)</th></tr>
+                    <tr><td>0.05</td><td>355 N/mm²</td></tr>
+                    <tr><td>0.10</td><td>353 N/mm²</td></tr>
+                    <tr><td>0.15</td><td>342 N/mm²</td></tr>
+                    <tr><td>0.20</td><td>329 N/mm²</td></tr>
+                </table>`;
+            } else {
+                tableContent.innerHTML = `
+                <h4 style="margin-bottom:10px; color:#475569; font-weight: 800;">📖 Reference Table (For Fe 500)</h4>
+                <table class="ref-table">
+                    <tr><th>d'/d Ratio</th><th>fsc (Fe 500)</th></tr>
+                    <tr><td>0.05</td><td>424 N/mm²</td></tr>
+                    <tr><td>0.10</td><td>412 N/mm²</td></tr>
+                    <tr><td>0.15</td><td>395 N/mm²</td></tr>
+                    <tr><td>0.20</td><td>370 N/mm²</td></tr>
+                </table>`;
+            }
+            
+            // Step 3: Xu max
+            const Xu_max = Xu_max_ratio * d;
+            html += `<div class="step doubly">
+                <h3>Step 3: Calculate Max Neutral Axis (${variable('X','u,max')})</h3>
+                <div class="math">${variable('X','u,max')} = ${variable('k')} × ${variable('d')}</div>
+                <div class="info-tag">For Fe ${fy}, constant k = <b>${Xu_max_ratio}</b></div>
+                <div class="math">= ${fmt(Xu_max_ratio)} × ${fmt(d)} = <b>${fmt(Xu_max)} mm</b></div>
+            </div>`;
+
+            // Step 4: Asc
+            const Mu2 = Mu - Mu_lim;
+            let fsc;
+            const ratio = cover/d;
+            
+            if(fy == 250) {
+                fsc = 217.5;
+            } else if(fy == 415) {
+                if(ratio <= 0.05) fsc = 355; else if(ratio <= 0.1) fsc = 353; else if(ratio <= 0.15) fsc = 342; else fsc = 329;
+            } else { // Fe 500
+                 if(ratio <= 0.05) fsc = 424; else if(ratio <= 0.1) fsc = 412; else if(ratio <= 0.15) fsc = 395; else fsc = 370;
+            }
+
+            const Asc = (Mu2 * 1e6) / (fsc * (d - cover));
+
+            html += `<div class="step doubly">
+                <h3>Step 4: Compression Steel (${variable('A','sc')})</h3>
+                <div class="math">${variable('M','u2')} = ${variable('M','u')} - ${variable('M','u,lim')}</div>
+                <div class="math">= ${fmt(Mu)} - ${fmt(Mu_lim)} = <b>${fmt(Mu2)} kNm</b></div>
+                <hr style="border-top:1px dashed #ccc; margin:10px 0;">
+                
+                <div class="highlight-box" style="background:#fff7ed; border-color:#fed7aa; color:#9a3412; margin: 15px 0;">
+                    <div>ratio ${variable("d'")}/${variable('d')} = ${fmt(cover)}/${fmt(d)} = <b>${fmt(ratio)}</b></div>
+                    <div style="margin-top:5px;">
+                        ${ fy == 250 ? 'For Fe 250, stress is constant.' : `From Fe ${fy} Table, at ratio ${fmt(ratio)}:` }
+                        <b>${variable('f','sc')} = ${fsc} N/mm²</b>
+                    </div>
+                </div>
+
+                <div class="math">
+                    ${variable('A','sc')} = <div class="frac"><span class="frac-top">${variable('M','u2')}</span><span class="frac-bot">${variable('f','sc')} (${variable('d')} - ${variable("d'")})</span></div>
+                </div>
+                <div class="math">
+                     = <div class="frac"><span class="frac-top">${fmt(Mu2)} × 10⁶</span><span class="frac-bot">${fsc} (${fmt(d)} - ${fmt(cover)})</span></div>
+                </div>
+                <div class="math">= <b>${fmt(Asc)} mm²</b></div>
+                ${getBarDetailing(Asc, 'Compression (Top)')}
+            </div>`;
+
+            // Step 5: Ast
+            const Ast1 = (0.36 * fck * b * Xu_max) / (0.87 * fy);
+            const Ast2 = (Asc * fsc) / (0.87 * fy);
+            const Ast_total = Ast1 + Ast2;
+
+            html += `<div class="step doubly">
+                <h3>Step 5: Tension Steel (${variable('A','st')})</h3>
+                <div style="margin-bottom:5px; font-weight:700; color:#475569;">Part 1: Balanced Section</div>
+                <div class="math">
+                    ${variable('A','st1')} = <div class="frac"><span class="frac-top">0.36 ${variable('f','ck')} ${variable('b')} ${variable('X','u,max')}</span><span class="frac-bot">0.87 ${variable('f','y')}</span></div>
+                </div>
+                <div class="math">
+                     = <div class="frac"><span class="frac-top">0.36 × ${fmt(fck)} × ${fmt(b)} × ${fmt(Xu_max)}</span><span class="frac-bot">0.87 × ${fmt(fy)}</span></div> = ${fmt(Ast1)} mm²
+                </div>
+                
+                <div style="margin:15px 0 5px 0; font-weight:700; color:#475569;">Part 2: Excess Moment</div>
+                <div class="math">
+                    ${variable('A','st2')} = <div class="frac"><span class="frac-top">${variable('A','sc')} ${variable('f','sc')}</span><span class="frac-bot">0.87 ${variable('f','y')}</span></div>
+                </div>
+                <div class="math">
+                     = <div class="frac"><span class="frac-top">${fmt(Asc)} × ${fmt(fsc)}</span><span class="frac-bot">0.87 × ${fmt(fy)}</span></div> = ${fmt(Ast2)} mm²
+                </div>
+
+                <div class="math">Total ${variable('A','st')} = ${fmt(Ast1)} + ${fmt(Ast2)} = <b>${fmt(Ast_total)} mm²</b></div>
+                ${getBarDetailing(Ast_total, 'Tension (Bottom)')}
+            </div>`;
+        }
+
+        document.getElementById('results').innerHTML = html;
+        document.getElementById('results').scrollIntoView({behavior:'smooth'});
+    }
+</script>
+
+</body>
+</html>
+

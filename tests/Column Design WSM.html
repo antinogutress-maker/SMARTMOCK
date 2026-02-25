@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loksewa Column Design (Professional)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #2980b9;
+            --paper-bg: #fffbf0; 
+            --ink-color: #000000;
+            --fail-color: #c0392b;
+            --pass-color: #27ae60;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #e4e7e6;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        /* HEADER */
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+        
+        h1 { margin: 0; font-size: 1.8rem; letter-spacing: 0.5px; }
+
+        /* CARDS */
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+
+        /* INPUTS */
+        label { font-weight: 700; color: var(--primary); display: block; margin-top: 18px; font-size: 0.95rem; }
+        input, select {
+            width: 100%; padding: 14px; margin-top: 8px;
+            border: 2px solid #e0e0e0; border-radius: 8px; box-sizing: border-box; font-size: 15px;
+            white-space: normal; background-color: #fafafa; transition: 0.3s;
+        }
+        input:focus, select:focus { border-color: var(--secondary); background-color: #fff; outline: none; }
+        option { font-size: 14px; padding: 10px; border-bottom: 1px solid #eee; }
+
+        /* BUTTONS */
+        .btn {
+            width: 100%; padding: 16px; border: none; border-radius: 8px;
+            font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 20px;
+            text-transform: uppercase; transition: transform 0.1s, box-shadow 0.2s; letter-spacing: 0.5px;
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn-calc { background-color: var(--secondary); color: white; box-shadow: 0 4px 10px rgba(41, 128, 185, 0.3); }
+        .btn-group { background-color: #27ae60; color: white; box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3); }
+        .btn-back { background-color: #7f8c8d; color: white; }
+        .btn-copy { background-color: white; border: 2px solid #27ae60; color: #27ae60; }
+
+        /* CALC SHEET */
+        .calc-sheet {
+            background-color: var(--paper-bg);
+            border: 1px solid #dcdcdc;
+            padding: 30px;
+            font-family: 'Times New Roman', Times, serif; 
+            font-size: 1.15rem;
+            line-height: 1.6;
+            color: var(--ink-color);
+            border-left: 6px solid var(--secondary);
+            border-radius: 4px;
+        }
+
+        .step-title {
+            font-family: 'Roboto', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--secondary);
+            text-decoration: underline;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .step-title:first-child { margin-top: 0; }
+
+        .math-line { display: block; margin-bottom: 8px; padding-left: 10px; }
+        .sub { vertical-align: sub; font-size: 0.7em; }
+        .sup { vertical-align: super; font-size: 0.7em; }
+
+        .result-highlight {
+            background-color: rgba(39, 174, 96, 0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: var(--pass-color);
+            border: 1px solid var(--pass-color);
+        }
+        
+        .fail-box {
+            background-color: rgba(192, 57, 43, 0.08);
+            border-left: 4px solid var(--fail-color);
+            padding: 10px;
+            margin: 10px 0;
+            color: #800;
+            font-size: 0.95em;
+        }
+
+        .note-box {
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 25px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.95rem;
+            display: none; 
+            line-height: 1.5;
+        }
+
+        .link-display {
+            background: #f1f2f6; padding: 12px; text-align: center;
+            font-family: monospace; border-radius: 6px; margin: 15px 0;
+            word-break: break-all; border: 1px dashed #bdc3c7;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1 style="margin:0;">Column Design Solver</h1>
+        <p style="margin:8px 0 0; opacity:0.9; font-weight:300;">Loksewa Sub-Engineer Tool</p>
+    </header>
+
+    <div id="inputPage">
+        <div class="card">
+            <label>1. Axial Load (P) in KN</label>
+            <input type="number" id="load" placeholder="Example: 850">
+
+            <label>2. Unsupported Length (L) in Metres</label>
+            <input type="number" id="length" step="0.1" placeholder="Example: 5.0">
+
+            <label>3. End Conditions (IS 456 Table 28)</label>
+            <select id="endCondition">
+                <option value="0.65">Effectively held in position and restrained against rotation in both ends (0.65 L)</option>
+                <option value="0.80">Effectively held in position at both ends, restrained against rotation at one end (0.80 L)</option>
+                <option value="1.00">Effectively held in position at both ends, but not restrained against rotation (1.00 L)</option>
+                <option value="2.00">Effectively held in position and restrained against rotation at one end but not held in position nor restrained against rotation at the other end (2.00 L)</option>
+            </select>
+
+            <label>4. Concrete Grade</label>
+            <select id="concreteGrade">
+                <option value="4">M15 (σcc = 4 N/mm²)</option>
+                <option value="5">M20 (σcc = 5 N/mm²)</option>
+                <option value="6">M25 (σcc = 6 N/mm²)</option>
+            </select>
+
+            <label>5. Steel Grade</label>
+            <select id="steelGrade">
+                <option value="130">Mild Steel Fe250 (σsc = 130)</option>
+                <option value="190">HYSD Fe415/500 (σsc = 190)</option>
+            </select>
+
+            <button class="btn btn-calc" onclick="calculateDesign()">Calculate Design</button>
+            <button class="btn btn-group" onclick="showGroup()">Join Study Group</button>
+        </div>
+    </div>
+
+    <div id="outputPage" style="display:none;">
+        <div class="card">
+            <h2 style="margin-top:0; text-align:center; color:var(--primary);">Design Calculations</h2>
+            <div id="resultsArea" class="calc-sheet">
+                </div>
+            <button class="btn btn-back" onclick="goBack()">Back to Home</button>
+        </div>
+    </div>
+
+    <div id="groupPage" style="display:none;">
+        <div class="card" style="text-align:center;">
+            <div style="font-size:3rem; margin-bottom:10px;">📢</div>
+            <h2 style="color:var(--primary);">Join Loksewa Group</h2>
+            <p style="color:#666;">Get daily notes, MCQs, and discuss doubts with fellow Sub-Engineers.</p>
+            <div class="link-display" id="waLink">https://chat.whatsapp.com/GpMpVmBo71RBZqLOf1l4PM?mode=gi_t</div>
+            <button class="btn btn-copy" onclick="copyLink()">📋 Copy Link</button>
+            <a href="https://chat.whatsapp.com/GpMpVmBo71RBZqLOf1l4PM?mode=gi_t" target="_blank" style="text-decoration:none;">
+                <button class="btn btn-group">🚀 Direct Join (WhatsApp)</button>
+            </a>
+            <button class="btn btn-back" onclick="goBack()">Back</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function calculateDesign() {
+        // 1. Fetch Values
+        const P_kn = parseFloat(document.getElementById('load').value);
+        const L_m = parseFloat(document.getElementById('length').value);
+        const K = parseFloat(document.getElementById('endCondition').value);
+        const sig_cc = parseFloat(document.getElementById('concreteGrade').value);
+        const sig_sc = parseFloat(document.getElementById('steelGrade').value);
+
+        if (!P_kn || !L_m) { alert("Please enter Load and Length!"); return; }
+
+        const P_N = P_kn * 1000;
+        const L_mm = L_m * 1000;
+        let html = "";
+
+        // --- STEP 1 ---
+        const Leff = K * L_mm;
+        html += `<span class="step-title">Step 1: Given Data & Effective Length</span>`;
+        html += `<div class="math-line">Load (P) = ${P_kn} KN = ${P_N} N</div>`;
+        html += `<div class="math-line">Length (L) = ${L_m} m = ${L_mm} mm</div>`;
+        html += `<div class="math-line">Effective Length (L<span class="sub">eff</span>) = K × L</div>`;
+        html += `<div class="math-line">= ${K} × ${L_mm}</div>`;
+        html += `<div class="math-line">= <b>${Leff.toFixed(0)} mm</b></div>`;
+
+        // --- STEP 2 ---
+        html += `<span class="step-title">Step 2: Determine Size of Column</span>`;
+        html += `<div class="math-line">Assume Percentage of steel = 1%</div>`;
+        html += `<div class="math-line">So, A<span class="sub">sc</span> = 0.01 A<span class="sub">g</span> and A<span class="sub">c</span> = 0.99 A<span class="sub">g</span></div>`;
+        html += `<br><div class="math-line"><strong>Load Formula:</strong></div>`;
+        html += `<div class="math-line">P = σ<span class="sub">cc</span>A<span class="sub">c</span> + σ<span class="sub">sc</span>A<span class="sub">sc</span></div>`;
+        html += `<div class="math-line">${P_N} = ${sig_cc} × (0.99 A<span class="sub">g</span>) + ${sig_sc} × (0.01 A<span class="sub">g</span>)</div>`;
+        
+        let val1 = (sig_cc * 0.99);
+        let val2 = (sig_sc * 0.01);
+        let total_factor = val1 + val2;
+
+        html += `<div class="math-line">${P_N} = ${total_factor.toFixed(3)} A<span class="sub">g</span></div>`;
+        
+        let Ag_req = P_N / total_factor;
+        html += `<div class="math-line">A<span class="sub">g</span> = ${P_N} / ${total_factor.toFixed(3)} = ${Ag_req.toFixed(2)} mm<span class="sup">2</span></div>`;
+
+        let b_calc = Math.sqrt(Ag_req);
+        html += `<br><div class="math-line">For Square Column, Side (b) = √A<span class="sub">g</span></div>`;
+        html += `<div class="math-line">b = √${Ag_req.toFixed(2)} = ${b_calc.toFixed(2)} mm</div>`;
+
+        let b_prov = Math.ceil(b_calc / 10) * 10;
+        if(b_prov < 200) b_prov = 200;
+        let initial_b = b_prov; 
+        
+        html += `<div class="math-line">Rounding up to nearest 10mm:</div>`;
+        html += `<div class="math-line"><b>Provide Trial Section: ${b_prov} mm × ${b_prov} mm</b></div>`;
+
+        // --- STEP 3 ---
+        let lambda = Leff / b_prov;
+        let isLong = lambda > 12;
+        
+        html += `<span class="step-title">Step 3: Slenderness Ratio Check</span>`;
+        html += `<div class="math-line">Slenderness Ratio (λ) = L<span class="sub">eff</span> / b</div>`;
+        html += `<div class="math-line">λ = ${Leff} / ${b_prov}</div>`;
+        html += `<div class="math-line">λ = <b>${lambda.toFixed(2)}</b></div>`;
+        
+        let Cr = 1.0;
+        if(isLong) {
+            html += `<div class="math-line" style="color:#c0392b">Since λ > 12, it is a <strong>LONG COLUMN</strong>.</div>`;
+            html += `<br><div class="math-line">Calculate Reduction Factor (C<span class="sub">r</span>):</div>`;
+            html += `<div class="math-line">C<span class="sub">r</span> = 1.25 - (L<span class="sub">eff</span> / 48b)</div>`;
+            let reductionPart = Leff / (48 * b_prov);
+            html += `<div class="math-line">C<span class="sub">r</span> = 1.25 - (${Leff} / (48 × ${b_prov}))</div>`;
+            Cr = 1.25 - reductionPart;
+            if(Cr > 1) Cr = 1; 
+            html += `<div class="math-line">C<span class="sub">r</span> = <b>${Cr.toFixed(3)}</b></div>`;
+        } else {
+            html += `<div class="math-line" style="color:#27ae60">Since λ < 12, it is a <strong>SHORT COLUMN</strong>.</div>`;
+            html += `<div class="math-line">Reduction factor not required (C<span class="sub">r</span> = 1).</div>`;
+        }
+
+        // --- STEP 4 (LOOP WITH DETAILED FAILURE) ---
+        html += `<span class="step-title">Step 4: Minimum Eccentricity Check</span>`;
+        
+        let safe = false;
+        let iteration = 0;
+        let failedOnce = false;
+
+        while(!safe && iteration < 50) {
+            let emin = (L_mm/500) + (b_prov/30);
+            if(emin < 20) emin = 20;
+            let perm = 0.05 * b_prov;
+            
+            if(emin <= perm) {
+                safe = true;
+            } else { 
+                failedOnce = true;
+                if(iteration === 0) {
+                   html += `<div class="fail-box">`;
+                   html += `<strong>Trial 1 (Size: ${b_prov}mm):</strong><br>`;
+                   html += `e<span class="sub">min</span> = ${L_mm}/500 + ${b_prov}/30 = ${((L_mm/500)+(b_prov/30)).toFixed(2)} mm<br>`;
+                   html += `(Take e<span class="sub">min</span> = ${emin.toFixed(2)} mm)<br>`;
+                   html += `Permissible = 0.05 × ${b_prov} = ${perm.toFixed(2)} mm<br>`;
+                   html += `Condition: ${emin.toFixed(2)} > ${perm.toFixed(2)} → <strong>UNSAFE!</strong><br>`;
+                   html += `<em>Action: Increasing size...</em>`;
+                   html += `</div>`;
+                }
+                b_prov += 10; 
+                // Recalculate Cr because 'b' changed!
+                if(Leff/b_prov > 12) Cr = 1.25 - (Leff / (48 * b_prov));
+                else Cr = 1.0;
+            }
+            iteration++;
+        }
+
+        let emin_final = (L_mm/500) + (b_prov/30);
+        let emin_calc_val = emin_final; 
+        if(emin_final < 20) emin_final = 20;
+        let perm_final = 0.05 * b_prov;
+
+        html += `<div class="math-line"><strong>Final Check for Size ${b_prov} mm:</strong></div>`;
+        html += `<div class="math-line">e<span class="sub">min</span> = ${L_mm}/500 + ${b_prov}/30</div>`;
+        html += `<div class="math-line">= ${(L_mm/500).toFixed(2)} + ${(b_prov/30).toFixed(2)} = ${emin_calc_val.toFixed(2)} mm</div>`;
+        
+        if(emin_calc_val < 20) {
+             html += `<div class="math-line">(Since value < 20mm, adopt e<span class="sub">min</span> = 20mm)</div>`;
+        }
+
+        html += `<div class="math-line">Permissible = 0.05 × ${b_prov} = <strong>${perm_final.toFixed(2)} mm</strong></div>`;
+        html += `<div class="math-line" style="color:#27ae60; font-weight:bold; margin-top:5px;">Since ${emin_final.toFixed(2)} ≤ ${perm_final.toFixed(2)}, Design is SAFE.</div>`;
+
+        // --- STEP 5 ---
+        html += `<span class="step-title">Step 5: Longitudinal Reinforcement</span>`;
+        let Ag_final = b_prov * b_prov;
+        
+        html += `<div class="math-line">Final Section: ${b_prov}mm × ${b_prov}mm (A<span class="sub">g</span> = ${Ag_final} mm<span class="sup">2</span>)</div>`;
+        html += `<div class="math-line">Final Reduction Factor (C<span class="sub">r</span>) = ${Cr.toFixed(3)}</div>`;
+
+        html += `<br><div class="math-line"><strong>Calculation Logic for A<span class="sub">sc</span>:</strong></div>`;
+        html += `<div class="math-line">We know, Total Area A<span class="sub">g</span> = A<span class="sub">c</span> + A<span class="sub">sc</span></div>`;
+        html += `<div class="math-line">Therefore, <strong>A<span class="sub">c</span> = A<span class="sub">g</span> - A<span class="sub">sc</span></strong></div>`;
+        html += `<div class="math-line">Load Formula: P = C<span class="sub">r</span> [ σ<span class="sub">cc</span>(A<span class="sub">g</span> - A<span class="sub">sc</span>) + σ<span class="sub">sc</span>A<span class="sub">sc</span> ]</div>`;
+        html += `<div class="math-line">Rearranging: A<span class="sub">sc</span> = [ (P/C<span class="sub">r</span>) - σ<span class="sub">cc</span>A<span class="sub">g</span> ] / (σ<span class="sub">sc</span> - σ<span class="sub">cc</span>)</div>`;
+
+        let P_adjusted = P_N / Cr;
+        let num = P_adjusted - (sig_cc * Ag_final);
+        let den = sig_sc - sig_cc;
+        let Asc_calc = num / den;
+
+        html += `<br><div class="math-line">A<span class="sub">sc</span> = [ ${P_adjusted.toFixed(0)} - (${sig_cc}×${Ag_final}) ] / (${sig_sc} - ${sig_cc})</div>`;
+        
+        // Handle Negative Calculation Display
+        if (Asc_calc < 0) {
+            html += `<div class="math-line" style="color:#c0392b; font-weight:bold;">A<span class="sub">sc</span> (calculated) = ${Asc_calc.toFixed(2)} mm<span class="sup">2</span> (Negative!)</div>`;
+            html += `<div class="math-line" style="font-size:0.9em; background-color:#fce4e4; padding:5px; border-left:3px solid #c0392b;">
+                <strong>Explanation:</strong> The negative value means the concrete section (${b_prov}×${b_prov}) is HUGE and strong enough to carry the load alone without any steel. 
+                <br>So, theoretical steel needed is ZERO.
+            </div>`;
+        } else {
+            html += `<div class="math-line">A<span class="sub">sc</span> (calculated) = <b>${Asc_calc.toFixed(2)} mm<span class="sup">2</span></b></div>`;
+        }
+
+        // Min Steel
+        let min_st = 0.008 * Ag_final;
+        html += `<br><div class="math-line"><strong>Check Minimum Steel (0.8%):</strong></div>`;
+        html += `<div class="math-line">= 0.008 × A<span class="sub">g</span> = 0.008 × ${Ag_final}</div>`;
+        html += `<div class="math-line">= ${min_st.toFixed(2)} mm<span class="sup">2</span></div>`;
+
+        let Asc_final = Math.max(Asc_calc, min_st);
+        let remark = "";
+        
+        // LOGIC FOR CHOOSING GREATER VALUE
+        if (Asc_calc < 0) {
+             remark = "Since Calculated Steel is Negative (Not needed), we Provide <b>Minimum Steel</b>.";
+        } else if (Asc_calc < min_st) {
+            remark = "Since Calculated Area < Minimum Area, we Provide <b>Minimum Steel</b>.";
+        } else {
+            remark = "Since Calculated Area > Minimum Area, we Provide <b>Calculated Steel</b>.";
+        }
+        
+        html += `<div class="result-highlight" style="margin-top:10px; display:inline-block;">Required A<span class="sub">sc</span> = ${Asc_final.toFixed(2)} mm<span class="sup">2</span></div>`;
+        html += `<div class="math-line" style="font-size:0.95em; color:#444; margin-top:5px;">(${remark})</div>`;
+
+        // Bar Numbers
+        html += `<br><div class="math-line"><strong>Number of Bars:</strong></div>`;
+        let bar_dia = 16;
+        let ast1 = (Math.PI * Math.pow(bar_dia,2))/4;
+        let n = Math.ceil(Asc_final / ast1);
+        
+        if(n > 8) {
+            bar_dia = 20;
+            ast1 = (Math.PI * Math.pow(bar_dia,2))/4;
+            n = Math.ceil(Asc_final / ast1);
+        }
+        if(n < 4) n = 4;
+        if(n % 2 !== 0) n++; // Even
+
+        html += `<div class="math-line">Using ${bar_dia} mm φ bars (Area = ${ast1.toFixed(1)} mm<span class="sup">2</span>)</div>`;
+        html += `<div class="math-line">No. = ${Asc_final.toFixed(1)} / ${ast1.toFixed(1)} = ${(Asc_final/ast1).toFixed(2)}</div>`;
+        html += `<div class="math-line"><strong>Provide ${n} nos of ${bar_dia} mm φ bars.</strong></div>`;
+
+        // --- STEP 6 ---
+        html += `<span class="step-title">Step 6: Lateral Ties Design</span>`;
+        let tie_dia = (bar_dia/4) > 6 ? 8 : 6;
+        html += `<div class="math-line"><strong>1. Diameter:</strong></div>`;
+        html += `<div class="math-line">Max of (1/4 × φ<span class="sub">long</span> , 6mm)</div>`;
+        html += `<div class="math-line">= Max(${bar_dia}/4, 6) = Max(${bar_dia/4}, 6)</div>`;
+        html += `<div class="math-line">Provide <b>${tie_dia} mm</b> φ mild steel ties.</div>`;
+
+        let p1 = b_prov;
+        let p2 = 16 * bar_dia;
+        let p3 = 300;
+        let pitch = Math.min(p1, p2, p3);
+
+        html += `<br><div class="math-line"><strong>2. Pitch (Spacing):</strong> Minimum of:</div>`;
+        html += `<div class="math-line">a) Least Lateral Dim = ${p1} mm</div>`;
+        html += `<div class="math-line">b) 16 × φ<span class="sub">long</span> = 16 × ${bar_dia} = ${p2} mm</div>`;
+        html += `<div class="math-line">c) 300 mm</div>`;
+        html += `<div class="math-line"><strong>Provide Pitch = ${pitch} mm c/c</strong></div>`;
+
+        // --- EXAM NOTE (CONDITIONAL) ---
+        if(failedOnce) {
+            html += `<div class="note-box" style="display:block;">
+                <strong>💡 EXAM NOTE FOR STUDENTS:</strong><br>
+                The computer increased the size in small steps (10mm each time) to find the most economical size (${b_prov}mm). 
+                <br>However, in your exam, since your trial size failed the eccentricity check, 
+                <strong>directly increase the size by 20% to 30%</strong>. This saves you calculation time!
+            </div>`;
+        }
+
+        document.getElementById('resultsArea').innerHTML = html;
+        document.getElementById('inputPage').style.display = 'none';
+        document.getElementById('outputPage').style.display = 'block';
+        window.scrollTo(0,0);
+    }
+
+    function showGroup() {
+        document.getElementById('inputPage').style.display = 'none';
+        document.getElementById('groupPage').style.display = 'block';
+    }
+
+    function goBack() {
+        document.getElementById('inputPage').style.display = 'block';
+        document.getElementById('outputPage').style.display = 'none';
+        document.getElementById('groupPage').style.display = 'none';
+    }
+
+    function copyLink() {
+        const link = document.getElementById('waLink').innerText;
+        navigator.clipboard.writeText(link).then(() => alert("Link Copied!"));
+    }
+</script>
+
+</body>
+</html>
