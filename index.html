@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loksewa Exam Prep - GK & Numerical</title>
+    <title>Loksewa Exam Prep - GK, Numerical & Smart Mocks</title>
     <style>
         /* --- CSS: Kept your modern styling --- */
         :root {
@@ -82,11 +82,12 @@
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            border-left: 5px solid var(--primary-color);
+            border-left: 5px solid var(--primary-color); /* Default Blue for GK */
         }
 
-        /* Numerical cards get a different border color for visual distinction */
-        .quiz-card.numerical { border-left-color: #10b981; } 
+        /* Color Coding for different categories */
+        .quiz-card.numerical { border-left-color: #10b981; } /* Green */
+        .quiz-card.smart { border-left-color: #8b5cf6; } /* Purple for Smart Mocks */
 
         .quiz-card:hover {
             transform: translateY(-5px);
@@ -118,13 +119,14 @@
 
     <header>
         <h1>Loksewa Exam Hub</h1>
-        <p>Prepare with GK and Numerical Mock Tests</p>
+        <p>Prepare with Smart Mocks, GK, and Numericals</p>
     </header>
 
     <div class="container">
         <div class="filter-container">
             <select id="categoryFilter">
                 <option value="all">Show All Tests</option>
+                <option value="smart">Daily Smart Mock Test Series</option>
                 <option value="numerical">Numerical Reasoning</option>
                 <option value="gk">General Knowledge (GK)</option>
             </select>
@@ -147,10 +149,14 @@
 
         function formatTitle(filename) {
             let name = filename.replace('.html', '');
-            // Handle GK prefix specifically for better display
+            
+            // Clean up prefixes for better display
             if(name.toLowerCase().startsWith('gk')) {
                 name = "GK: " + name.substring(2);
+            } else if (name.toLowerCase().startsWith('smart')) {
+                name = "Smart Mock: " + name.substring(5);
             }
+            
             name = name.replace(/[-_]/g, ' '); 
             return name.replace(/\b\w/g, char => char.toUpperCase()); 
         }
@@ -164,14 +170,11 @@
                 const files = await response.json();
                 let fetchedFiles = files.filter(file => file.name.endsWith('.html'));
 
-                // --- SORTING LOGIC: Numericals First ---
+                // --- RECENT AT TOP LOGIC ---
+                // GitHub API doesn't send "upload dates", so we sort by file name descending.
+                // numeric: true ensures "Test 10" is sorted above "Test 2".
                 allQuizzes = fetchedFiles.sort((a, b) => {
-                    const aIsGk = a.name.toLowerCase().startsWith('gk');
-                    const bIsGk = b.name.toLowerCase().startsWith('gk');
-
-                    if (!aIsGk && bIsGk) return -1; // Numerical (a) comes before GK (b)
-                    if (aIsGk && !bIsGk) return 1;  // GK (a) comes after Numerical (b)
-                    return a.name.localeCompare(b.name); // Alpha sort within same category
+                    return b.name.localeCompare(a.name, undefined, { numeric: true, sensitivity: 'base' });
                 });
 
                 if (allQuizzes.length === 0) {
@@ -194,12 +197,21 @@
             container.innerHTML = ''; 
 
             quizArray.forEach((file, index) => {
-                const isGk = file.name.toLowerCase().startsWith('gk');
+                const nameLower = file.name.toLowerCase();
+                const isSmart = nameLower.startsWith('smart');
+                const isGk = nameLower.startsWith('gk');
+                const isNumerical = !isSmart && !isGk; 
+                
                 const formattedName = formatTitle(file.name);
                 
                 const card = document.createElement('a');
-                // Added "numerical" class for different styling if needed
-                card.className = `quiz-card ${!isGk ? 'numerical' : ''}`;
+                
+                // Assign the correct color class based on category
+                let cardClass = 'quiz-card ';
+                if (isSmart) cardClass += 'smart';
+                else if (isNumerical) cardClass += 'numerical';
+                
+                card.className = cardClass;
                 card.href = `${FOLDER_PATH}/${file.name}`; 
 
                 card.innerHTML = `
@@ -211,16 +223,20 @@
             });
         }
 
-        // --- FILTER LOGIC: GK vs Numerical ---
+        // --- FILTER LOGIC ---
         categoryFilter.addEventListener('change', (e) => {
             const selected = e.target.value;
             
             const filteredQuizzes = allQuizzes.filter(file => {
-                const isGk = file.name.toLowerCase().startsWith('gk');
+                const nameLower = file.name.toLowerCase();
+                const isSmart = nameLower.startsWith('smart');
+                const isGk = nameLower.startsWith('gk');
+                const isNumerical = !isSmart && !isGk; 
                 
                 if (selected === 'all') return true;
+                if (selected === 'smart') return isSmart;
                 if (selected === 'gk') return isGk;
-                if (selected === 'numerical') return !isGk;
+                if (selected === 'numerical') return isNumerical;
             });
 
             renderQuizzes(filteredQuizzes);
