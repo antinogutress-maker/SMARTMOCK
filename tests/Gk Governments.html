@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nepal Governance Expert Quiz</title>
+    <style>
+        /* रङ मनोविज्ञान: Navy (विश्वास), Gold (उपलब्धि), Emerald (सफलता) */
+        :root {
+            --navy: #0f172a;
+            --gold: #ca8a04;
+            --correct: #10b981;
+            --wrong: #ef4444;
+            --card-bg: #ffffff;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body {
+            background: var(--navy);
+            color: #1e293b;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; overflow: hidden;
+        }
+        .container {
+            width: 95%; max-width: 600px; background: var(--card-bg);
+            padding: 25px; border-radius: 20px; position: relative; z-index: 10;
+            max-height: 95vh; display: flex; flex-direction: column;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+        .header { text-align: center; margin-bottom: 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; }
+        .stats { display: flex; justify-content: space-between; font-weight: bold; font-size: 0.9rem; color: #64748b; }
+        .timer { color: #b45309; background: #fffbeb; padding: 4px 12px; border-radius: 20px; border: 1px solid #f59e0b; }
+        
+        #quiz-ui { overflow-y: auto; flex-grow: 1; }
+        .q-text { font-size: 1.3rem; font-weight: bold; margin: 15px 0; line-height: 1.5; color: var(--navy); }
+        
+        .opt-btn {
+            display: block; width: 100%; padding: 15px; margin-bottom: 10px;
+            text-align: left; background: #f8fafc; border: 1.5px solid #e2e8f0;
+            border-radius: 12px; font-size: 1.05rem; cursor: pointer; transition: 0.2s;
+        }
+        .opt-btn:hover { border-color: var(--gold); background: #fefce8; }
+        .correct { background: var(--correct) !important; color: white; border-color: #059669; }
+        .wrong { background: var(--wrong) !important; color: white; border-color: #b91c1c; }
+        .locked { pointer-events: none; }
+        
+        .info-box {
+            margin-top: 15px; padding: 15px; background: #f0f9ff;
+            border-left: 5px solid #0ea5e9; border-radius: 8px;
+            font-size: 1rem; color: #0369a1; display: none;
+        }
+        .footer { text-align: right; margin-top: 15px; height: 50px; }
+        #next-btn {
+            padding: 12px 35px; background: var(--navy); color: white;
+            border: none; border-radius: 50px; cursor: pointer; display: none; font-size: 1rem;
+        }
+        
+        #result-screen { display: none; text-align: center; overflow-y: auto; }
+        .score-circle { 
+            width: 140px; height: 140px; border-radius: 50%; background: var(--gold); 
+            color: white; display: flex; flex-direction: column; justify-content: center; 
+            margin: 20px auto; font-size: 2.5rem; font-weight: 900; 
+        }
+        .mistake-card { background: #fff1f2; padding: 15px; margin-top: 10px; border-left: 5px solid var(--wrong); text-align: left; border-radius: 8px; }
+        
+        #canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 99; }
+    </style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<div class="container">
+    <div id="quiz-ui">
+        <div class="header">
+            <h2 style="color:var(--gold); font-size: 1.1rem;">Nepal Governance Quiz</h2>
+            <div class="stats">
+                <span id="prog">प्रश्न: 1/45</span>
+                <span id="timer" class="timer">40:00</span>
+            </div>
+        </div>
+        <div class="q-text" id="q-txt">लोड हुँदैछ...</div>
+        <div id="opt-box"></div>
+        <div id="info-box" class="info-box"></div>
+        <div class="footer">
+            <button id="next-btn" onclick="nextQ()">अर्को प्रश्न ➜</button>
+        </div>
+    </div>
+
+    <div id="result-screen">
+        <h2 style="color: var(--navy);">नतिजा कार्ड</h2>
+        <div class="score-circle"><div id="score-val">0</div></div>
+        <h3 id="acc-pct">Accuracy: 0%</h3>
+        
+        <div id="retry-area">
+            <button id="retry-wrong-btn" onclick="retryWrong()" style="margin-top:20px; padding:15px; width:100%; background:var(--wrong); color:white; border:none; border-radius:12px; font-weight:bold; cursor:pointer; display:none;">
+                गलत भएका प्रश्नहरू मात्र पुनः प्रयास गर्नुहोस् ➜
+            </button>
+        </div>
+        
+        <button onclick="location.reload()" style="margin-top:15px; padding:12px; width:100%; background:var(--navy); color:white; border:none; border-radius:12px; cursor:pointer;">सुरु देखि खेल्नुहोस्</button>
+        
+        <div id="review-list" style="margin-top: 25px;"></div>
+    </div>
+</div>
+
+<script>
+    // --- RAW DATA (Correct answer strings for logic) ---
+    var rawData = [
+        { q: "१. नेपालको संविधानको धारा २३२ अनुसार संघ, प्रदेश र स्थानीय तह बीचको सम्बन्ध कुन तीन सिद्धान्तमा आधारित हुनेछ?", c: "सहकार्य, सहअस्तित्व र समन्वय", d: ["नियन्त्रण, निर्देशन र समन्वय", "प्रतिस्पर्धा र स्वायत्तता", "सन्तुलन र समन्वय"], info: "Cooperation, Coexistence and Coordination" },
+        { q: "२. प्रदेश सभालाई बढीमा ६ महिनासम्म निलम्बन वा विघटन गर्ने अधिकार कसलाई छ?", c: "राष्ट्रपति", d: ["प्रधानमन्त्री", "प्रधानन्यायाधीश", "सभामुख"], info: "धारा २३२-३ अनुसार राष्ट्रपतिलाई यो अधिकार छ।" },
+        { q: "३. नेपालको राज्य शक्तिको प्रयोग कसले गर्ने व्यवस्था संविधानको धारा ५६ मा छ?", c: "संघ, प्रदेश र स्थानीय तहले", d: ["नेपाल सरकारले मात्र", "संघ र प्रदेशले", "जनताले मात्र"], info: "राज्य शक्ति तीनवटै तहले प्रयोग गर्छन्।" },
+        { q: "४. संविधानको अनुसूची-६ अनुसार 'प्रदेशको एकल अधिकार' सूचीमा कतिवटा विषयहरू रहेका छन्?", c: "२१ वटा", d: ["३५ वटा", "२५ वटा", "२२ वटा"], info: "प्रदेशको एकल अधिकार सूचीमा २१ वटा विषय छन्।" },
+        { q: "५. 'स्थानीय तहको अधिकार सूची' (अनुसूची-८) मा कतिवटा विषयहरू समावेश छन्?", c: "२२ वटा", d: ["१५ वटा", "२१ वटा", "३५ वटा"], info: "स्थानीय तहको एकल अधिकार सूचीमा २२ वटा विषय छन्।" },
+        { q: "६. 'अवशिष्ट अधिकार' (Residual Powers) कुन तहको सरकारमा निहीत रहने व्यवस्था छ?", c: "संघमा (Federation)", d: ["प्रदेशमा", "स्थानीय तहमा", "साझा सूचीमा"], info: "धारा ५८: संविधानमा नलेखिएका विषय संघमा रहन्छन्।" },
+        { q: "७. तलका मध्ये कुन विषय 'प्रदेशको एकल अधिकार' (अनुसूची-६) भित्र पर्दछ?", c: "प्रदेश प्रहरी प्रशासन", d: ["सहकारी संस्था", "माध्यमिक शिक्षा", "घर जग्गा धनी पुर्जा"], info: "प्रदेश प्रहरी र शान्ति सुरक्षा प्रदेशको अधिकार हो।" },
+        { q: "८. 'आधारभूत र माध्यमिक शिक्षा' कुन तहको अधिकार सूचीमा पर्दछ?", c: "स्थानीय तहको अधिकार", d: ["संघको अधिकार", "प्रदेशको अधिकार", "साझा अधिकार"], info: "अनुसूची-८ अनुसार यो स्थानीय तहको अधिकार हो।" },
+        { q: "९. नेपालको शासकीय स्वरूप (Form of Governance) कस्तो हुनेछ?", c: "संसदीय शासन प्रणाली", d: ["राष्ट्रपति प्रणाली", "राजतन्त्रात्मक प्रणाली", "एकदलीय प्रणाली"], info: "बहुलवादमा आधारित बहुदलीय संसदीय शासन प्रणाली।" },
+        { q: "१०. नेपालको कार्यकारी अधिकार (Executive Power) कसमा निहीत रहेको छ?", c: "मन्त्रिपरिषद्मा", d: ["राष्ट्रपतिमा", "प्रधानमन्त्रीमा", "संसदमा"], info: "धारा ७५: कार्यकारिणी अधिकार मन्त्रिपरिषद्मा निहीत हुनेछ।" },
+        { q: "११. प्रदेशमा नेपाल सरकारको प्रतिनिधिको रूपमा रहने 'प्रदेश प्रमुख' को नियुक्ति कसले गर्दछ?", c: "राष्ट्रपति", d: ["प्रधानमन्त्री", "मुख्यमन्त्री", "सभामुख"], info: "राष्ट्रपतिले प्रदेश प्रमुखको नियुक्ति गर्छन्।" },
+        { q: "१२. प्रदेश मन्त्रिपरिषद् गठन गर्दा प्रदेश सभाको कुल सदस्य संख्याको कति प्रतिशत भन्दा बढी हुन नहुने व्यवस्था छ?", c: "२० प्रतिशत", d: ["१० प्रतिशत", "१५ प्रतिशत", "२५ प्रतिशत"], info: "धारा १६८-९ अनुसार बढीमा २० प्रतिशत।" },
+        { q: "१३. नेपाललाई 'धर्मनिरपेक्ष' राज्य भन्नाले के बुझिन्छ?", c: "सनातन देखि चलिआएको धर्म संस्कृतिको संरक्षण", d: ["धर्म नमान्ने राज्य", "हिन्दु राज्य", "क्रिश्चियन राज्य"], info: "धारा ४: धार्मिक र सांस्कृतिक स्वतन्त्रता समेत बुझाउँछ।" },
+        { q: "१४. राष्ट्रिय झण्डाको नाप र बनावट सम्बन्धी व्यवस्था संविधानको कुन अनुसूचीमा छ?", c: "अनुसूची १", d: ["अनुसूची २", "अनुसूची ३", "अनुसूची ४"], info: "अनुसूची १ मा राष्ट्रिय झण्डाको विवरण छ।" },
+        { q: "१५. नेपालको निशान छाप (Coat of Arms) कहिले संशोधन गरियो?", c: "२०७७ असार ४", d: ["२०७७ जेठ ५", "२०७२ असोज ३", "२०७४ भदौ १"], info: "लिम्पियाधुरा सहितको नक्सा राख्न दोस्रो संशोधन।" },
+        { q: "१६. नेपालको संविधानको धारा ४ अनुसार 'धर्मनिरपेक्ष' भन्नाले के बुझिन्छ?", c: "सनातन संस्कृतिको संरक्षण", d: ["धर्म नमान्ने", "समान व्यवहार", "राज्यको धर्म नहुने"], info: "सनातन धर्म संस्कृतिको संरक्षण र स्वतन्त्रता।" },
+        { q: "१७. 'गणतन्त्रात्मक व्यवस्था' मा राष्ट्रपतिको निर्वाचन कसरी गरिन्छ?", c: "निर्वाचक मण्डलद्वारा", d: ["जनताद्वारा प्रत्यक्ष", "संघीय संसदद्वारा मात्र", "प्रधानमन्त्रीद्वारा"], info: "संघीय संसद र प्रदेश सभाका सदस्यको निर्वाचक मण्डलबाट।" },
+        { q: "१८. नेपालको सार्वभौमसत्ता र राजकीय सत्ता कसमा निहीत छ?", c: "नेपाली जनतामा", d: ["राष्ट्रपतिमा", "संविधानमा", "संसदमा"], info: "धारा २: नेपाली जनतामा निहीत छ।" },
+        { q: "१९. राष्ट्रिय सभामा प्रत्येक प्रदेशबाट कम्तीमा कति जना महिला निर्वाचित हुनुपर्छ?", c: "३ जना", d: ["२ जना", "१ तिहाइ", "४ जना"], info: "प्रत्येक प्रदेशबाट ८ मध्ये ३ महिला अनिवार्य।" },
+        { q: "२०. संघीय लोकतान्त्रिक गणतन्त्र नेपालको मूल संरचना कति तहको छ?", c: "तीन तह", d: ["दुई तह", "चार तह", "पाँच तह"], info: "संघ, प्रदेश र स्थानीय गरी ३ तह।" },
+        { q: "२१. संघीय मन्त्रिपरिषद्मा बढीमा कति जना मन्त्रीहरू रहन सक्छन्?", c: "२५ जना", d: ["१५ जना", "२१ जना", "३५ जना"], info: "प्रधानमन्त्री सहित बढीमा २५ जना मन्त्री।" },
+        { q: "२२. प्रदेश सभामा 'समानुपातिक' प्रणाली मार्फत कति प्रतिशत सदस्य निर्वाचित हुन्छन्?", c: "४० प्रतिशत", d: ["३३ प्रतिशत", "५० प्रतिशत", "६० प्रतिशत"], info: "६०% प्रत्यक्ष र ४०% समानुपातिक।" },
+        { q: "२३. संघ र प्रदेश बीचको राजनीतिक विवाद समाधान गर्न कुन इजलासको व्यवस्था छ?", c: "संवैधानिक इजलास", d: ["अन्तर-प्रदेश परिषद्", "संघीय संसद", "विशेष अदालत"], info: "सर्वोच्च अदालतको संवैधानिक इजलास (धारा १३७)।" },
+        { q: "२४. नेपालमा 'स्थानीय तह' भन्नाले कुन निकायलाई जनाउँछ?", c: "गाउँपालिका, नगरपालिका र जिल्ला सभा", d: ["गाउँपालिका मात्र", "वडा कार्यालय", "नगरपालिका मात्र"], info: "पालिका र जिल्ला सभा दुवै स्थानीय तह हुन्।" },
+        { q: "२५. संघीयतामा 'अवशिष्ट अधिकार' कसमा निहीत हुन्छ?", c: "संघ", d: ["स्थानीय तह", "प्रदेश", "राष्ट्रपति"], info: "धारा ५८ बमोजिम संघमा रहन्छ।" },
+        { q: "२६. संवैधानिक आयोगहरूको पुनरावलोकन कति वर्षपछि गरिने व्यवस्था छ?", c: "१० वर्ष", d: ["५ वर्ष", "१५ वर्ष", "२० वर्ष"], info: "संविधान प्रारम्भ भएको १० वर्षपछि।" },
+        { q: "२७. राष्ट्रपतिले कसको सिफारिसमा प्रदेश प्रमुखलाई पदमुक्त गर्न सक्छन्?", c: "मन्त्रिपरिषद्", d: ["प्रधानमन्त्री", "मुख्यमन्त्री", "संसद"], info: "नेपाल सरकार (मन्त्रिपरिषद्) को सिफारिसमा।" },
+        { q: "२८. पहिलो राष्ट्रपति डा. रामवरण यादव कहिले निर्वाचित हुनुभएको थियो?", c: "२०६५ साउन ६", d: ["२०६५ जेठ १५", "२०६३ माघ १", "२०७२ असोज ३"], info: "नेपालको पहिलो राष्ट्रपति निर्वाचित मिति।" },
+        { q: "२९. नेपालको संविधानको कुन धारामा 'नेपालको राजधानी' काठमाडौँ तोकिएको छ?", c: "धारा २८८", d: ["धारा ४", "धारा ५६", "धारा २९०"], info: "धारा २८८ मा राजधानीको व्यवस्था छ।" },
+        { q: "३०. 'संवैधानिक इजलास' मा प्रधानन्यायाधीश बाहेक कति जना न्यायाधीश रहन्छन्?", c: "४ जना", d: ["३ जना", "५ जना", "७ जना"], info: "प्रधानन्यायाधीश सहित जम्मा ५ जनाको इजलास हुन्छ।" },
+        { q: "३१. नेपालमा विधिवत रूपमा 'गणतन्त्र घोषणा' कहिले गरियो?", c: "२०६५ जेठ १५", d: ["२०६३ बैशाख ११", "२०७२ असोज ३", "२०६३ मंसिर ५"], info: "पहिलो संविधान सभाको पहिलो बैठकबाट।" },
+        { q: "३२. 'नेपालको संविधान (२०७२)' कहिले जारी (Promulgation) भयो?", c: "२०७२ असोज ३", d: ["२०७२ असोज १", "२०७२ माघ ९", "२०७४ मंसिर १०"], info: "असोज ३ गते ऐतिहासिक घोषणा भयो।" },
+        { q: "३३. नेपाल सरकार र माओवादी बीच 'विस्तृत शान्ति सम्झौता' कहिले भयो?", c: "२०६३ मंसिर ५", d: ["२०६२ मंसिर १२", "२०६३ माघ १", "२०६४ चैत २८"], info: "२०६३ मंसिर ५ मा हस्ताक्षर भयो।" },
+        { q: "३४. नेपालमा '७५३ स्थानीय तह' भएको संरचना कहिलेदेखि लागू भयो?", c: "२०७३ फागुन २७", d: ["२०७४ बैशाख ३१", "२०७३ पुस २२", "२०७२ असोज ३"], info: "राजपत्रमा सूचना प्रकाशित भएको मिति।" },
+        { q: "३५. नेपालको संविधानको 'पहिलो संशोधन' कहिले भयो?", c: "२०७२ माघ ९", d: ["२०७२ असोज ३", "२०७२ फागुन १", "२०७३ साउन १९"], info: "समावेशी र निर्वाचन क्षेत्र सम्बन्धी।" },
+        { q: "३६. नेपालको निसान छापमा 'चुच्चे नक्सा' राख्न दोस्रो संशोधन कहिले भयो?", c: "२०७७ असार ४", d: ["२०७७ जेठ ५", "२०७७ जेठ ७", "२०७७ असोज ३"], info: "२०७७ असार ४ गते प्रमाणीकरण भयो।" },
+        { q: "३७. 'नेपालको अन्तरिम संविधान, २०६३' कहिले जारी गरियो?", c: "२०६३ माघ १", d: ["२०६३ जेठ ४", "२०६३ मंसिर ५", "२०६४ चैत २८"], info: "माघ १ गतेबाट लागू भएको।" },
+        { q: "३८. नेपालमा पहिलो पटक 'संविधान सभाको निर्वाचन' कहिले भयो?", c: "२०६४ चैत २८", d: ["२०७० मंसिर ४", "२०६३ माघ १", "२०६५ जेठ १५"], info: "नेपालको इतिहासमा पहिलो संविधान सभा।" },
+        { q: "३९. नेपाललाई ७ प्रदेशको संरचनामा कहिले लगियो?", c: "२०७२ असोज ३", d: ["२०७३ फागुन २७", "२०७४ भदौ ५", "२०६५ जेठ १५"], info: "संविधान जारी भएसँगै प्रदेश संरचना आयो।" },
+        { q: "४०. संघीय संरचना अनुसारको पहिलो स्थानीय निर्वाचन कहिले भयो?", c: "२०७४ बैशाख ३१", d: ["२०७४ असार १४", "२०७४ असोज २", "२०७४ मंसिर १०"], info: "पहिलो चरणको मतदान मिति।" },
+        { q: "४१. 'अन्तर-सरकारी वित्त परिषद्' को अध्यक्ष को हुने व्यवस्था छ?", c: "अर्थ मन्त्री", d: ["प्रधानमन्त्री", "गभर्नर", "योजना आयोग उपाध्यक्ष"], info: "वित्तीय बाँडफाँडका लागि अर्थमन्त्रीको अध्यक्षता।" },
+        { q: "४२. 'गाउँ सभा' र 'नगर सभा' को कार्यकाल कति वर्षको हुनेछ?", c: "५ वर्ष", d: ["४ वर्ष", "६ वर्ष", "स्थायी सभा"], info: "धारा २२५ अनुसार ५ वर्षको कार्यकाल।" },
+        { q: "४३. प्रदेश सरकारलाई 'प्रदेश लोक सेवा आयोग' गठन गर्ने अधिकार कुन धारामा छ?", c: "धारा २४४", d: ["धारा २४२", "धारा २४३", "धारा २४५"], info: "धारा २४४ ले प्रदेशलाई यो अधिकार दिएको छ।" },
+        { q: "४४. कुनै विधेयक 'अर्थ विधेयक' हो वा होइन भन्ने अन्तिम निर्णय कसको हुनेछ?", c: "सभामुख", d: ["अर्थमन्त्री", "राष्ट्रपति", "प्रधानमन्त्री"], info: "सङ्घीय संसद्मा सभामुखको निर्णय अन्तिम हुन्छ।" },
+        { q: "४५. निर्वाचन क्षेत्र निर्धारण आयोगमा कति जना सदस्य रहने व्यवस्था छ?", c: "५ जना", d: ["३ जना", "७ जना", "९ जना"], info: "धारा २८६ बमोजिम ५ जना सदस्य।" }
+    ];
+
+    var currentQuiz = [];
+    var wrongAttempted = [];
+    var isRetryMode = false;
+    var curIndex = 0, score = 0, timeLeft = 40 * 60, timerInt;
+
+    // --- बराबर वितरण र र्यान्डम स्लटिङ लजिक ---
+    function prepareQuiz(data) {
+        var slots = [];
+        // ४५ प्रश्नका लागि ११-११-११-१२ को वितरण
+        for(var i=0; i<45; i++) slots.push(i % 4);
+        slots.sort(function() { return 0.5 - Math.random(); });
+
+        return data.map(function(item, idx) {
+            var correctSlot = slots[idx % slots.length];
+            var options = ["", "", "", ""];
+            options[correctSlot] = item.c;
+            
+            var dCount = 0;
+            for(var j=0; j<4; j++) {
+                if(j !== correctSlot) {
+                    options[j] = item.d[dCount];
+                    dCount++;
+                }
+            }
+            return { q: item.q, o: options, ai: correctSlot, info: item.info, rawCorrect: item.c };
+        }).sort(function() { return 0.5 - Math.random(); });
+    }
+
+    function init() {
+        currentQuiz = prepareQuiz(rawData);
+        renderQ();
+        startTimer();
+    }
+
+    function startTimer() {
+        clearInterval(timerInt);
+        timerInt = setInterval(function(){
+            timeLeft--;
+            var m = Math.floor(timeLeft/60), s = timeLeft % 60;
+            document.getElementById('timer').innerText = m + ":" + (s < 10 ? "0"+s : s);
+            if(timeLeft <= 0) finish();
+        }, 1000);
+    }
+
+    function renderQ() {
+        var q = currentQuiz[curIndex];
+        document.getElementById('q-txt').innerText = q.q;
+        document.getElementById('prog').innerText = "प्रश्न: " + (curIndex + 1) + " / " + currentQuiz.length;
+        document.getElementById('info-box').style.display = "none";
+        
+        var box = document.getElementById('opt-box');
+        box.innerHTML = "";
+        for(var i=0; i<4; i++) {
+            var b = document.createElement('button');
+            b.className = "opt-btn";
+            b.innerText = String.fromCharCode(97 + i) + ") " + q.o[i];
+            b.onclick = (function(idx){ return function(){ check(idx); } })(i);
+            box.appendChild(b);
+        }
+        document.getElementById('next-btn').style.display = "none";
+    }
+
+    function check(idx) {
+        var q = currentQuiz[curIndex];
+        var btns = document.getElementsByClassName('opt-btn');
+        for(var i=0; i<btns.length; i++) btns[i].className += " locked";
+
+        if(idx === q.ai) {
+            score++; btns[idx].className += " correct";
+            startFire();
+        } else {
+            btns[idx].className += " wrong";
+            btns[q.ai].className += " correct";
+            // गलत भएका प्रश्नहरू टिपोट गर्ने (यदि पहिले नै टिपिएको छैन भने)
+            var alreadyIn = false;
+            for(var k=0; k<wrongAttempted.length; k++) {
+                if(wrongAttempted[k].q === q.q) alreadyIn = true;
+            }
+            if(!alreadyIn) {
+                wrongAttempted.push({q: q.q, c: q.rawCorrect, d: q.o.filter(function(x){return x!==q.rawCorrect}), info: q.info});
+            }
+        }
+        
+        var info = document.getElementById('info-box');
+        info.innerHTML = "<strong>जानकारी:</strong> " + q.info;
+        info.style.display = "block";
+        document.getElementById('next-btn').style.display = "inline-block";
+    }
+
+    function nextQ() {
+        curIndex++;
+        if(curIndex < currentQuiz.length) renderQ();
+        else finish();
+    }
+
+    function retryWrong() {
+        if(wrongAttempted.length === 0) return;
+        currentQuiz = prepareQuiz(wrongAttempted);
+        wrongAttempted = []; // रिसेट
+        curIndex = 0; score = 0; timeLeft = 30 * 60; // रिसेट टाइम
+        isRetryMode = true;
+        document.getElementById('result-screen').style.display = "none";
+        document.getElementById('quiz-ui').style.display = "block";
+        renderQ();
+        startTimer();
+    }
+
+    function finish() {
+        clearInterval(timerInt);
+        document.getElementById('quiz-ui').style.display = "none";
+        document.getElementById('result-screen').style.display = "block";
+        document.getElementById('score-val').innerText = score;
+        document.getElementById('acc-pct').innerText = "Accuracy: " + Math.round(score/currentQuiz.length*100) + "%";
+        
+        if(wrongAttempted.length > 0) {
+            document.getElementById('retry-wrong-btn').style.display = "block";
+            document.getElementById('retry-wrong-btn').innerText = "गलत भएका " + wrongAttempted.length + " प्रश्नहरू पुनः प्रयास गर्नुहोस् ➜";
+        } else {
+            document.getElementById('retry-wrong-btn').style.display = "none";
+        }
+
+        var list = document.getElementById('review-list');
+        list.innerHTML = "<h4>गलत उत्तरहरूको समीक्षा:</h4>";
+        for(var i=0; i<wrongAttempted.length; i++) {
+            var d = document.createElement('div');
+            d.className = "mistake-card";
+            d.innerHTML = "<b>" + wrongAttempted[i].q + "</b><br><span style='color:green'>सही उत्तर: " + wrongAttempted[i].c + "</span>";
+            list.appendChild(d);
+        }
+    }
+
+    // --- FIREWORKS एनिमेसन ---
+    var cv = document.getElementById('canvas'), cx = cv.getContext('2d');
+    var pts = [];
+    function resz() { cv.width = window.innerWidth; cv.height = window.innerHeight; }
+    window.onresize = resz; resz();
+    function P(){
+        this.x = cv.width/2; this.y = cv.height/2;
+        this.vx = (Math.random()-0.5)*10; this.vy = (Math.random()-0.5)*10;
+        this.c = "hsl("+Math.random()*360+",100%,50%)"; this.a = 1;
+    }
+    function startFire(){ pts = []; for(var i=0; i<50; i++) pts.push(new P()); loop(); }
+    function loop(){ 
+        if(!pts.length) return; 
+        cx.clearRect(0,0,cv.width,cv.height); 
+        for(var i=0; i<pts.length; i++){
+            var p = pts[i]; p.x+=p.vx; p.y+=p.vy; p.a-=0.02;
+            cx.globalAlpha = p.a; cx.fillStyle = p.c; cx.beginPath(); cx.arc(p.x,p.y,3,0,7); cx.fill();
+            if(p.a <= 0) pts.splice(i,1);
+        }
+        requestAnimationFrame(loop);
+    }
+
+    init();
+</script>
+</body>
+</html>

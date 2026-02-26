@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Climate & Demographics Quiz</title>
+    <style>
+        /* --- CSS RESET & VARIABLES --- */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #2c3e50, #4ca1af); /* Calm Blue/Grey - Focus */
+            --card-bg: #ffffff;
+            --primary-text: #2c3e50;
+            --accent-color: #2980b9;
+            --success-color: #00e676; /* Bright Green */
+            --error-color: #ff1744;   /* Bright Red */
+            --timer-color: #e67e22;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        /* --- MAIN APP CONTAINER --- */
+        .app-container {
+            width: 95%;
+            max-width: 900px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            padding: 30px;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            min-height: 700px;
+        }
+
+        /* --- HEADER --- */
+        header {
+            text-align: center;
+            border-bottom: 2px solid #f1f2f6;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--accent-color);
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #555;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .timer-box {
+            color: var(--timer-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* --- QUESTION AREA --- */
+        #game-area {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .question-text {
+            font-size: 1.8rem; /* Moderate to Big */
+            font-weight: 600;
+            color: var(--primary-text);
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: #f1f2f6;
+            border: 2px solid #dfe4ea;
+            padding: 22px;
+            border-radius: 12px;
+            font-size: 1.4rem;
+            text-align: left;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .option-btn:hover:not(.disabled) {
+            background: #dff9fb;
+            transform: translateX(10px);
+            border-color: var(--accent-color);
+        }
+
+        .option-btn.correct {
+            background-color: var(--success-color) !important;
+            color: white;
+            border-color: #00b359;
+            box-shadow: 0 0 15px var(--success-color);
+        }
+
+        .option-btn.wrong {
+            background-color: var(--error-color) !important;
+            color: white;
+            border-color: #c40026;
+            box-shadow: 0 0 15px var(--error-color);
+        }
+
+        .disabled {
+            pointer-events: none;
+            opacity: 0.9;
+        }
+
+        /* --- EXPLANATION BOX --- */
+        .explanation-box {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #e3f2fd;
+            border-left: 6px solid #2196f3;
+            border-radius: 8px;
+            font-size: 1.3rem;
+            color: #0d47a1;
+            display: none; /* Hidden initially */
+            animation: slideDown 0.4s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- NEXT BUTTON --- */
+        .next-btn-container {
+            margin-top: 30px;
+            text-align: right;
+            height: 60px; 
+        }
+
+        #next-btn {
+            background: linear-gradient(to right, #2980b9, #2c3e50);
+            color: white;
+            border: none;
+            padding: 15px 45px;
+            font-size: 1.4rem;
+            border-radius: 50px;
+            cursor: pointer;
+            display: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+
+        #next-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* --- OVERLAY & ANIMATIONS --- */
+        #feedback-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .feedback-text {
+            font-size: 4rem;
+            font-weight: 900;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-align: center;
+            padding: 20px;
+        }
+
+        .feedback-text.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Firecracker Particles */
+        .particle {
+            position: absolute;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: explode 1s ease-out forwards;
+        }
+
+        @keyframes explode {
+            0% { transform: translate(0,0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--x), var(--y)) scale(0); opacity: 0; }
+        }
+
+        /* --- RESULTS SECTION --- */
+        #result-section {
+            display: none;
+            text-align: center;
+            animation: fadeIn 0.5s;
+        }
+
+        .score-circle {
+            width: 180px; height: 180px;
+            background: var(--accent-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 25px;
+            font-size: 3.5rem;
+            font-weight: 800;
+            border: 6px solid #ecf0f1;
+            box-shadow: 0 10px 30px rgba(41, 128, 185, 0.5);
+        }
+
+        .review-wrapper {
+            margin-top: 30px;
+            text-align: left;
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 10px;
+            background: #fafafa;
+        }
+
+        .review-item {
+            background: #fff;
+            border-left: 5px solid var(--error-color);
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .review-q { font-weight: bold; font-size: 1.3rem; margin-bottom: 10px; display: block;}
+        .review-wrong { color: var(--error-color); font-weight: bold; }
+        .review-correct { color: #27ae60; font-weight: bold; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; } to { opacity: 1; }
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 600px) {
+            h1 { font-size: 1.6rem; }
+            .question-text { font-size: 1.4rem; }
+            .option-btn { font-size: 1.2rem; padding: 15px; }
+            .feedback-text { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="feedback-overlay">
+        <div id="overlay-text" class="feedback-text"></div>
+    </div>
+
+    <div class="app-container">
+        
+        <header id="quiz-header">
+            <h1>CENSUS AND CLIMATE CHANGE</h1>
+            <div class="stats-bar">
+                <span id="progress-text">Question: 1 / 80</span>
+                <div class="timer-box">
+                    <span>⏳</span>
+                    <span id="timer">40:00</span>
+                </div>
+            </div>
+        </header>
+
+        <div id="game-area">
+            <div class="question-text" id="question">Loading Question...</div>
+            <div class="options-grid" id="options-container">
+                </div>
+            
+            <div id="explanation-box" class="explanation-box">
+                <strong>Additional Info:</strong> <span id="explanation-text"></span>
+            </div>
+
+            <div class="next-btn-container">
+                <button id="next-btn" onclick="nextQuestion()">Next Question ➜</button>
+            </div>
+        </div>
+
+        <div id="result-section">
+            <h2 style="color: var(--accent-color); font-size: 2.5rem; margin-bottom: 20px;">Quiz Completed!</h2>
+            
+            <div class="score-circle">
+                <span id="final-score">0</span>
+                <span style="font-size: 1.2rem; font-weight: normal;">Score</span>
+            </div>
+            
+            <h3 id="accuracy-text" style="font-size: 1.5rem; color: #555; margin-bottom: 20px;">Accuracy: 0%</h3>
+            
+            <div class="review-wrapper" id="review-wrapper">
+                <h3 style="margin-bottom: 15px; color: var(--error-color);">Review Wrong Answers:</h3>
+                <div id="review-list"></div>
+            </div>
+
+            <button onclick="location.reload()" style="margin-top: 30px; padding: 15px 40px; background: var(--accent-color); color: white; border: none; font-size: 1.3rem; border-radius: 8px; cursor: pointer;">Play Again</button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- DATA STORE ---
+        // Questions combined into a single sequence
+        // a=0, b=1, c=2, d=3
+        const quizData = [
+            // Climate & Environment (1-38)
+            { q: "१. पृथ्वीको तापक्रम नाप्ने कार्यको सुरुवात कहिलेदेखि भएको हो?", o: ["सन् १८६०", "सन् १९६०", "सन् १९७०", "सन् १९८०"], a: 1, exp: "सन् १९६०" },
+            { q: "२. जल तथा मौसम विज्ञान विभागको प्रतिवेदन अनुसार नेपालको तापक्रम प्रत्येक वर्ष कति डिग्री सेल्सियसको दरले बढिरहेको छ?", o: ["०.०४°C", "०.०५६°C", "०.०६°C", "०.०८°C"], a: 1, exp: "०.०५६°C" },
+            { q: "३. नेपालको इतिहासमा सर्वाधिक गर्मी भएको (तापक्रम मापन गरिएको) वर्ष कुन हो?", o: ["सन् २०१०", "सन् २०१२", "सन् २०१६", "सन् २०२२"], a: 2, exp: "सन् २०१६ (नोट: सन् २०१६ वा २०२४ को जुन महिनामा अत्यधिक गर्मी रेकर्ड गरिएको छ। धनगढी/नेपालगन्जमा ४६.४°C सम्म पुगेको रेकर्ड छ।)" },
+            { q: "४. विश्वमा सर्वाधिक तातो वर्ष (Hottest Year) कुन वर्षलाई मानिएको छ (हालसम्म)?", o: ["सन् २०१६", "सन् २०२०", "सन् २०२३", "सन् २०२४"], a: 3, exp: "सन् २०२४" },
+            { q: "५. विश्व वातावरण दिवस (World Environment Day) २०२५ को नारा के थियो?", o: ["Ending Plastic Pollution", "Land Restoration, Desertification and Drought Resilience", "Only One Earth", "Ecosystem Restoration"], a: 0, exp: "Ending Plastic Pollution" },
+            { q: "६. विश्व सिमसार दिवस (World Wetlands Day) कहिले देखि मनाउन थालिएको हो?", o: ["सन् १९७१", "सन् १९९७", "सन् २०००", "सन् १९९०"], a: 1, exp: "सन् १९९७ फेब्रुअरी २ बाट (सन्धि १९७१ मा भए पनि दिवस १९९७ बाट मनाउन थालिएको)" },
+            { q: "७. विश्व सिमसार दिवस २०२५ को नारा के थियो?", o: ["Wetlands and Water", "Wetlands Action for People and Nature", "Wetlands and Human Wellbeing", "Protecting Wetlands for our Future"], a: 3, exp: "Protecting Wetlands for our Future" },
+            { q: "८. पर्यावरण (Environment) सम्बन्धी पहिलो अन्तर्राष्ट्रिय सम्मेलन कुन देशमा भएको थियो?", o: ["ब्राजिल", "स्विडेन (स्टकहोम)", "फ्रान्स", "अमेरिका"], a: 1, exp: "स्विडेन - सन् १९७२ जुन ५-१६" },
+            { q: "९. जलवायु परिवर्तनका असर सम्बन्धी जानकारी दिन माल्दिभ्सले पानी मुनि मन्त्रिपरिषद्को बैठक कहिले गरेको थियो?", o: ["सन् २००९ अक्टोबर १६", "सन् २००९ डिसेम्बर ४", "सन् २०१०", "सन् २००८"], a: 0, exp: "सन् २००९ अक्टोबर १६" },
+            { q: "१०. वातावरण क्षेत्रको सबैभन्दा ठूलो पुरस्कार (Environment Nobel) कुन हो?", o: ["Blue Planet Award", "Goldman Environment Prize", "Global 500", "Right Livelihood Award"], a: 0, exp: "Blue Planet Award (नोट: 'Green Nobel' भनेर चाहिँ Goldman Prize लाई चिनिन्छ, तर रकम र प्रतिष्ठाले Blue Planet ठूलो मानिन्छ।)" },
+            { q: "११. वातावरण क्षेत्रको नोबेल पुरस्कार (Green Nobel) भनेर चिनिने पुरस्कार कुन हो?", o: ["Blue Planet Award", "Goldman Environment Prize", "WWF Award", "UNEP Sasakawa Award"], a: 1, exp: "Goldman Environment Prize" },
+            { q: "१२. 'Global 500' पुरस्कार पाउने नेपाली को हुन्?", o: ["महावीर पुन", "कृष्ण कुमार पाण्डे", "डा. सन्दुक रुइत", "कुलचन्द्र गौतम"], a: 1, exp: "कृष्ण कुमार पाण्डे" },
+            { q: "१३. क्योटो प्रोटोकल (Kyoto Protocol) कहिले अनुमोदन/पारित गरिएको थियो?", o: ["सन् १९९७ डिसेम्बर ११", "सन् २००५ फेब्रुअरी १६", "सन् १९९२", "सन् २००१"], a: 0, exp: "सन् १९९७ डिसेम्बर ११" },
+            { q: "१४. क्योटो प्रोटोकलमा नेपालले कहिले हस्ताक्षर/अनुमोदन गर्यो?", o: ["सन् २००५ सेप्टेम्बर १६", "सन् २००५ डिसेम्बर १४", "सन् २००६", "सन् २००४"], a: 1, exp: "सन् २००५ डिसेम्बर १४" },
+            { q: "१५. कार्बन व्यापार (Carbon Trade) को अवधारणा कहिले देखि प्रारम्भ भयो?", o: ["सन् १९९०", "सन् १९९७ (क्योटो प्रोटोकल)", "सन् २००५", "सन् २०१०"], a: 1, exp: "सन् १९९७ को क्योटो प्रोटोकलले बाटो खुलाएको" },
+            { q: "१६. ओजन तह (Ozone Layer) पत्ता लगाउने व्यक्ति को हुन्?", o: ["जे.सी. फारम्यान (J.C. Farman)", "सेरउड रोल्याण्ड", "जे.सी. फारम्यान र विल्सन", "आर्थिनस"], a: 0, exp: "जे.सी. फारम्यान - सन् १९८५ मा अन्टार्कटिकामा ओजन प्वाल पत्ता लगाएका।" },
+            { q: "१७. ओजन तह पातलिँदै गएको तथ्य कसले पत्ता लगाएका हुन्?", o: ["सेरउड रोल्याण्ड (Sherwood Rowland)", "जे.सी. फारम्यान (J.C. Farman)", "मारियो मोलिना", "कोफी अन्नान"], a: 0, exp: "सेरउड रोल्याण्ड (जसले CFC ग्याँसका कारण ओजन तह विनास हुन्छ भनेर सिद्धान्त दिएका थिए)" },
+            { q: "१८. ओजन तहलाई कुन एकाइमा नापिन्छ?", o: ["Decibel", "Dobson Unit (DU)", "Richter Scale", "Celsius"], a: 1, exp: "Dobson Unit (DU)" },
+            { q: "१९. 'Green House Effect' (हरितगृह प्रभाव) पत्ता लगाउने सर्वप्रथम व्यक्ति को हुन्?", o: ["आर्थिनस (Svante Arrhenius)", "जोन टिन्डल", "ग्यालिलियो", "न्युटन"], a: 0, exp: "आर्थिनस (Svante Arrhenius) ले सन् १८९६ मा यसको विस्तृत गणना गरेका थिए।" },
+            { q: "२०. विश्वको कुल हरितगृह ग्याँस उत्सर्जनमा नेपालको हिस्सा कति प्रतिशत छ?", o: ["०.०२७%", "०.०२५%", "०.०५%", "०.१%"], a: 0, exp: "०.०२७% (कतै ०.०२५% पनि भेटिन्छ, पछिल्लो रिपोर्ट अनुसार ०.०२७% मानिन्छ)" },
+            { q: "२१. शुद्ध पानीको pH मान (pH Value) कति हुन्छ?", o: ["५", "६", "७", "८"], a: 2, exp: "७ (Neutral)" },
+            { q: "२२. 'Acid Rain' (अम्लीय वर्षा) भएको पत्ता लगाउने पहिलो वैज्ञानिक को हुन्?", o: ["रोबर्ट एंगस स्मिथ (Robert Angus Smith)", "डाल्टन", "म्याडम क्युरी", "आइन्स्टाइन"], a: 0, exp: "रोबर्ट एंगस स्मिथ - सन् १८५२" },
+            { q: "२३. हरितगृह ग्याँस (Green House Gas) उत्पादन गर्ने शीर्ष ५ राष्ट्रहरू कुन कुन हुन्?", o: ["चीन, अमेरिका, भारत, रुस, जापान", "अमेरिका, चीन, भारत, रुस, जापान", "चीन, अमेरिका, युरोपियन युनियन, भारत, रुस", "अमेरिका, चीन, रसिया, ब्राजिल, जापान"], a: 0, exp: "चीन सबैभन्दा बढी, त्यसपछि अमेरिका, भारत, रुस र जापान" },
+            { q: "२४. 'Green Peace' (ग्रीन पिस) को स्थापना कहिले भएको हो?", o: ["सन् १९७०", "सन् १९७१", "सन् १९७२", "सन् १९७५"], a: 1, exp: "सन् १९७१ - क्यानडाको भ्यानकुभरमा" },
+            { q: "२५. फ्रान्समा 'Car Free Day' कहिले देखि मनाउन थालिएको हो?", o: ["सन् १९९५", "सन् १९९८", "सन् २०००", "सन् २००२"], a: 1, exp: "सन् १९९८ सेप्टेम्बर २२" },
+            { q: "२६. UNO ले कति डेसिबल (Decibel) सम्मको आवाजलाई शान्त मानेको छ?", o: ["२० डेसिबल", "३० डेसिबल", "४० डेसिबल", "६५ डेसिबल"], a: 2, exp: "WHO को मापदण्ड अनुसार ४५-५५ डेसिबल सामान्य मानिन्छ। नोट अनुसार ४० सही छ।" },
+            { q: "२७. कति वर्षको अन्तरालमा पृथ्वीको तापक्रम, वर्षा र वायुको चापमा भएको औषत परिवर्तनलाई 'जलवायु परिवर्तन' भनिन्छ?", o: ["१० वर्ष", "२० वर्ष", "३० वर्ष", "५० वर्ष"], a: 2, exp: "३० वर्ष - WMO को परिभाषा अनुसार" },
+            { q: "२८. जलवायु परिवर्तनका कारक तत्त्व (Green House Gases) कति वटा रहेका छन्?", o: ["४", "५", "६", "७"], a: 2, exp: "६ (क्योटो प्रोटोकलले ६ वटा ग्याँसलाई मुख्य कारक मानेको छ)" },
+            { q: "२९. नेपालमा विश्वको जनसंख्याको कति प्रतिशत बसोबास गर्छन्?", o: ["०.३५%", "०.३७%", "०.४०%", "२.८%"], a: 1, exp: "०.३७% - जनगणना २०७८ अनुसार" },
+            { q: "३०. नेपालको वार्षिक औषत तापक्रम वृद्धि कति रहेको छ?", o: ["०.०४°C", "०.०५६°C", "०.०६°C", "०.०८°C"], a: 1, exp: "०.०५६°C" },
+            { q: "३१. नेपालमा 'जलवायु परिवर्तन नीति' (Climate Change Policy) कहिले लागु भयो?", o: ["वि.सं. २०६७ (सन् २०११)", "वि.सं. २०७६ (सन् २०१९)", "वि.सं. २०४७", "वि.सं. २०७०"], a: 1, exp: "वि.सं. २०७६ - नयाँ नीति (पुरानो २०६७ मा थियो)" },
+            { q: "३२. सन् २१०० सम्म समुद्र सतह कति बढ्ने अनुमान छ?", o: ["२० सेमी", "३० सेमी", "५० सेमी", "१ मिटर"], a: 1, exp: "३० सेमी (देखि १ मिटर सम्मको अनुमान छ)" },
+            { q: "३३. वातावरण तथा भू-उपयोग नीति समावेश भएको प्रथम योजना कुन हो?", o: ["पाँचौ", "छैठौं (6th)", "सातौं", "आठौं"], a: 1, exp: "छैठौं योजना - Sixth Plan" },
+            { q: "३४. विश्व वन्यजन्तु कोष (WWF) को क्षेत्रीय कार्यालय नेपालमा कहिले स्थापना भएको थियो?", o: ["वि.सं. २०४८", "वि.सं. २०५०", "वि.सं. २०२४ (सन् १९६७)", "वि.सं. २०५२ जेठ ८"], a: 3, exp: "वि.सं. २०५२ जेठ ८ (सन् १९९३)" },
+            { q: "३५. नेपालमा सर्वप्रथम 'वातावरण संरक्षण ऐन' कहिले जारी भएको हो?", o: ["वि.सं. २०५०", "वि.सं. २०५३ माघ १६", "वि.सं. २०५४", "वि.सं. २०७६"], a: 1, exp: "वि.सं. २०५३" },
+            { q: "३६. ISO 14000 केसँग सम्बन्धित छ?", o: ["गुणस्तर व्यवस्थापन", "वातावरण व्यवस्थापन (Environment Management)", "खाद्य सुरक्षा", "सूचना सुरक्षा"], a: 1, exp: "वातावरण व्यवस्थापन (Environment Management)" },
+            { q: "३७. ISO 9000 केसँग सम्बन्धित छ?", o: ["वातावरण", "वस्तुको गुणस्तर (Quality Management)", "सामाजिक उत्तरदायित्व", "उर्जा"], a: 1, exp: "वस्तुको गुणस्तर (Quality Management)" },
+            { q: "३८. नेपालमा 'वातावरणीय प्रभाव मूल्यांकन' (EIA) अवलम्बन गरिएको योजना कुन हो?", o: ["छैठौं", "सातौं (7th)", "आठौं", "नवौं"], a: 1, exp: "सातौं योजना" },
+
+            // Population (39-55)
+            { q: "३९. नेपालमा विधिवत् रूपमा जनगणना कार्यको सुरुवात कहिलेदेखि भएको हो?", o: ["वि.सं. १९५८", "वि.सं. १९६८ (सन् १९११)", "वि.सं. १९७८", "वि.सं. १९८८"], a: 1, exp: "वि.सं. १९६८ (सन् १९११)" },
+            { q: "४०. 'केन्द्रीय तथ्याङ्क विभाग' (हाल राष्ट्रिय तथ्याङ्क कार्यालय) को स्थापना कहिले भएको हो?", o: ["वि.सं. २०१४", "वि.सं. २०१५ पुस १७", "वि.सं. २०१६", "वि.सं. २०१७"], a: 1, exp: "वि.सं. २०१५ पुस १७" },
+            { q: "४१. नेपालको जनसंख्या सबैभन्दा उच्च वृद्धिदर भएको जनगणना कुन हो?", o: ["वि.सं. २०३८", "वि.सं. २०४८", "वि.सं. २०२८", "वि.सं. २०५८"], a: 0, exp: "वि.सं. २०३८ (वृद्धिदर २.६२%)" },
+            { q: "४२. वि.सं. २०६८ को जनगणना अनुसार जनसंख्या दोब्बर हुन लाग्ने समय ५८ वर्ष थियो, हाल २०७८ मा कति पुगेको छ?", o: ["५८ वर्ष", "६० वर्ष", "६६ वर्ष", "७६ वर्ष"], a: 3, exp: "७६ वर्ष (वृद्धिदर ०.९२% भएकोले)" },
+            { q: "४३. केन्द्रीय तथ्याङ्क विभागले 'जनसंख्या घडी' (Population Clock) को व्यवस्था कहिलेबार गरेको हो?", o: ["वि.सं. २०६८ साउन १", "वि.सं. २०६८ भदौ १", "वि.सं. २०७८ साउन १", "वि.सं. २०६५"], a: 0, exp: "वि.सं. २०६८ साउन १" },
+            { q: "४४. नेपालमा 'Modified De Jure Method' (सुधारिएको अक्सर बसोबास विधि) प्रयोग भएको जनगणना कुन हो?", o: ["वि.सं. २०११/२०१३", "वि.सं. २०२८", "वि.सं. २०३८", "वि.सं. २०६८"], a: 3, exp: "वि.सं. २०६८" },
+            { q: "४५. राष्ट्रिय जनगणना २०७८ अनुसार नेपालको जनघनत्व (Density) कति रहेको छ?", o: ["१८० जना/वर्ग कि.मि.", "१९८ जना/वर्ग कि.मि.", "२१४ जना/वर्ग कि.मि.", "१५७ जना/वर्ग कि.मि."], a: 1, exp: "१९८ जना/वर्ग कि.मि." },
+            { q: "४६. सबैभन्दा धेरै जनघनत्व भएको जिल्ला कुन हो?", o: ["काठमाडौं (५१६९ जना)", "भक्तपुर", "ललितपुर", "रुपन्देही"], a: 0, exp: "काठमाडौं (५१६९ जना प्रति वर्ग कि.मि.)" },
+            { q: "४७. सबैभन्दा कम जनघनत्व भएको जिल्ला कुन हो?", o: ["मुस्ताङ", "डोल्पा", "मनाङ (३ जना)", "हुम्ला"], a: 2, exp: "मनाङ (३ जना प्रति वर्ग कि.मि.)" },
+            { q: "४८. जनगणना २०७८ अनुसार सबैभन्दा बढी वार्षिक औषत जनसंख्या वृद्धिदर भएको जिल्ला कुन हो?", o: ["काठमाडौं", "रुपन्देही", "भक्तपुर (३.३५%)", "चितवन"], a: 2, exp: "भक्तपुर (३.३५%)" },
+            { q: "४९. सबैभन्दा कम वार्षिक औषत जनसंख्या वृद्धिदर (ऋणात्मक) भएको जिल्ला कुन हो?", o: ["मनाङ", "खोटाङ", "रामेछाप (-१.६७%)", "भोजपुर"], a: 2, exp: "रामेछाप (-१.६७%)" },
+            { q: "५०. जनगणना २०७८ अनुसार 'यौनिक तथा लैङ्गिक अल्पसंख्यक' (Sexual Minority) को जनसंख्या कति छ?", o: ["१५००", "२९२८ (०.०१%)", "३५००", "५०००"], a: 1, exp: "२९२८ जना (कुल जनसंख्याको ०.०१%)" },
+            { q: "५१. जनगणना २०७८ अनुसार नेपालको लैङ्गिक अनुपात (Sex Ratio) कति रहेको छ?", o: ["९४.१६", "९५.५९", "९५.९१", "९८.५"], a: 1, exp: "९५.५९ (नोटमा ९४.१६ प्रारम्भिक नतिजा थियो। अन्तिम नतिजा ९५.५९ हो।)" },
+            { q: "५२. जनगणना २०७८ अनुसार देशको कुल साक्षरता दर (५ वर्ष वा सो भन्दा माथि) कति रहेको छ?", o: ["६५.९%", "७१.१५%", "७६.२% (वा ७६.३%)", "८०%"], a: 2, exp: "७६.२% (वा ७६.३%)" },
+            { q: "५३. कति प्रतिशत परिवारले धारा/पाइप बाट पिउने पानी प्रयोग गर्छन्?", o: ["५४%", "५७%", "६०%", "६५%"], a: 1, exp: "५७% (२०७८ को तथ्याङ्क अनुसार)" },
+            { q: "५४. बत्ती बाल्न बिजुलीको प्रयोग गर्ने घरपरिवार कति प्रतिशत छन्?", o: ["९०%", "९२.२%", "९५%", "८५%"], a: 1, exp: "९२.२%" },
+            { q: "५५. शौचालयको प्रयोग गर्ने (पहुँच पुगेका) घरपरिवार कति प्रतिशत छन्?", o: ["९०%", "९५.५%", "९८%", "८५%"], a: 1, exp: "९५.५%" },
+
+            // Gandaki Province Specific (56-65)
+            { q: "५६. राष्ट्रिय जनगणना २०७८ अनुसार गण्डकी प्रदेशको कुल जनसंख्या कति रहेको छ?", o: ["२४,०३,७५७", "२४,६६,४२७", "६१,१६,८६६", "५१,२२,०७८"], a: 1, exp: "२४,६६,४२७ (नेपालको कुल जनसंख्याको ८.४६%)" },
+            { q: "५७. जनगणना २०७८ अनुसार सबैभन्दा बढी साक्षरता दर (Literacy Rate) भएको प्रदेश कुन हो?", o: ["बागमती प्रदेश", "गण्डकी प्रदेश", "कोशी प्रदेश", "लुम्बिनी प्रदेश"], a: 1, exp: "गण्डकी प्रदेश (८२.१%)" },
+            { q: "५८. गण्डकी प्रदेशको वार्षिक औषत जनसंख्या वृद्धिदर (Population Growth Rate) कति रहेको छ?", o: ["०.९२%", "०.२५%", "०.३५%", "-०.२५%"], a: 1, exp: "०.२५% (राष्ट्रिय वृद्धिदर ०.९२%)" },
+            { q: "५९. जनगणना २०७८ अनुसार गण्डकी प्रदेशको जनघनत्व (Population Density) कति छ?", o: ["१९८ जना/वर्ग कि.मि.", "११५ जना/वर्ग कि.मि.", "१३८ जना/वर्ग कि.मि.", "१०५ जना/वर्ग कि.मि."], a: 1, exp: "११५ जना/वर्ग कि.मि." },
+            { q: "६०. गण्डकी प्रदेशमा लैङ्गिक अनुपात (Sex Ratio) कति रहेको छ?", o: ["९५.५९", "९०.३७", "९२.५", "९९.५"], a: 1, exp: "९०.३७ (प्रति १०० महिलामा पुरुषको संख्या ९० जना मात्र छ)" },
+            { q: "६१. गण्डकी प्रदेशको कुन जिल्लाको जनसंख्या वृद्धिदर सबैभन्दा कम (ऋणात्मक) छ?", o: ["मुस्ताङ", "मनाङ", "म्याग्दी", "पर्वत"], a: 1, exp: "मनाङ (-१.३९%)" },
+            { q: "६२. गण्डकी प्रदेशमा नगरपालिका (Urban) र गाउँपालिका (Rural) मा बस्ने जनसंख्याको प्रतिशत कति छ?", o: ["६६.०८% र ३३.९२%", "५८.४% र ४१.६%", "६५.८% र ३४.२%", "५०% र ५०%"], a: 2, exp: "६५.८% शहरी र ३४.२% ग्रामीण" },
+            { q: "६३. गण्डकी प्रदेशको सबैभन्दा बढी जनसंख्या भएको जिल्ला कुन हो?", o: ["स्याङ्जा", "तनहुँ", "कास्की", "नवलपुर"], a: 2, exp: "कास्की (करिब ६ लाख)" },
+            { q: "६४. गण्डकी प्रदेशमा अपाङ्गता (Disability) भएको जनसंख्या प्रतिशत कति छ?", o: ["२.२%", "३.१%", "१.५%", "४.५%"], a: 1, exp: "३.१% (राष्ट्रिय औसत २.२% भन्दा बढी)" },
+            { q: "६५. जनगणना २०७८ अनुसार गण्डकी प्रदेशमा औसत परिवार सदस्य संख्या (Average Household Size) कति छ?", o: ["४.३७", "३.६६", "४.०", "३.५"], a: 1, exp: "३.६६ (गण्डकीको परिवार आकार सबैभन्दा सानो)" },
+
+            // Gandaki Districts Specific (66-75)
+            { q: "६६. राष्ट्रिय जनगणना २०७८ अनुसार गण्डकी प्रदेशमा सबैभन्दा बढी जनघनत्व भएको जिल्ला कुन हो?", o: ["नवलपुर", "स्याङ्जा", "कास्की", "पर्वत"], a: 2, exp: "कास्की (२९७ जना/वर्ग कि.मि.)" },
+            { q: "६७. गण्डकी प्रदेशमा सबैभन्दा कम जनसंख्या (Least Population) भएका दुई जिल्लाहरू क्रमशः कुन-कुन हुन्?", o: ["मनाङ र मुस्ताङ", "मुस्ताङ र म्याग्दी", "मनाङ र गोरखा", "मुस्ताङ र रसुवा"], a: 0, exp: "मनाङ (५,६५८) र मुस्ताङ (१४,४५२)" },
+            { q: "६८. गण्डकी प्रदेशको कुन जिल्लामा 'लैङ्गिक अनुपात' (Sex Ratio) सबैभन्दा उच्च छ?", o: ["कास्की", "मनाङ", "नवलपुर", "स्याङ्जा"], a: 1, exp: "मनाङ (१२९.४)" },
+            { q: "६९. गण्डकी प्रदेशको कुन जिल्लामा 'लैङ्गिक अनुपात' सबैभन्दा कम छ?", o: ["स्याङ्जा", "पर्वत", "तनहुँ", "गोरखा"], a: 0, exp: "स्याङ्जा (८५.६)" },
+            { q: "७०. गण्डकी प्रदेशमा 'परिवारको औसत आकार' सबैभन्दा सानो भएको जिल्ला कुन हो?", o: ["कास्की", "गोरखा", "नवलपुर", "लमजुङ"], a: 1, exp: "गोरखा (३.४९)" },
+            { q: "७१. नेपालकै सबैभन्दा ठूलो फलाम खानी (Iron Mine) भनिएको 'धौबादी' गण्डकी प्रदेशको कुन जिल्लामा पर्दछ?", o: ["तनहुँ", "पर्वत", "नवलपुर", "बागलुङ"], a: 2, exp: "नवलपुर (नवलपरासी बर्दघाट सुस्ता पूर्व)" },
+            { q: "७२. 'तामा खानी' (Copper Mine) का लागि प्रसिद्ध गण्डकी प्रदेशका जिल्लाहरू कुन-कुन हुन्?", o: ["बागलुङ र म्याग्दी", "कास्की र स्याङ्जा", "मुस्ताङ र मनाङ", "गोरखा र तनहुँ"], a: 0, exp: "बागलुङ र म्याग्दी" },
+            { q: "७३. गण्डकी प्रदेशको कुन स्थानमा 'युरेनियम' (Uranium) र 'नुन खानी' (Salt Mine) को सम्भावना देखिएको छ?", o: ["मनाङ", "मुस्ताङ (लोमान्थाङ/तेताङ)", "गोरखा (चुम उपत्यका)", "म्याग्दी"], a: 1, exp: "मुस्ताङ (लोमान्थाङमा युरेनियम र तेताङमा नुन)" },
+            { q: "७४. जनगणना २०७८ अनुसार गण्डकी प्रदेशमा सबैभन्दा बढी जनसंख्या वृद्धिदर (Growth Rate) भएको जिल्ला कुन हो?", o: ["नवलपुर", "कास्की", "तनहुँ", "गोरखा"], a: 1, exp: "कास्की" },
+            { q: "७५. कालीगण्डकी नदीको बगरमा कुन बहुमूल्य धातु पाइने विश्वास गरिन्छ?", o: ["प्लाटिनम", "सुन (Gold Placer)", "हिरा", "चाँदी"], a: 1, exp: "सुन (Gold Placer)" },
+
+            // Misc (76-80)
+            { q: "७६. जनगणना २०७८ अनुसार नेपालकै सबैभन्दा कम जनसंख्या भएको गाउँपालिका 'नार्पा भूमि' गण्डकी प्रदेशको कुन जिल्लामा पर्दछ?", o: ["मुस्ताङ", "मनाङ", "गोरखा", "म्याग्दी"], a: 1, exp: "मनाङ (जनसंख्या जम्मा ३९६)" },
+            { q: "७७. जनगणना २०७८ अनुसार परिवारका सदस्य विदेशमा अनुपस्थित रहेको (Absentee Population) घरपरिवारको प्रतिशत सबैभन्दा बढी भएको प्रदेश कुन हो?", o: ["लुम्बिनी प्रदेश", "गण्डकी प्रदेश", "कोशी प्रदेश", "सुदूरपश्चिम प्रदेश"], a: 1, exp: "गण्डकी प्रदेश (३०.८%)" },
+            { q: "७८. गण्डकी प्रदेशमा कुल कति वटा स्थानीय तहहरू (Local Levels) रहेका छन्?", o: ["८५", "७९", "१०९", "१३७"], a: 0, exp: "८५ वटा (१ महानगर, २६ नगर, ५८ गाउँपालिका)" },
+            { q: "७९. गण्डकी प्रदेशमा सबैभन्दा बढी जनसंख्या भएको जाति (Caste/Ethnicity) कुन हो?", o: ["मगर", "गुरुङ", "क्षेत्री", "बाहुन (पहाडी)"], a: 3, exp: "बाहुन (Hill Brahmin)" },
+            { q: "८०. जनगणना २०७८ अनुसार गण्डकी प्रदेशमा दोस्रो धेरै मानिने धर्म (Religion) कुन हो?", o: ["हिन्दु", "बौद्ध", "क्रिश्चियन", "इस्लाम"], a: 1, exp: "बौद्ध" }
+        ];
+
+        // --- COMPLIMENTS & MOTIVATION ---
+        const compliments = ["Wow Amazing!", "You are a Genius!", "Spectacular!", "Outstanding!", "Excellent!", "Sharp Mind!", "Brilliant!"];
+        const motivations = ["Don't Give Up!", "Keep Trying!", "You'll Get Next One!", "Stay Focused!", "Learning is Key!", "Believe in Yourself!"];
+        const colors = ["#e74c3c", "#f1c40f", "#2ecc71", "#9b59b6", "#3498db", "#e67e22"];
+
+        // --- STATE VARIABLES ---
+        let currentQuestion = 0;
+        let score = 0;
+        let timeLeft = 40 * 60; // 40 minutes in seconds
+        let timerInterval;
+        let isAnswered = false;
+        let userResponses = [];
+
+        // --- DOM ELEMENTS ---
+        const questionEl = document.getElementById('question');
+        const optionsEl = document.getElementById('options-container');
+        const progressEl = document.getElementById('progress-text');
+        const timerEl = document.getElementById('timer');
+        const gameArea = document.getElementById('game-area');
+        const resultSection = document.getElementById('result-section');
+        const nextBtn = document.getElementById('next-btn');
+        const explanationBox = document.getElementById('explanation-box');
+        const explanationText = document.getElementById('explanation-text');
+        const overlay = document.getElementById('feedback-overlay');
+        const overlayText = document.getElementById('overlay-text');
+
+        // --- INIT ---
+        window.onload = function() {
+            startTimer();
+            loadQuestion();
+        };
+
+        // --- TIMER ---
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                if(timeLeft <= 0) {
+                    endGame();
+                } else {
+                    timeLeft--;
+                    let mins = Math.floor(timeLeft / 60);
+                    let secs = timeLeft % 60;
+                    timerEl.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                    
+                    // Color alert when time is low
+                    if(timeLeft < 300) { // last 5 mins
+                        timerEl.style.color = 'red';
+                        timerEl.classList.add('pulse');
+                    }
+                }
+            }, 1000);
+        }
+
+        // --- LOAD QUESTION ---
+        function loadQuestion() {
+            isAnswered = false;
+            nextBtn.style.display = 'none';
+            explanationBox.style.display = 'none';
+            overlay.innerHTML = '<div id="overlay-text" class="feedback-text"></div>'; // clear particles
+            
+            const data = quizData[currentQuestion];
+            questionEl.innerText = data.q;
+            progressEl.innerText = `Question: ${currentQuestion + 1} / ${quizData.length}`;
+
+            optionsEl.innerHTML = '';
+            data.o.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(index, btn);
+                optionsEl.appendChild(btn);
+            });
+        }
+
+        // --- CHECK ANSWER ---
+        function checkAnswer(selectedIndex, btn) {
+            if(isAnswered) return;
+            isAnswered = true;
+
+            const data = quizData[currentQuestion];
+            const isCorrect = selectedIndex === data.a;
+
+            // Save user response
+            userResponses.push({
+                question: data.q,
+                selected: data.o[selectedIndex],
+                correct: data.o[data.a],
+                isCorrect: isCorrect
+            });
+
+            // Disable buttons
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(b => b.classList.add('disabled'));
+
+            // Visual feedback
+            if(isCorrect) {
+                score++;
+                btn.classList.add('correct');
+                triggerOverlay(true);
+            } else {
+                btn.classList.add('wrong');
+                // Normally we don't show correct answer immediately if we want them to review at the end,
+                // but usually for UX, showing correct green is standard. 
+                // Prompt: "answers of only wrong attempted question... at last"
+                // So I will only highlight the selected Wrong one here as per logic, 
+                // but allow explanation to be seen.
+                triggerOverlay(false);
+            }
+
+            // Show Explanation & Next Button
+            explanationText.innerText = data.exp;
+            explanationBox.style.display = 'block';
+            nextBtn.style.display = 'inline-block';
+        }
+
+        // --- OVERLAY ANIMATION ---
+        function triggerOverlay(isSuccess) {
+            const txt = isSuccess 
+                ? compliments[Math.floor(Math.random() * compliments.length)]
+                : motivations[Math.floor(Math.random() * motivations.length)];
+            
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            
+            overlayText.innerText = txt;
+            overlayText.style.color = color;
+            overlayText.classList.add('show');
+
+            if(isSuccess) {
+                createFirecrackers();
+            }
+
+            // Hide after 1.5s
+            setTimeout(() => {
+                overlayText.classList.remove('show');
+            }, 1500);
+        }
+
+        function createFirecrackers() {
+            for(let i=0; i<30; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                document.body.appendChild(p);
+                
+                // Random Postion
+                const x = window.innerWidth / 2;
+                const y = window.innerHeight / 2;
+                p.style.left = x + 'px';
+                p.style.top = y + 'px';
+                p.style.background = colors[Math.floor(Math.random() * colors.length)];
+
+                // Random Velocity
+                const angle = Math.random() * Math.PI * 2;
+                const vel = Math.random() * 300 + 100;
+                const tx = Math.cos(angle) * vel;
+                const ty = Math.sin(angle) * vel;
+
+                p.style.setProperty('--x', `${tx}px`);
+                p.style.setProperty('--y', `${ty}px`);
+
+                setTimeout(() => p.remove(), 1000);
+            }
+        }
+
+        // --- NAVIGATION ---
+        function nextQuestion() {
+            currentQuestion++;
+            if(currentQuestion < quizData.length) {
+                loadQuestion();
+            } else {
+                endGame();
+            }
+        }
+
+        // --- END GAME & REVIEW ---
+        function endGame() {
+            clearInterval(timerInterval);
+            gameArea.style.display = 'none';
+            document.querySelector('header').style.display = 'none';
+            resultSection.style.display = 'block';
+
+            document.getElementById('final-score').innerText = score;
+            const accuracy = Math.round((score / quizData.length) * 100);
+            document.getElementById('accuracy-text').innerText = `Accuracy: ${accuracy}%`;
+
+            // Filter wrong answers
+            const wrongAnswers = userResponses.filter(r => !r.isCorrect);
+            const reviewList = document.getElementById('review-list');
+
+            if(wrongAnswers.length === 0) {
+                reviewList.innerHTML = "<h3 style='color:green'>Perfect Score! Amazing!</h3>";
+            } else {
+                wrongAnswers.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'review-item';
+                    div.innerHTML = `
+                        <span class="review-q">${item.question}</span>
+                        <div>Your Answer: <span class="review-wrong">${item.selected}</span></div>
+                        <div>Correct Answer: <span class="review-correct">${item.correct}</span></div>
+                    `;
+                    reviewList.appendChild(div);
+                });
+            }
+        }
+    </script>
+</body>
+</html>

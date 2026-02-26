@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nepal Political Division Quiz</title>
+    <style>
+        /* --- THEME: Administrative Blue & White --- */
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --primary: #0056b3;
+            --accent: #17a2b8;
+            --correct: #28a745;
+            --wrong: #dc3545;
+            --text-main: #212529;
+            --text-light: #6c757d;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+
+        body {
+            background-color: var(--bg-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 0;
+            color: var(--text-main);
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--card-bg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+        }
+
+        /* --- HOME SCREEN --- */
+        #home-screen {
+            padding: 40px 25px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex-grow: 1;
+        }
+
+        h1 { color: var(--primary); font-size: 2rem; margin-bottom: 10px; font-weight: 700; }
+        .subtitle { color: var(--text-light); margin-bottom: 40px; font-size: 1rem; }
+
+        .btn-main {
+            width: 100%; padding: 16px; margin-bottom: 15px;
+            border: none; border-radius: 8px;
+            font-size: 1.1rem; font-weight: 600;
+            cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+            color: white;
+        }
+
+        .btn-start { background: var(--primary); box-shadow: 0 4px 6px rgba(0, 86, 179, 0.2); }
+        .btn-retry { background: var(--wrong); box-shadow: 0 4px 6px rgba(220, 53, 69, 0.2); display: none; }
+        
+        .btn-main:active { transform: scale(0.98); }
+
+        /* --- QUIZ SCREEN --- */
+        #quiz-screen { display: none; flex-direction: column; height: 100vh; }
+
+        header {
+            padding: 15px 20px;
+            background: #fff;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky; top: 0; z-index: 10;
+        }
+
+        .timer { background: var(--accent); color: white; padding: 5px 12px; border-radius: 4px; font-weight: bold; }
+        .progress { color: var(--text-light); font-weight: 600; font-size: 0.9rem; }
+
+        /* Content Area */
+        #content-area {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .question-text {
+            font-size: 1.25rem; font-weight: 600; line-height: 1.5;
+            margin-bottom: 25px; color: var(--text-main);
+        }
+
+        .options-stack { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+
+        .option-card {
+            width: 100%; padding: 15px;
+            background: #f8f9fa; border: 1px solid #dee2e6;
+            border-radius: 6px; font-size: 1rem; text-align: left;
+            cursor: pointer; transition: all 0.2s; color: var(--text-main);
+        }
+
+        .option-card:hover:not(.locked) { background: #e2e6ea; border-color: var(--primary); }
+
+        .correct-opt { background: #d4edda !important; border-color: var(--correct) !important; color: #155724 !important; position: relative; }
+        .correct-opt::after { content: "✓"; position: absolute; right: 15px; font-weight: bold; }
+
+        .wrong-opt { background: #f8d7da !important; border-color: var(--wrong) !important; color: #721c24 !important; position: relative; }
+        .wrong-opt::after { content: "✕"; position: absolute; right: 15px; font-weight: bold; }
+
+        .locked { pointer-events: none; }
+
+        /* Explanation Box */
+        .exp-container {
+            margin-top: 25px;
+            background: #e9ecef;
+            border-left: 4px solid var(--primary);
+            border-radius: 4px;
+            padding: 15px;
+            display: none;
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        .exp-title { font-weight: 700; color: var(--primary); font-size: 0.9rem; margin-bottom: 5px; display: block; }
+        .exp-text { font-size: 0.95rem; line-height: 1.5; color: var(--text-main); }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Footer */
+        .footer {
+            padding: 15px 20px; background: white; border-top: 1px solid #e9ecef;
+        }
+        
+        #next-btn {
+            width: 100%; padding: 14px; border-radius: 6px;
+            background: var(--primary); color: white;
+            border: none; font-size: 1.1rem; font-weight: 600;
+            cursor: pointer; display: none;
+        }
+
+        /* --- RESULT SCREEN --- */
+        #result-screen {
+            display: none; flex-direction: column; justify-content: center;
+            align-items: center; height: 100vh; padding: 30px; text-align: center;
+        }
+
+        .score-display {
+            font-size: 4rem; font-weight: 800; color: var(--primary); margin-bottom: 10px;
+        }
+        
+        #accuracy { color: var(--text-light); font-size: 1.1rem; margin-bottom: 40px; }
+
+        #overlay-msg {
+            position: fixed; top: 45%; left: 0; width: 100%;
+            text-align: center; font-size: 2.5rem; font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            pointer-events: none; opacity: 0; transition: 0.2s; z-index: 100;
+        }
+    </style>
+</head>
+<body>
+
+<div id="overlay-msg"></div>
+
+<div class="app-container">
+    
+    <div id="home-screen">
+        <h1>Nepal Political Division</h1>
+        <p class="subtitle">Federal, Provincial & Local Structures<br>(44 Questions)</p>
+        
+        <button class="btn-main btn-start" onclick="startQuiz('full')">Start Quiz</button>
+        <button id="retry-btn" class="btn-main btn-retry" onclick="startQuiz('wrong')">Retry Mistakes</button>
+        
+        <div id="mistake-info" style="margin-top: 20px; color: #888; font-size: 0.9rem;"></div>
+    </div>
+
+    <div id="quiz-screen">
+        <header>
+            <div id="progress" class="progress">1 / 44</div>
+            <div id="timer" class="timer">40:00</div>
+        </header>
+
+        <div id="content-area">
+            <div id="question" class="question-text">Loading...</div>
+            <div id="options" class="options-stack"></div>
+            
+            <div id="explanation" class="exp-container">
+                <span class="exp-title">Explanation</span>
+                <div id="exp-text" class="exp-text"></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <button id="next-btn" onclick="nextQ()">Next Question ➜</button>
+        </div>
+    </div>
+
+    <div id="result-screen">
+        <h2 style="color: var(--primary); margin-bottom: 20px;">Quiz Completed</h2>
+        <div id="score-val" class="score-display">0</div>
+        <div id="accuracy">Accuracy: 0%</div>
+        <button class="btn-main btn-start" onclick="location.reload()">Home</button>
+    </div>
+
+</div>
+
+<script>
+    // --- DATABASE: 44 QUESTIONS ---
+    // Renamed to 'rawData' to match logic
+    const rawData = [
+        { id: 1, q: "नेपालको संविधानको अनुसूची-५ मा 'संघको अधिकारको सूची' अन्तर्गत कतिवटा विषयहरू समावेश गरिएका छन्?", o: ["२१ वटा", "२२ वटा", "२५ वटा", "३५ वटा"], cor: "३५ वटा", exp: "अनुसूची ५ = ३५ विषय (संघ)" },
+        { id: 2, q: "संविधानको अनुसूची-६ बमोजिम 'प्रदेशको अधिकारको सूची' मा कतिवटा विषयहरू रहेका छन्?", o: ["२१ वटा", "२२ वटा", "२५ वटा", "३५ वटा"], cor: "२१ वटा", exp: "अनुसूची ६ = २१ विषय (प्रदेश)" },
+        { id: 3, q: "स्थानीय तहको अधिकारको सूची (अनुसूची-८) मा कतिवटा विषयहरू व्यवस्था गरिएको छ?", o: ["१५ वटा", "२१ वटा", "२२ वटा", "२५ वटा"], cor: "२२ वटा", exp: "अनुसूची ८ = २२ विषय (स्थानीय तह)" },
+        { id: 4, q: "संघ र प्रदेशको साझा अधिकारको सूची (अनुसूची-७) मा कतिवटा विषयहरू रहेका छन्?", o: ["१५ वटा", "२१ वटा", "२५ वटा", "३५ वटा"], cor: "२५ वटा", exp: "अनुसूची ७ = २५ विषय (संघ र प्रदेश)" },
+        { id: 5, q: "संघ, प्रदेश र स्थानीय तह गरी तिनै तहको साझा अधिकारको सूची (अनुसूची-९) मा कतिवटा विषयहरू छन्? ", o: ["१५ वटा", "२० वटा", "२५ वटा", "३५ वटा"], cor: "१५ वटा", exp: "अनुसूची ९ = १५ विषय (तिनै तह)" },
+        { id: 6, q: "नेपालको संविधानको धारा ५८ बमोजिम 'अवशिष्ट अधिकार' (Residual Powers) कुन तहमा निहित रहने व्यवस्था छ?", o: ["संघमा", "प्रदेशमा", "स्थानीय तहमा", "संघ र प्रदेश दुवैमा"], cor: "संघमा", exp: "संविधानमा नतोकिएको विषय संघको अधिकार हुनेछ।" },
+        { id: 7, q: "'आधारभूत र माध्यमिक शिक्षा' संविधानको कुन तहको अधिकार सूचीमा पर्दछ?", o: ["संघको अधिकार", "प्रदेशको अधिकार", "स्थानीय तहको अधिकार", "संघ र प्रदेशको साझा अधिकार"], cor: "स्थानीय तहको अधिकार", exp: "अनुसूची ८ अनुसार।" },
+        { id: 8, q: "'राष्ट्रिय सेना, रक्षा र युद्ध' सम्बन्धी व्यवस्था कुन तहको एकल अधिकार क्षेत्र भित्र पर्दछ?", o: ["संघ", "प्रदेश", "स्थानीय तह", "संघ र प्रदेश साझा"], cor: "संघ", exp: "अनुसूची ५ अनुसार।" },
+        { id: 9, q: "'आधारभूत स्वास्थ्य र सरसफाई' कसको अधिकार क्षेत्र भित्र पर्दछ?", o: ["संघ", "प्रदेश", "स्थानीय तह", "साझा अधिकार"], cor: "स्थानीय तह", exp: "अनुसूची ८ अनुसार।" },
+        { id: 10, q: "हाल नेपालमा कतिवटा स्थानीय तहहरू (Local Levels) कायम रहेका छन्?", o: ["७४४", "७५३", "७६६", "७७७"], cor: "७५३", exp: "७५३ स्थानीय तह।" },
+        
+        { id: 11, q: "नेपालमा हाल कतिवटा महानगरपालिकाहरू रहेका छन्?", o: ["४ वटा", "५ वटा", "६ वटा", "११ वटा"], cor: "६ वटा", exp: "काठमाडौं, ललितपुर, भरतपुर, पोखरा, वीरगंज, विराटनगर।" },
+        { id: 12, q: "नेपालमा उप-महानगरपालिका (Sub-Metropolitan Cities) को संख्या कति रहेको छ?", o: ["७", "१०", "११", "१२"], cor: "११", exp: "११ वटा उप-महानगरपालिका।" },
+        { id: 13, q: "नेपालमा हाल कतिवटा गाउँपालिकाहरू रहेका छन्?", o: ["४६०", "२७६", "४८१", "४४६"], cor: "४६०", exp: "४६० गाउँपालिका।" },
+        { id: 14, q: "नेपालमा जम्मा वडा संख्या (Total Wards) कति रहेको छ?", o: ["६६८४", "६७४३", "७४३६", "६३४७"], cor: "६७४३", exp: "६७४३ वडा।" },
+        { id: 15, q: "नेपाललाई ७ प्रदेशमा विभाजन गर्ने व्यवस्था कुन मितिबाट लागू भएको मानिन्छ?", o: ["२०७२ असोज ३", "२०७४ फागुन २७", "२०७२ साउन ३", "२०६३ माघ १"], cor: "२०७२ असोज ३", exp: "संविधान जारी भएको मिति।" },
+        { id: 16, q: "'सहकारी संस्था' को नियमन र व्यवस्थापन कुन तहको एकल अधिकार सूचीमा राखिएको छ?", o: ["संघ", "प्रदेश", "स्थानीय तह", "संघ र प्रदेश साझा"], cor: "स्थानीय तह", exp: "अनुसूची ८।" },
+        { id: 17, q: "'प्रदेश प्रहरी' (State Police) को व्यवस्था कुन अनुसूचीमा छ?", o: ["अनुसूची ५", "अनुसूची ६", "अनुसूची ७", "अनुसूची ८"], cor: "अनुसूची ६", exp: "प्रदेशको एकल अधिकार।" },
+        { id: 18, q: "नेपालमा हाल कतिवटा नगरपालिकाहरू रहेका छन्?", o: ["२४६", "२७६", "२९३", "२१७"], cor: "२७६", exp: "२७६ नगरपालिका।" },
+        { id: 19, q: "नेपाल सरकारले ७७ वटा जिल्ला कायम कहिले गरेको हो?", o: ["२०७२ असोज ३", "२०७४ भदौ ५", "२०७४ साउन ३", "२०७३ फागुन २७"], cor: "२०७४ भदौ ५", exp: "नवलपरासी र रुकुम विभाजनको सूचना राजपत्रमा प्रकाशित मिति।" },
+        { id: 20, q: "परराष्ट्र सम्बन्ध र कूटनीतिक मामिला संविधान अनुसार कसको क्षेत्राधिकार हो?", o: ["संघ", "प्रदेश", "स्थानीय तह", "तीनै तहको साझा"], cor: "संघ", exp: "अनुसूची ५।" },
+        
+        { id: 21, q: "नेपालको संविधानमा 'संघको अधिकारको सूची' कुन अनुसूचीमा व्यवस्था गरिएको छ?", o: ["अनुसूची ४", "अनुसूची ५", "अनुसूची ६", "अनुसूची ७"], cor: "अनुसूची ५", exp: "संघको अधिकार।" },
+        { id: 22, q: "'प्रदेशको अधिकारको सूची' संविधानको कुन अनुसूचीमा राखिएको छ?", o: ["अनुसूची ५", "अनुसूची ६", "अनुसूची ७", "अनुसूची ८"], cor: "अनुसूची ६", exp: "प्रदेशको अधिकार।" },
+        { id: 23, q: "'स्थानीय तहको अधिकारको सूची' कुन अनुसूचीमा व्यवस्था छ?", o: ["अनुसूची ६", "अनुसूची ७", "अनुसूची ८", "अनुसूची ९"], cor: "अनुसूची ८", exp: "स्थानीय तहको अधिकार।" },
+        { id: 24, q: "संघ र प्रदेशको साझा अधिकारको सूची कुन अनुसूचीमा पर्दछ?", o: ["अनुसूची ६", "अनुसूची ७", "अनुसूची ८", "अनुसूची ९"], cor: "अनुसूची ७", exp: "संघ र प्रदेश साझा।" },
+        { id: 25, q: "संघ, प्रदेश र स्थानीय तह गरी तिनै तहको साझा अधिकारको सूची कुन हो?", o: ["अनुसूची ६", "अनुसूची ७", "अनुसूची ८", "अनुसूची ९"], cor: "अनुसूची ९", exp: "तिनै तहको साझा।" },
+        { id: 26, q: "'रक्षा र सेना' सम्बन्धी व्यवस्था कुन अनुसूची अन्तर्गत पर्दछ?", o: ["अनुसूची ५", "अनुसूची ६", "अनुसूची ७", "अनुसूची ८"], cor: "अनुसूची ५", exp: "संघको अधिकार।" },
+        { id: 27, q: "'आधारभूत र माध्यमिक शिक्षा' कुन अनुसूचीको अधिकार क्षेत्र भित्र पर्दछ?", o: ["अनुसूची ६", "अनुसूची ७", "अनुसूची ८", "अनुसूची ९"], cor: "अनुसूची ८", exp: "स्थानीय तहको अधिकार।" },
+        { id: 28, q: "'प्रदेश प्रहरी प्रशासन र शान्ति सुरक्षा' कुन अनुसूचीमा समावेश गरिएको छ?", o: ["अनुसूची ५", "अनुसूची ६", "अनुसूची ७", "अनुसूची ८"], cor: "अनुसूची ६", exp: "प्रदेशको अधिकार।" },
+        { id: 29, q: "'सहकारी' सम्बन्धी अधिकार स्थानीय तहको अधिकार सूचीमा पर्दछ, यो कुन अनुसूचीमा छ?", o: ["अनुसूची ५", "अनुसूची ७", "अनुसूची ८", "अनुसूची ९"], cor: "अनुसूची ८", exp: "स्थानीय तह।" },
+        { id: 30, q: "'शिक्षा, खेलकुद र पत्रपत्रिका' कुन अनुसूची अन्तर्गत संघ, प्रदेश र स्थानीय तहको साझा अधिकारमा पर्दछन्?", o: ["अनुसूची ६", "अनुसूची ७", "अनुसूची ८", "अनुसूची ९"], cor: "अनुसूची ९", exp: "साझा अधिकार।" },
+        
+        { id: 31, q: "संविधानको धारा ५८ अनुसार अवशिष्ट अधिकार कसलाई हुनेछ?", o: ["प्रदेश सभालाई", "संघलाई", "स्थानीय तहलाई", "प्रधानमन्त्रीलाई"], cor: "संघलाई", exp: "अवशिष्ट अधिकार संघमा निहित।" },
+        { id: 32, q: "'अवशिष्ट अधिकार' भन्नाले के बुझिन्छ?", o: ["तिनै तहको साझा अधिकार", "संविधानको अनुसूचीमा उल्लेख नभएको विषय", "स्थानीय तहले प्रयोग गर्ने विशेष अधिकार", "संकटकालमा प्रयोग हुने अधिकार"], cor: "संविधानको अनुसूचीमा उल्लेख नभएको विषय", exp: "तोकिएका सूची बाहेकका अधिकार।" },
+        { id: 33, q: "नेपालको मूल संरचना संघ, प्रदेश र स्थानीय तह गरी तीन तहको हुनेछ भन्ने व्यवस्था कुन धारामा छ?", o: ["धारा ५६", "धारा ५७", "धारा ५८", "धारा ५९"], cor: "धारा ५६", exp: "राज्यको संरचना।" },
+        { id: 34, q: "संविधान अनुसार 'स्थानीय तह' भन्नाले कुन कुन निकायलाई बुझाउँछ?", o: ["गाउँपालिका र नगरपालिका मात्र", "गाउँपालिका, नगरपालिका र वडा समिति", "गाउँपालिका, नगरपालिका र जिल्ला सभा", "गाउँपालिका, नगरपालिका र प्रदेश सभा"], cor: "गाउँपालिका, नगरपालिका र जिल्ला सभा", exp: "धारा ५६(४)।" },
+        { id: 35, q: "स्थानीय तहको कार्यकारिणी अधिकार कसमा निहित रहने व्यवस्था छ?", o: ["गाउँ सभा वा नगर सभामा", "वडा अध्यक्षमा", "गाउँ कार्यपालिका वा नगर कार्यपालिकामा", "जिल्ला समन्वय समितिमा"], cor: "गाउँ कार्यपालिका वा नगर कार्यपालिकामा", exp: "धारा २१४।" },
+        { id: 36, q: "जिल्ला भित्रका गाउँपालिका र नगरपालिका बीच समन्वय गर्न कुन निकाय रहने व्यवस्था छ?", o: ["जिल्ला प्रशासन कार्यालय", "जिल्ला समन्वय समिति", "जिल्ला विकास समिति", "जिल्ला सभा"], cor: "जिल्ला समन्वय समिति", exp: "DCC." },
+        { id: 37, q: "नेपालमा हाल कायम रहेको ७७ जिल्ला मध्ये पहाडी प्रदेशमा कति जिल्ला रहेका छन्?", o: ["२१", "२८", "३५", "५३"], cor: "३५", exp: "भौगोलिक विभाजन अनुसार (हिमाल-२१, पहाड-३५, तराई-२१)।" },
+        { id: 38, q: "प्रदेश प्रमुख (Province Head) को नियुक्ति कसले गर्ने व्यवस्था छ?", o: ["प्रधानमन्त्रीले", "प्रधानन्यायाधीशले", "राष्ट्रपतिले", "मुख्यमन्त्रीले"], cor: "राष्ट्रपतिले", exp: "धारा १६३।" },
+        { id: 39, q: "गाउँ सभा र नगर सभाको कार्यकाल कति वर्षको हुनेछ?", o: ["३ वर्ष", "४ वर्ष", "५ वर्ष", "६ वर्ष"], cor: "५ वर्ष", exp: "धारा २१७/२२५।" },
+        { id: 40, q: "राज्य शक्तिको बाँडफाँड सम्बन्धी व्यवस्था संविधानको कुन धारामा गरिएको छ?", o: ["धारा ५६", "धारा ५७", "धारा ५८", "धारा ६०"], cor: "धारा ५७", exp: "राज्य शक्तिको बाँडफाँड।" },
+        
+        { id: 41, q: "सबैभन्दा धेरै स्थानीय तह भएको प्रदेश कुन हो?", o: ["बागमती प्रदेश", "कोशी प्रदेश", "मधेश प्रदेश", "कर्णाली प्रदेश"], cor: "कोशी प्रदेश", exp: "१३७ स्थानीय तह।" },
+        { id: 42, q: "स्थानीय तहको निर्वाचनमा उम्मेदवार हुन कति वर्ष उमेर पूरा भएको हुनुपर्दछ?", o: ["१८ वर्ष", "२१ वर्ष", "२५ वर्ष", "३५ वर्ष"], cor: "२१ वर्ष", exp: "२१ वर्ष पूरा भएको।" },
+        { id: 43, q: "गाउँपालिकाको अध्यक्ष वा उपाध्यक्षको पदमा निर्वाचित हुन नपाउने गरी कति कार्यकाल तोकिएको छ?", o: ["एक कार्यकाल", "दुई कार्यकाल", "तीन कार्यकाल", "कुनै सीमा छैन"], cor: "दुई कार्यकाल", exp: "दुई कार्यकाल निर्वाचित भएको व्यक्ति उम्मेदवार हुन पाउँदैन।" },
+        { id: 44, q: "गाउँपालिका र नगरपालिकाको वडा संख्या निर्धारण गर्ने अधिकार कुन कानून बमोजिम हुन्छ?", o: ["संघीय कानून बमोजिम", "प्रदेश कानून बमोजिम", "स्थानीय कानून बमोजिम", "निर्वाचन आयोगको निर्णय बमोजिम"], cor: "संघीय कानून बमोजिम", exp: "धारा २९५।" }
+    ];
+
+    // --- LOGIC ---
+    let currentQuiz = [], score = 0, current = 0, time = 40 * 60, timerId, mode = 'full';
+
+    function getMistakes() { return JSON.parse(localStorage.getItem('politicalMistakes')) || []; }
+    function saveMistake(q) {
+        let bank = getMistakes();
+        if(!bank.some(i => i.id === q.id)) {
+            bank.push(q);
+            localStorage.setItem('politicalMistakes', JSON.stringify(bank));
+        }
+        updateHomeUI();
+    }
+    function removeMistake(id) {
+        let bank = getMistakes().filter(i => i.id !== id);
+        localStorage.setItem('politicalMistakes', JSON.stringify(bank));
+        updateHomeUI();
+    }
+    function updateHomeUI() {
+        let bank = getMistakes();
+        let btn = document.getElementById('retry-btn');
+        let info = document.getElementById('mistake-info');
+        if(bank.length > 0) {
+            btn.style.display = 'block';
+            info.innerText = `You have ${bank.length} mistakes saved.`;
+        } else {
+            btn.style.display = 'none';
+            info.innerText = "No mistakes saved. Great job!";
+        }
+    }
+
+    function startQuiz(m) {
+        mode = m;
+        document.getElementById('home-screen').style.display = 'none';
+        document.getElementById('quiz-screen').style.display = 'flex';
+        
+        let source = (mode === 'full') ? rawData : getMistakes();
+        // Shuffle questions
+        currentQuiz = source.map(q => {
+            let opts = [...q.o];
+            // Shuffle options
+            for (let i = opts.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [opts[i], opts[j]] = [opts[j], opts[i]];
+            }
+            return { ...q, o: opts, ai: opts.indexOf(q.cor) };
+        }).sort(() => 0.5 - Math.random());
+
+        current = 0; score = 0; time = 40 * 60;
+        startTimer();
+        renderQ();
+    }
+
+    function startTimer() {
+        clearInterval(timerId);
+        timerId = setInterval(() => {
+            time--;
+            let m = Math.floor(time / 60);
+            let s = time % 60;
+            document.getElementById('timer').innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+            if(time <= 0) endQuiz();
+        }, 1000);
+    }
+
+    function renderQ() {
+        let q = currentQuiz[current];
+        document.getElementById('question').innerText = q.q;
+        document.getElementById('progress').innerText = `${current + 1} / ${currentQuiz.length}`;
+        let box = document.getElementById('options');
+        box.innerHTML = '';
+        q.o.forEach((opt, idx) => {
+            let btn = document.createElement('button');
+            btn.className = 'option-card';
+            btn.innerText = opt;
+            btn.onclick = () => check(idx, btn);
+            box.appendChild(btn);
+        });
+        document.getElementById('explanation').style.display = 'none';
+        document.getElementById('next-btn').style.display = 'none';
+        document.getElementById('content-area').scrollTop = 0;
+    }
+
+    function check(idx, btn) {
+        let q = currentQuiz[current];
+        let btns = document.getElementsByClassName('option-card');
+        for(let b of btns) b.classList.add('locked');
+
+        if(idx === q.ai) {
+            score++;
+            btn.classList.add('correct-opt');
+            if(mode === 'wrong') removeMistake(q.id);
+            showOverlay('Right!', '#28a745');
+        } else {
+            btn.classList.add('wrong-opt');
+            btns[q.ai].classList.add('correct-opt');
+            saveMistake(rawData.find(item => item.id === q.id));
+            showOverlay('Wrong!', '#dc3545');
+        }
+        document.getElementById('exp-text').innerText = q.exp;
+        document.getElementById('explanation').style.display = 'block';
+        document.getElementById('next-btn').style.display = 'block';
+        
+        setTimeout(() => {
+            document.getElementById('content-area').scrollTop = document.getElementById('content-area').scrollHeight;
+        }, 100);
+    }
+
+    function showOverlay(txt, col) {
+        let el = document.getElementById('overlay-msg');
+        el.innerText = txt; el.style.color = col; el.style.opacity = 1;
+        setTimeout(() => el.style.opacity = 0, 800);
+    }
+
+    function nextQ() {
+        current++;
+        if(current < currentQuiz.length) renderQ();
+        else endQuiz();
+    }
+
+    function endQuiz() {
+        clearInterval(timerId);
+        document.getElementById('quiz-screen').style.display = 'none';
+        document.getElementById('result-screen').style.display = 'flex';
+        document.getElementById('score-val').innerText = score;
+        document.getElementById('accuracy').innerText = `Accuracy: ${Math.round((score/currentQuiz.length)*100)}%`;
+        updateHomeUI();
+    }
+
+    updateHomeUI();
+</script>
+</body>
+</html>

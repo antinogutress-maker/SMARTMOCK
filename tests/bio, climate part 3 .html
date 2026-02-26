@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Climate & Biodiversity - Full Width</title>
+    <style>
+        /* --- THEME: Eco-Green & Nature Focus --- */
+        :root {
+            --bg-deep: #022c22; 
+            --card-white: #ffffff;
+            --primary-green: #059669;
+            --accent-orange: #f59e0b;
+            --correct-green: #10b981;
+            --wrong-red: #ef4444;
+            --btn-gray: #f3f4f6;
+            --text-main: #111827;
+            --text-light: #6b7280;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+
+        body {
+            background-color: var(--bg-deep);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align top for long content */
+            padding: 15px;
+            color: var(--text-main);
+        }
+
+        /* The Main Card - Now fills the width */
+        .app-wrapper {
+            width: 100%;
+            max-width: 600px; /* Optimal reading width on larger screens */
+            background: var(--card-white);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            margin-top: 10px;
+            min-height: 80vh;
+        }
+
+        /* --- HOME SCREEN --- */
+        #home-view {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex-grow: 1;
+            height: 100%;
+        }
+
+        h1 { color: var(--primary-green); margin-bottom: 10px; font-size: 2rem; font-weight: 800; }
+        .sub-text { color: var(--text-light); margin-bottom: 40px; font-size: 1rem; }
+
+        .start-btn { 
+            background: var(--bg-deep); color: white; width: 100%; padding: 20px; 
+            border-radius: 15px; border: none; font-size: 1.2rem; font-weight: bold; 
+            cursor: pointer; margin-top: 15px; transition: transform 0.2s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .start-btn:active { transform: scale(0.98); }
+
+        .retry-btn { 
+            background: var(--wrong-red); color: white; width: 100%; padding: 18px; 
+            border-radius: 15px; border: none; font-size: 1.1rem; font-weight: bold; 
+            cursor: pointer; margin-top: 15px; display: none; 
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        /* --- QUIZ SCREEN --- */
+        #quiz-view { display: none; flex-direction: column; height: 100%; }
+
+        #timer-display {
+            background: var(--accent-orange);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 30px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin: 0 auto 15px auto;
+            display: inline-block;
+            align-self: center;
+        }
+
+        .prog-bar {
+            text-align: center;
+            color: var(--text-light);
+            font-weight: 600;
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+            border-bottom: 2px solid #f3f4f6;
+            padding-bottom: 15px;
+        }
+
+        .question-box {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option-btn {
+            width: 100%;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid var(--btn-gray);
+            background: #fff;
+            font-size: 1.1rem;
+            text-align: left;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            color: var(--text-main);
+        }
+
+        .option-btn:hover:not(.locked) { 
+            border-color: var(--primary-green); 
+            background: #ecfdf5; 
+        }
+
+        /* Answer states */
+        .is-correct { background: #d1fae5 !important; border-color: var(--correct-green) !important; color: #065f46 !important; position: relative; }
+        .is-correct::after { content: "✔"; position: absolute; right: 20px; font-weight: bold; }
+
+        .is-wrong { background: #fee2e2 !important; border-color: var(--wrong-red) !important; color: #991b1b !important; position: relative; }
+        .is-wrong::after { content: "✖"; position: absolute; right: 20px; font-weight: bold; }
+
+        .locked { pointer-events: none; }
+
+        .explanation {
+            margin-top: 25px;
+            padding: 20px;
+            background: #eff6ff;
+            border-left: 5px solid #3b82f6;
+            border-radius: 10px;
+            display: none;
+            font-size: 1rem;
+            color: #1e3a8a;
+            line-height: 1.6;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .nav-footer { margin-top: auto; padding-top: 25px; }
+
+        #next-btn {
+            width: 100%;
+            padding: 18px;
+            background: var(--bg-deep);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: none;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(2, 44, 34, 0.3);
+        }
+
+        /* --- RESULT SCREEN --- */
+        #result-view { display: none; text-align: center; flex-direction: column; justify-content: center; height: 100%; }
+        
+        .score-circle {
+            width: 150px; height: 150px;
+            background: var(--accent-orange);
+            color: white;
+            border-radius: 50%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            margin: 0 auto 30px auto;
+            font-size: 3.5rem; font-weight: 900;
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.4);
+        }
+
+        #firework-overlay { position: fixed; top: 35%; width: 100%; text-align: center; font-size: 3.5rem; font-weight: 900; pointer-events: none; z-index: 100; opacity: 0; transition: opacity 0.3s; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+    </style>
+</head>
+<body>
+
+<div id="firework-overlay"></div>
+
+<div class="app-wrapper">
+    <div id="home-view">
+        <h1>Eco-Quiz Pro</h1>
+        <p class="sub-text">Bio, Climate & Sustainable Development</p>
+        <button class="start-btn" onclick="initQuiz('full')">Full Quiz (30 Questions)</button>
+        <button id="home-retry-btn" class="retry-btn" onclick="initQuiz('wrong')">Retry Last Mistakes</button>
+        <p id="mistake-count" style="margin-top: 20px; font-size: 0.9rem; color: #888; font-weight: bold;"></p>
+    </div>
+
+    <div id="quiz-view">
+        <div id="timer-display">30:00</div>
+        <div id="prog-text" class="prog-bar">Question: 1 / 30</div>
+        
+        <div style="flex-grow: 1; overflow-y: auto;">
+            <div id="q-text" class="question-box">Loading...</div>
+            <div id="opt-container" class="options-list"></div>
+            <div id="exp-box" class="explanation"></div>
+        </div>
+
+        <div class="nav-footer">
+            <button id="next-btn" onclick="nextQuestion()">Next Question ➜</button>
+        </div>
+    </div>
+
+    <div id="result-view">
+        <h2 style="color: var(--primary-green); margin-bottom: 20px;">नतिजा कार्ड</h2>
+        <div class="score-circle">
+            <span id="final-score">0</span>
+            <span style="font-size: 1rem;">Score</span>
+        </div>
+        <p id="accuracy-text" style="margin-bottom: 40px; font-weight: bold; color: var(--text-light); font-size: 1.2rem;">Accuracy: 0%</p>
+        <button class="start-btn" onclick="location.reload()">Back to Home</button>
+    </div>
+</div>
+
+<script>
+    // --- DATABASE ---
+    var rawData = [
+        { id: 1, q: "जलवायु परिवर्तन सम्बन्धी 'कोप-२९' (COP-29) कहाँ आयोजना भयो?", o: ["दुबई", "बाकु (अजरबैजान)", "बेलेम", "पेरिस"], cor: "बाकु (अजरबैजान)", exp: "सन् २०२४ को कोप सम्मेलन अजरबैजानमा सम्पन्न भयो।" },
+        { id: 2, q: "'पेरिस सम्झौता' ले विश्वको तापक्रम वृद्धिलाई कतिमा सीमित राख्ने लक्ष्य लिएको छ?", o: ["१.० डिग्री", "१.५ डिग्री", "२.० डिग्री", "२.५ डिग्री"], cor: "१.५ डिग्री", exp: "यो लक्ष्य पूर्व-औद्योगिक कालको तुलनामा तोकिएको हो।" },
+        { id: 3, q: "नेपालले कहिलेसम्म 'शून्य कार्बन उत्सर्जन' (Net Zero) को लक्ष्य हासिल गर्ने प्रतिबद्धता जनाएको छ?", o: ["सन् २०३०", "सन् २०४५", "सन् २०५०", "सन् २०७०"], cor: "सन् २०४५", exp: "यो नेपालको दोस्रो राष्ट्रिय निर्धारित योगदान (NDC) मा उल्लेख छ।" },
+        { id: 4, q: "संयुक्त राष्ट्र संघले कुन वर्षलाई 'हिमाल तथा ग्लेसियर संरक्षण वर्ष' मनाउने निर्णय गरेको छ?", o: ["सन् २०२४", "सन् २०२५", "सन् २०२६", "सन् २०३०"], cor: "सन् २०२५", exp: "ग्लेसियर पग्लने समस्यालाई उजागर गर्न यो वर्ष तोकिएको हो।" },
+        { id: 5, q: "दिगो विकास लक्ष्य (SDG) को 'लक्ष्य नं. १३' (Goal 13) केसँग सम्बन्धित छ?", o: ["गरिबी", "जलवायु कार्य (Climate Action)", "जमिनमा जीवन", "शुद्ध पानी"], cor: "जलवायु कार्य (Climate Action)", exp: "जलवायु परिवर्तनका असर न्यूनीकरण गर्ने लक्ष्य।" },
+        { id: 6, q: "'एजेन्डा २१' कुन ऐतिहासिक सम्मेलनबाट पारित भएको हो?", o: ["रियो सम्मेलन (१९९२)", "स्टकहोम", "पेरिस", "क्योटो"], cor: "रियो सम्मेलन (१९९२)", exp: "यसलाई पृथ्वी सम्मेलन पनि भनिन्छ।" },
+        { id: 7, q: "सन् २०२४ को 'विश्व वातावरण दिवस' को नारा के थियो?", o: ["प्लास्टिकको अन्त्य", "भू-पुनर्स्थापना र मरुभूमिकरण विरुद्ध", "एक पृथ्वी", "वायु संरक्षण"], cor: "भू-पुनर्स्थापना र मरुभूमिकरण विरुद्ध", exp: "Land Restoration, Desertification and Drought Resilience." },
+        { id: 8, q: "जैविक विविधताको '30x30 Target' ले कति प्रतिशत भूभाग संरक्षण गर्ने लक्ष्य लिएको छ?", o: ["२० प्रतिशत", "३० प्रतिशत", "४० प्रतिशत", "५० प्रतिशत"], cor: "३० प्रतिशत", exp: "सन् २०३० सम्म पृथ्वीको ३०% हिस्सा सुरक्षित गर्ने लक्ष्य।" },
+        { id: 9, q: "ओजोन तहको क्षयीकरण रोक्न गरिएको सफल अन्तर्राष्ट्रिय सन्धि कुन हो?", o: ["क्योटो", "मोन्ट्रियल प्रोटोकल", "पेरिस", "नागोया"], cor: "मोन्ट्रियल प्रोटोकल", exp: "सन् १९८७ को यो सन्धिले CFC ग्यास नियन्त्रण गर्छ। [attachment_0](attachment)" },
+        { id: 10, q: "वायु प्रदूषण मापन गर्ने आधिकारिक सूचकांकलाई के भनिन्छ?", o: ["AQI", "WQI", "Richter", "Decibel"], cor: "AQI", exp: "Air Quality Index जति कम भयो वातावरण उति राम्रो मानिन्छ।" },
+        { id: 11, q: "'ब्लु कार्बन' (Blue Carbon) भन्नाले के बुझिन्छ?", o: ["उद्योगको कार्बन", "समुद्री र तटीय प्रणालीको कार्बन", "हिमालको कार्बन", "धुवाँ"], cor: "समुद्री र तटीय प्रणालीको कार्बन", exp: "महासागरका वनस्पतिले सोस्ने कार्बन।" },
+        { id: 12, q: "'अम्लीय वर्षा' (Acid Rain) को मुख्य कारक ग्यासहरू कुन हुन्?", o: ["CO2 र O2", "सल्फर र नाइट्रोजनका अक्साइड", "मिथेन", "हाइड्रोजन"], cor: "सल्फर र नाइट्रोजनका अक्साइड", exp: "SO2 र NOx पानीसँग मिल्दा अम्ल बन्छ। [attachment_1](attachment)" },
+        { id: 13, q: "सूर्यबाट आउने हानिकारक 'UV Rays' लाई कुन तहले पृथ्वीमा आउन रोक्छ?", o: ["ट्रोपो", "ओजोन तह", "मेसो", "आयोनो"], cor: "ओजोन तह", exp: "यो स्ट्राटोस्फियरमा अवस्थित हुन्छ।" },
+        { id: 14, q: "'ग्रीन हाउस ग्यास' मा सबैभन्दा बढी योगदान कुन ग्यासको हुन्छ?", o: ["मिथेन", "कार्बन डाइअक्साइड (CO2)", "नाइट्रस", "CFC"], cor: "कार्बन डाइअक्साइड (CO2)", exp: "यो हरित गृह प्रभावका लागि ६०% भन्दा बढी जिम्मेवार छ।" },
+        { id: 15, q: "'हरित गृह प्रभाव' (Greenhouse Effect) को अवधारणा ल्याउने वैज्ञानिक को हुन्?", o: ["आर्थिनियस", "बेरोन जिन फुरियर", "न्युटन", "डार्विन"], cor: "बेरोन जिन फुरियर", exp: "सन् १८२४ मा यो अवधारणा आएको हो। [attachment_2](attachment)" },
+        { id: 16, q: "नेपालमा हाल कतिवटा राष्ट्रिय निकुञ्जहरू रहेका छन्?", o: ["१०", "११", "१२", "१३"], cor: "१३", exp: "छायानाथ रारा घोषणासँगै नेपालमा १३ राष्ट्रिय निकुञ्ज पुगेका छन्।" },
+        { id: 17, q: "नेपालमा कति प्रजातिका स्तनधारी वन्यजन्तु संरक्षित सूचीमा छन्?", o: ["२६", "२७", "९", "३"], cor: "२६", exp: "ऐनको अनुसूची अनुसार २६ स्तनधारी वन्यजन्तु संरक्षित छन्।" },
+        { id: 18, q: "राष्ट्रिय निकुञ्जको आम्दानीको कति प्रतिशत रकम मध्यवर्ती क्षेत्रमा खर्च गरिन्छ?", o: ["१०-२०%", "३०-५०%", "५०-६०%", "७०-८०%"], cor: "३०-५०%", exp: "यो स्थानीय जनताको विकास र संरक्षणका लागि हो।" },
+        { id: 19, q: "नेपालको पहिलो 'रामसार क्षेत्र' (Ramsar Site) कुन हो?", o: ["रारा ताल", "कोशी टप्पु", "फेवा ताल", "शे-फोक्सुण्डो"], cor: "कोशी टप्पु", exp: "सन् १९८७ मा सूचीकृत भएको थियो।" },
+        { id: 20, q: "नेपालमा मात्र पाइने चरा 'काँडे भ्याकुर' कुन क्षेत्रमा पाइन्छ?", o: ["तराई", "मध्य पहाडी क्षेत्र", "हिमाल", "रारा क्षेत्र"], cor: "मध्य पहाडी क्षेत्र", exp: "Spiny Babbler नेपालको इन्डेमिक चरा हो।" },
+        { id: 21, q: "४० माइक्रोन भन्दा पातलो प्लास्टिकमा कहिलेदेखि पूर्ण प्रतिबन्ध लगाइएको हो?", o: ["२०७२", "२०७८ साउन १", "२०७५", "२०८०"], cor: "२०७८ साउन १", exp: "वातावरण प्रदूषण न्यूनीकरणका लागि यो कदम चालिएको हो।" },
+        { id: 22, q: "नेपालको एकमात्र 'शिकार आरक्ष' (Hunting Reserve) कुन हो?", o: ["पर्सा", "ढोरपाटन", "कोशी टप्पु", "शुक्लाफाँटा"], cor: "ढोरपाटन", exp: "यो बाग्लुङ, म्याग्दी र रुकुममा फैलिएको छ।" },
+        { id: 23, q: "नेपालमा 'राष्ट्रिय संरक्षण दिवस' कहिले मनाइन्छ?", o: ["असोज ७", "जेठ १०", "असार ८", "मंसिर ४"], cor: "असोज ७", exp: "असोज ७ गते संरक्षणकर्मीहरूको सम्मानमा मनाइन्छ।" },
+        { id: 24, q: "गिद्ध संरक्षणका लागि 'जटायु रेष्टुरेन्ट' कुन जिल्लाबाट सुरु भयो?", o: ["नवलपरासी", "चितवन", "बाँके", "दाङ"], cor: "नवलपरासी", exp: "यो विश्वकै पहिलो सामुदायिक गिद्ध भोजनालय हो।" },
+        { id: 25, q: "काठमाडौंमा २० वर्ष पुराना सवारी साधनमा प्रतिबन्ध कहिलेदेखि लाग्यो?", o: ["२०७१", "२०७३ चैत्र १", "२०७५", "२०७२"], cor: "२०७३ चैत्र १", exp: "यातायात प्रदूषण घटाउन यो नियम ल्याइएको हो।" },
+        { id: 26, q: "नेपाल सरकारले 'जलवायु परिवर्तन नीति' पहिलो पटक कहिले जारी गर्यो?", o: ["वि.सं. २०६३", "वि.सं. २०६७", "वि.सं. २०७६", "वि.सं. २०७२"], cor: "वि.सं. २०६७", exp: "हाल २०७६ को नीति कार्यान्वयनमा छ।" },
+        { id: 27, q: "'Red Data Book' कुन संस्थाले प्रकाशन गर्छ?", o: ["WWF", "IUCN", "UNEP", "CITES"], cor: "IUCN", exp: "यसमा लोप हुन लागेका जीवहरूको सूची हुन्छ।" },
+        { id: 28, q: "वन्यजन्तुको अन्तर्राष्ट्रिय व्यापार नियन्त्रण गर्ने महासन्धि कुन हो?", o: ["RAMSAR", "CITES", "CBD", "Paris"], cor: "CITES", exp: "साइटिसको मुख्यालय जेनेभामा छ।" },
+        { id: 29, q: "जैविक विविधताको हिसाबले नेपाल विश्वको कतिऔं स्थानमा पर्दछ?", o: ["२५ औं", "४९ औं", "३५ औं", "११८ औं"], cor: "४९ औं", exp: "नेपाल जैविक विविधतामा धनी राष्ट्र हो।" },
+        { id: 30, q: "'मिनामाटा रोग' के को प्रदूषणका कारण लाग्छ?", o: ["सिसा", "पारो (Mercury)", "क्याडमियम", "आर्सेनिक"], cor: "पारो (Mercury)", exp: "यो पारोको विषका कारण हुने समस्या हो।" }
+    ];
+
+    var quizData = [], mistakes = [], current = 0, score = 0, time = 30 * 60, tInt, mode = 'full';
+
+    // Local Storage Logic
+    function getSavedMistakes() { return JSON.parse(localStorage.getItem('ecoFullMistakes')) || []; }
+    function saveMistake(q) {
+        var bank = getSavedMistakes();
+        if(!bank.some(function(i){ return i.id === q.id })) {
+            bank.push(q);
+            localStorage.setItem('ecoFullMistakes', JSON.stringify(bank));
+        }
+        updateHomeUI();
+    }
+    function removeMistake(id) {
+        var bank = getSavedMistakes().filter(function(i){ return i.id !== id });
+        localStorage.setItem('ecoFullMistakes', JSON.stringify(bank));
+        updateHomeUI();
+    }
+    function updateHomeUI() {
+        var bank = getSavedMistakes();
+        if(bank.length > 0) {
+            document.getElementById('home-retry-btn').style.display = 'block';
+            document.getElementById('mistake-count').innerText = "तपाईंसँग अभ्यास गर्न " + bank.length + " गलत प्रश्नहरू बाँकी छन्।";
+        } else {
+            document.getElementById('home-retry-btn').style.display = 'none';
+            document.getElementById('mistake-count').innerText = "बधाई छ! कुनै पनि गल्ती बाँकी छैन।";
+        }
+    }
+
+    // Engine
+    function initQuiz(m) {
+        mode = m;
+        document.getElementById('home-view').style.display = 'none';
+        document.getElementById('quiz-view').style.display = 'flex';
+        var source = (mode === 'full') ? rawData : getSavedMistakes();
+        quizData = source.map(shuffleOptions).sort(function(){ return 0.5 - Math.random() });
+        current = 0; score = 0; time = 30 * 60;
+        startTimer();
+        renderQuestion();
+    }
+
+    function shuffleOptions(item) {
+        var opts = item.o.slice();
+        for (var i = opts.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = opts[i]; opts[i] = opts[j]; opts[j] = temp;
+        }
+        return { id: item.id, q: item.q, o: opts, ai: opts.indexOf(item.cor), exp: item.exp };
+    }
+
+    function startTimer() {
+        clearInterval(tInt);
+        tInt = setInterval(function(){
+            time--;
+            var m = Math.floor(time/60), s = time % 60;
+            document.getElementById('timer-display').innerText = m + ":" + (s < 10 ? "0"+s : s);
+            if(time <= 0) finishQuiz();
+        }, 1000);
+    }
+
+    function renderQuestion() {
+        var q = quizData[current];
+        document.getElementById('q-text').innerText = q.q;
+        document.getElementById('prog-text').innerText = "Question: " + (current + 1) + " / " + quizData.length;
+        var box = document.getElementById('opt-container');
+        box.innerHTML = "";
+        for(var i=0; i<4; i++) {
+            var b = document.createElement('button');
+            b.className = "option-btn";
+            b.innerText = String.fromCharCode(97+i) + ") " + q.o[i];
+            b.onclick = (function(idx){ return function(){ checkAnswer(idx); } })(i);
+            box.appendChild(b);
+        }
+        document.getElementById('exp-box').style.display = "none";
+        document.getElementById('next-btn').style.display = "none";
+    }
+
+    function checkAnswer(idx) {
+        var q = quizData[current];
+        var btns = document.getElementsByClassName('option-btn');
+        for(var i=0; i<4; i++) btns[i].classList.add('locked');
+
+        if(idx === q.ai) {
+            score++;
+            btns[idx].classList.add('is-correct');
+            if(mode === 'wrong') removeMistake(q.id);
+            triggerFeedback("EXCELLENT!", "#10b981");
+        } else {
+            btns[idx].classList.add('is-wrong');
+            btns[q.ai].classList.add('is-correct');
+            saveMistake(rawData.find(function(i){ return i.id === q.id }));
+            triggerFeedback("WRONG!", "#ef4444");
+        }
+        document.getElementById('exp-box').innerHTML = "<strong>व्याख्या:</strong> " + q.exp;
+        document.getElementById('exp-box').style.display = "block";
+        document.getElementById('next-btn').style.display = "block";
+    }
+
+    function triggerFeedback(t, c) {
+        var f = document.getElementById('firework-overlay');
+        f.innerText = t; f.style.color = c; f.style.opacity = 1;
+        setTimeout(function(){ f.style.opacity = 0; }, 800);
+    }
+
+    function nextQuestion() {
+        current++;
+        if(current < quizData.length) renderQuestion();
+        else finishQuiz();
+    }
+
+    function finishQuiz() {
+        clearInterval(tInt);
+        document.getElementById('quiz-view').style.display = "none";
+        document.getElementById('result-view').style.display = "flex";
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('accuracy-text').innerText = "Accuracy: " + Math.round((score/quizData.length)*100) + "%";
+        updateHomeUI();
+    }
+
+    updateHomeUI();
+</script>
+</body>
+</html>

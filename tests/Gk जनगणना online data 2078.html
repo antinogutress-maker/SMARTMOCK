@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loksewa Census 2078 Quiz</title>
+    <style>
+        :root {
+            /* Psychology of Colors: 
+               Purple/Blue: Wisdom, Trust, Focus. 
+               Green: Success, Growth. 
+               Red: Alert, Attention. 
+            */
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --card-bg: #ffffff;
+            --primary-color: #6c5ce7; /* Soft Purple for calm focus */
+            --secondary-color: #0984e3; /* Trust Blue */
+            --success-color: #00b894; /* Vivid Green */
+            --error-color: #d63031; /* Bright Red */
+            --text-main: #2d3436;
+            --text-light: #636e72;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+            overflow-x: hidden;
+        }
+
+        .container {
+            background: var(--card-bg);
+            width: 95%;
+            max-width: 700px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            padding: 30px;
+            position: relative;
+            transition: height 0.3s ease;
+        }
+
+        /* Headers */
+        h1, h2 { text-align: center; color: var(--text-main); }
+        h1 { font-size: 1.8rem; color: var(--primary-color); margin-bottom: 5px; }
+        .subtitle { text-align: center; color: var(--text-light); font-size: 0.9rem; margin-bottom: 25px; }
+
+        /* Screens */
+        .screen { display: none; animation: slideUp 0.5s ease; }
+        .screen.active { display: block; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Buttons */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            color: white;
+        }
+        .btn-primary { background: linear-gradient(to right, var(--primary-color), var(--secondary-color)); }
+        .btn-mistake { background: linear-gradient(to right, #e17055, #d63031); display: none; } /* Hidden by default */
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        
+        .btn-home { background: var(--text-light); margin-top: 20px;}
+
+        /* Quiz Stats on Home */
+        .stats-box {
+            background: #dfe6e9;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+        }
+        .stat-item span { display: block; font-weight: bold; font-size: 1.2rem; color: var(--primary-color); }
+
+        /* Quiz Interface */
+        .quiz-top-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: var(--text-light);
+            border-bottom: 2px solid #f1f1f1;
+            padding-bottom: 10px;
+        }
+        .timer { color: var(--error-color); font-family: monospace; font-size: 1.2rem; }
+
+        .question-text {
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .options-list { list-style: none; padding: 0; }
+        .option-item {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .option-item:hover:not(.disabled) { border-color: var(--primary-color); background: #f1f2f6; }
+        
+        /* Validated States */
+        .option-item.correct { 
+            background: var(--success-color) !important; 
+            border-color: var(--success-color) !important; 
+            color: white;
+            animation: pulse 0.5s;
+        }
+        .option-item.wrong { 
+            background: var(--error-color) !important; 
+            border-color: var(--error-color) !important; 
+            color: white;
+            animation: shake 0.4s;
+        }
+        .option-item.disabled { pointer-events: none; }
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
+        /* Celebration Overlay */
+        .celebration-text {
+            position: fixed;
+            top: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255,255,255,0.95);
+            padding: 15px 40px;
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            font-size: 1.5rem;
+            font-weight: bold;
+            z-index: 1000;
+            display: none;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        /* Results */
+        .score-display {
+            width: 150px;
+            height: 150px;
+            background: conic-gradient(var(--success-color) 0%, #dfe6e9 0%);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            position: relative;
+        }
+        .score-display::before {
+            content: ''; position: absolute; width: 130px; height: 130px; background: white; border-radius: 50%;
+        }
+        .score-text { position: relative; z-index: 1; }
+
+        /* Next Button */
+        #next-btn { display: none; margin-top: 20px; background: var(--text-main); }
+
+        /* Particles */
+        .particle {
+            position: fixed;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 999;
+            animation: pop 1s ease-out forwards;
+        }
+        @keyframes pop {
+            0% { transform: translate(0,0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--x), var(--y)) scale(0); opacity: 0; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="feedback-msg" class="celebration-text"></div>
+
+    <div class="container">
+        
+        <div id="home-screen" class="screen active">
+            <h1>Loksewa Mastery</h1>
+            <p class="subtitle">Topic: राष्ट्रिय जनगणना २०७८ (National Census 2078)</p>
+            
+            <div class="stats-box">
+                <div class="stat-item">
+                    <span id="mistake-count">0</span>Mistakes Saved
+                </div>
+                <div class="stat-item">
+                    <span id="last-score">0%</span>Last Score
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="startQuiz('full')">Start Quiz (All Questions)</button>
+            <button id="mistake-btn" class="btn btn-mistake" onclick="startQuiz('mistake')">Practice Wrong Questions</button>
+            
+            <p style="text-align:center; font-size:0.8rem; margin-top:30px; color:#b2bec3;">
+                50 Minutes Timer • Instant Feedback • Mistake Tracking
+            </p>
+        </div>
+
+        <div id="quiz-screen" class="screen">
+            <div class="quiz-top-bar">
+                <span id="q-progress">Q 1/60</span>
+                <span id="timer" class="timer">50:00</span>
+            </div>
+
+            <div id="question-text" class="question-text">Loading...</div>
+            
+            <ul id="options-container" class="options-list">
+                </ul>
+
+            <button id="next-btn" class="btn" onclick="nextQuestion()">Next Question</button>
+        </div>
+
+        <div id="result-screen" class="screen">
+            <h1>Quiz Completed!</h1>
+            <p class="subtitle">Here is how you performed</p>
+
+            <div class="score-display" id="score-circle">
+                <span class="score-text" id="final-percentage">0%</span>
+            </div>
+
+            <div class="stats-box">
+                <div class="stat-item"><span id="total-q">0</span>Total</div>
+                <div class="stat-item"><span id="total-c" style="color:var(--success-color)">0</span>Correct</div>
+                <div class="stat-item"><span id="total-w" style="color:var(--error-color)">0</span>Wrong</div>
+            </div>
+
+            <p style="text-align: center; color: var(--text-light);">
+                Wrong answers have been saved to your Mistake Bank on the home screen.
+            </p>
+
+            <button class="btn btn-home" onclick="goHome()">Back to Home</button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- DATA: 60 Questions ---
+        const rawData = [
+            // SET 1
+            { q: "१) जनगणना २०७८ को प्रारम्भिक नतिजा कहिले सार्वजनिक भएको थियो?", o: ["२०७८ माघ ११", "२०७८ माघ १५", "२०७८ माघ २०", "२०७८ चैत्र १०"], a: 0 },
+            { q: "२) जनगणना २०७८ मा लैङ्गिक अनुपात कति रहेको छ?", o: ["४८.८७%", "५१.१३%", "९४.१६%", "९५.५९%"], a: 3 },
+            { q: "३) जनगणना २०७८ अनुसार ६० वर्ष माथिको जनसङ्ख्या कति प्रतिशत रहेको छ?", o: ["६१.९६%", "२७.८३%", "१०.२१%", "५६.९६%"], a: 2 },
+            { q: "४) जनगणना २०७८ अनुसार यौनिक अल्पसङ्ख्यकको जनसङ्ख्या कति रहेको छ?", o: ["०.०१%", "०.०३%", "०.०८%", "०.०९%"], a: 0 },
+            { q: "५) जनगणना २०७८ अनुसार परिवारको औसत आकार कति रहेको छ?", o: ["४.३७%", "४.३३%", "३.९९%", "४.७३%"], a: 0 },
+            { q: "६) जनगणना २०७८ अनुसार भौगोलिक क्षेत्रनुसारको जनसङ्ख्या को बारेमा तलका कथन विचार गर्नुहोस्।\ni) हिमाली प्रदेशमा ६.०८ % जनसङ्ख्या रहेको छ।\nii) पहाडी प्रदेश र तराई प्रदेशको जनसङ्ख्या क्रमशः ४०.३१% र ५३.६१% रहेको छ।", o: ["i र ii दुबै ठिक", "i र ii दुबै बेठिक", "i र ii दुबै ठिक", "i र ii दुबै बेठिक"], a: 2 }, // Fixed option mapping based on text provided
+            { q: "७) जनगणना २०७८ मा कति प्रतिशत परिवारले धाराको पानी प्रयोग गर्दछन्?", o: ["५७%", "५२%", "५५%", "५६.१५%"], a: 0 },
+            { q: "८) जनगणना २०७८ अनुसार कति प्रतिशत जनसङ्ख्या शौचालयको पहुँचमा रहेका छन्?", o: ["९७%", "९५.५%", "९४.५%", "९८%"], a: 1 },
+            { q: "९) जनगणना २०७८ अनुसार महिलाको साक्षरता दर कति प्रतिशत रहेको छ?", o: ["७६.२%", "८३.६%", "६९.७%", "७२%"], a: 2 },
+            { q: "१०) जनगणना २०७८ अनुसार सबैभन्दा बढि साक्षरता हुने जिल्ला तलका मध्ये कुन होइन?", o: ["काठमाडौं", "ललितपुर", "भक्तपुर", "रौतहट"], a: 3 },
+            { q: "११) जनगणना २०७८ अनुसार सबैभन्दा बढि जनसङ्ख्या वृद्धिदर भएको जिल्ला तलका मध्ये कुन हो?", o: ["रामेछाप", "काठमाडौं", "भक्तपुर", "दोलखा"], a: 2 },
+            { q: "१२) तल दिइएको क्रम अध्ययन गरेर सबै भन्दा बढि जनसङ्ख्या भएको जिल्लाको सहि क्रम छनोट गर्नुहोस्।", o: ["काठमाडौँ, मोरङ, रुपन्देही, झापा, सुनसरी", "काठमाडौँ, मोरङ, रुपन्देही, सुनसरी, झापा", "काठमाडौँ, झापा, रुपन्देही, मोरङ, सुनसरी", "मनाङ, मुस्ताङ, डोल्पा, रसुवा, हुम्ला"], a: 0 },
+            { q: "१३) जोडा मिलान गरे सहि कोड छनोट गर्नुहोस्:\nA) कोशी - १९२ जना\nB) मधेश - ६३३ जना\nC) बाग्मती - ३०१ जना\nD) गण्डकी - ११५ जना", o: ["A-1, B-2, C-3, D-4", "A-1, B-4, C-3, D-2", "A-3, B-2, C-1, D-4", "A-1, B-2, C-4, D-3"], a: 0 },
+            { q: "१४) गलत जोडा पत्ता लगाउनुहोस।", o: ["लुम्बिनी प्रदेश – २३० जना", "कर्णाली प्रदेश – ६० जना", "सुदुरपश्चिम प्रदेश – १३८ जना", "सबैभन्दा बढि जनघनत्व – वाग्मती"], a: 3 },
+            { q: "१५) जनगणना २०७८ अनुसार सबैभन्दा बढि विदेशमा वसोवास गर्ने जनसङ्ख्या भएको प्रदेश कुन हो?", o: ["कर्णाली", "गण्डकी", "मधेश", "लुम्बिनी"], a: 3 },
+            { q: "१६) जनगणना २०७८ अनुसार बिजुली बत्तिको प्रयोग गर्ने जनसङ्ख्या कति रहेको छ?", o: ["९२.२%", "९६.६%", "९०.६%", "९५%"], a: 0 },
+            { q: "१७) जनगणना २०७८ अनुसार सबैभन्दा कम जनसङ्ख्या भएको नगरपालिका कुन हो?", o: ["ठुलिभेरी न. पा.", "त्रीपुरा सुन्दरी न. पा.", "मादि न. पा.", "लालीगुराँस न. पा."], a: 0 },
+            { q: "१८) जनगणना २०७८ अनुसार तल दिइएको मध्ये सबैभन्दा बढि जनसङ्ख्या भएको नगरपालिका कुन हो?", o: ["पोखरा", "भरतपुर", "ललितपुर", "वीरगञ्ज"], a: 0 },
+            { q: "१९) जनगणना २०७८ अनुसार सबैभन्दा कम जनसङ्ख्या भएको गा. पा. कुन हो?", o: ["चामे", "लो-घेकर दामोदरकुण्ड", "लोमन्थाङ", "नार्पा भूमी"], a: 3 },
+            { q: "२०) जनगणना २०७८ अनुसार सबैभन्दा बढि जनसङ्ख्या भएको गा. पा. कुन हो?", o: ["राप्ती सोनारी", "खजुरा", "मायादेवि", "वैजनाथ"], a: 3 },
+            { q: "२१) तलको जोडा बिचार गरी सहि कथन छनोट गर्नुहोस्।\na. जनसङ्ख्या ऋणात्मक भएका जिल्लाहरु – ३४\nb. जनसङ्ख्या धनात्मक भएका जिल्लाहरु – ४३", o: ["a मात्र ठिक", "b मात्र ठिक", "दुबै बेठिक", "दुबै ठिक"], a: 3 },
+            { q: "२२) नेपालमा वसोवास गर्ने नेपालि नागरिक कति प्रतिशत रहेको छ?", o: ["१००%", "९९%", "९९.५३%", "९९.४६%"], a: 2 },
+            { q: "२३) कुल जनसङ्ख्या को कति प्रतिशत जनसङ्ख्या अपाङ्गता रहेको छ?", o: ["२.१%", "२%", "२.२%", "१.९%"], a: 2 },
+            { q: "२४) २०७८ को जनगणना अनुसार ५ वर्ष वा सो भन्दा कम उमेरका वालवालिकाको जन्मदर्ता कति प्रतिशत गरिएको छ?", o: ["७०%", "७४%", "७८%", "८०%"], a: 1 },
+            { q: "२५) जनगणना २०७८ अनुसार तल दिइएको कथन अध्ययन गरी सहि उत्तर छनोट गर्नुहोस्।\na. जातजातिको संख्या १४२ रहेको छ\nb. यस गणना अनुसार १० वटा धर्म र १२४ वटा मातृभाषा रहेका छन्।\nc. हिन्दु धर्म सबैभन्दा बढि वाहुल्यता भएको धर्म हो।", o: ["माथिको क मात्र", "माथिको ख मात्र", "माथिको ग मात्र", "माथिको सबै ठिक"], a: 3 }, // Adjusted options for logic
+            { q: "२६) जनगणना २०७८ अनुसार सबैभन्दा कम जनसङ्ख्या भएको धर्म कुन हो?", o: ["शिख", "जैन", "वोन", "वहाई"], a: 3 },
+            { q: "२७) जनगणना २०७८ अनुसार बौद्ध धर्मको जनसङ्ख्या कति रहेको छ?", o: ["८.२१%", "५.०९%", "३.१७%", "१.७६%"], a: 0 },
+            { q: "२८) जनगणना २०७८ अनुसार नेवारी भाषा बोल्ने मानिस कति प्रतिशत रहेका छन्?", o: ["२.७८%", "२.९६%", "४.८८%", "१.७%"], a: 1 },
+            { q: "२९) जनगणना २०७८ अनुसार सबै भन्दा कम संख्या भएको जाती कुन हो?", o: ["कुसुण्डा", "वनकरिया", "नुराङ", "मेचे"], a: 2 },
+            { q: "३०) जनगणना २०७८ अनुसार सबैभन्दा कम बोलिने मातृभाषा कुन हो?", o: ["कुसुण्डा", "वनकरिया", "नुराङ", "साम"], a: 0 },
+
+            // SET 2 (Appended as 31-60)
+            { q: "३१) जनगणना २०७८ अनुसार नेपालको कुल जनसङ्ख्या कति रहेको छ?", o: ["२,९१,६४,५७८", "२,९१,९२,४८०", "२,६४,९४,५०४", "२,८०,६४,५७८"], a: 0 },
+            { q: "३२) जनगणना २०७८ अनुसार नेपालको वार्षिक औषत जनसङ्ख्या वृद्धिदर (Annual Growth Rate) कति रहेको छ?", o: ["१.३५%", "०.९२%", "०.९८%", "१.०२%"], a: 1 },
+            { q: "३३) जनगणना २०७८ अनुसार नगरपालिका (सहरी क्षेत्र) मा बसोबास गर्ने जनसङ्ख्या कति प्रतिशत रहेको छ?", o: ["६३.१९%", "६६.१७%", "५९.९%", "६२.५%"], a: 1 },
+            { q: "३४) जनगणना २०७८ अनुसार नेपालको कुल साक्षरता दर (Total Literacy Rate) कति रहेको छ?", o: ["६५.९%", "७६.३%", "७१.१५%", "७५%"], a: 1 },
+            { q: "३५) जनगणना २०७८ अनुसार पुरुषको साक्षरता दर कति प्रतिशत रहेको छ?", o: ["८३.६%", "७६.२%", "८१.६%", "८५.५%"], a: 0 },
+            { q: "३६) जनगणना २०७८ अनुसार सबैभन्दा कम साक्षरता भएको प्रदेश कुन हो?", o: ["कर्णाली प्रदेश", "सुदूरपश्चिम प्रदेश", "मधेश प्रदेश", "लुम्बिनी प्रदेश"], a: 2 },
+            { q: "३७) जनगणना २०७८ अनुसार खाना पकाउनका लागि अक्सर प्रयोग गर्ने इन्धन (Cooking Fuel) मा सबैभन्दा बढी हिस्सा कसको छ?", o: ["एल.पी. ग्यास", "काठ/दाउरा", "बिजुली", "गुइँठा"], a: 1 },
+            { q: "३८) जनगणना २०७८ अनुसार कति प्रतिशत परिवारमा महिलाको नाममा घर वा जग्गा (Female Ownership) रहेको छ?", o: ["१९.७%", "२३.८%", "२६.४%", "३०.५%"], a: 1 },
+            { q: "३९) जनगणना २०७८ अनुसार कुल जनसङ्ख्याको कति प्रतिशत मानिस अक्सर विदेशमा (Absentee Population) बस्छन्?", o: ["२१,९०,५९२ जना", "१९,२१,४०० जना", "२५,००,००० जना", "१५,५०,३०० जना"], a: 0 },
+            { q: "४०) जनगणना २०७८ अनुसार सबैभन्दा कम जनसङ्ख्या वृद्धिदर (Negative Growth Rate) भएको जिल्ला कुन हो?", o: ["मनाङ", "रामेछाप", "खोटाङ", "भोजपुर"], a: 1 },
+            { q: "४१) जनगणना २०७८ अनुसार सबैभन्दा कम जनसङ्ख्या भएको जिल्ला कुन हो?", o: ["मनाङ", "मुस्ताङ", "रसुवा", "डोल्पा"], a: 0 },
+            { q: "४२) जनगणना २०७८ अनुसार सबैभन्दा कम जनघनत्व भएको प्रदेश कुन हो?", o: ["गण्डकी प्रदेश", "कर्णाली प्रदेश", "सुदूरपश्चिम प्रदेश", "कोशी प्रदेश"], a: 1 },
+            { q: "४३) जनगणना २०७८ अनुसार अपाङ्गता भएका व्यक्तिहरूमध्ये सबैभन्दा बढी कुन प्रकारको अपाङ्गता रहेको छ?", o: ["दृष्टि सम्बन्धी", "शारीरिक अपाङ्गता", "सुस्त श्रवण", "बहुअपाङ्गता"], a: 1 },
+            { q: "४४) जनगणना २०७८ अनुसार कति प्रतिशत परिवारको पहुँचमा 'स्मार्ट फोन' (Smart Phone) रहेको छ?", o: ["७३.२%", "६५.५%", "५०%", "८०%"], a: 0 },
+            { q: "४५) जनगणना २०७८ अनुसार इन्टरनेट सुविधाको पहुँचमा रहेका परिवार कति प्रतिशत छन्?", o: ["३०.५%", "३७.७%", "४५.२%", "५२.१%"], a: 1 },
+            { q: "४६) जनगणना २०७८ अनुसार सबैभन्दा बढी जनसङ्ख्या भएको प्रदेश कुन हो?", o: ["कोशी", "मधेश", "बागमती", "लुम्बिनी"], a: 2 },
+            { q: "४७) जनगणना २०७८ अनुसार हिन्दु धर्मावलम्बीको प्रतिशत कति रहेको छ?", o: ["८१.३%", "८१.१९%", "८०.६%", "८२.१%"], a: 1 },
+            { q: "४८) जनगणना २०७८ अनुसार नेपालमा कति प्रकारका अपाङ्गता वर्गीकरण गरिएको थियो?", o: ["७ प्रकार", "८ प्रकार", "१० प्रकार", "१२ प्रकार"], a: 2 },
+            { q: "४९) जनगणना २०७८ अनुसार जन्मस्थान र हालको बसोबास एउटै गाउँपालिका वा नगरपालिकामा भएका (बसाइँसराई नगरेका) व्यक्ति कति प्रतिशत छन्?", o: ["६८%", "५५%", "७५%", "६०%"], a: 0 },
+            { q: "५०) जनगणना २०७८ को नारा (Slogan) के थियो?", o: ["कोही नछुटौँ, कोही नदोहोरियौँ", "मेरो गणना, मेरो सहभागिता", "राष्ट्रको गणना, राष्ट्रको उन्नति", "तथ्याङ्क विकासको आधार"], a: 1 },
+            { q: "५१) नेपालको 'मातृ मृत्यु अनुपात' (Maternal Mortality Ratio) कति रहेको छ (प्रति लाख जीवित जन्ममा)?", o: ["२३९", "१५१", "१७०", "१३४"], a: 1 },
+            { q: "५२) जनगणना २०७८ अनुसार 'महिला परिवारमुली' (Female Headed Households) रहेका परिवारको प्रतिशत कति छ?", o: ["२५.७%", "३१.५५%", "२६.६%", "३५%"], a: 1 },
+            { q: "५३) जनगणना २०७८ अनुसार नेपालको 'कुल आश्रित अनुपात' (Total Dependency Ratio) कति रहेको छ?", o: ["६०.५%", "५३.३%", "५८.२%", "४९.५%"], a: 1 },
+            { q: "५४) जनगणना २०७८ अनुसार सबैभन्दा बढी जनघनत्व भएको जिल्ला काठमाडौं हो भने जनघनत्व कति (प्रति वर्ग कि.मि.) रहेको छ?", o: ["४४१६ जना", "५१६९ जना", "३९२० जना", "५००० जना"], a: 1 },
+            { q: "५५) जनगणना २०७८ अनुसार सबैभन्दा ठूलो 'औसत परिवार आकार' (Highest Average Household Size) भएको प्रदेश कुन हो?", o: ["कर्णाली प्रदेश", "मधेश प्रदेश", "सुदूरपश्चिम प्रदेश", "लुम्बिनी प्रदेश"], a: 1 },
+            { q: "५६) नेपालमा दोस्रो सबैभन्दा बढी बोलिने 'मातृभाषा' (Mother Tongue) कुन हो?", o: ["भोजपुरी", "थारु", "मैथिली", "तामाङ"], a: 2 },
+            { q: "५७) जनगणना २०७८ अनुसार 'युवा साक्षरता दर' (१५-२४ वर्ष उमेर समूह) कति प्रतिशत रहेको छ?", o: ["८५%", "९२.४%", "८८.६%", "९५%"], a: 1 },
+            { q: "५८) जनगणना २०७८ अनुसार घरको छाना (Roof) मा सबैभन्दा बढी कुन सामग्रीको प्रयोग भएको छ?", o: ["टायल/खपडा", "जस्ता/टिनको पाता", "ढलान (RCC)", "फुस/खर"], a: 1 },
+            { q: "५९) जनगणना २०७८ अनुसार खानेपानीको मुख्य स्रोतमा 'ट्युबवेल/हाते पम्प' प्रयोग गर्ने जनसङ्ख्या कति प्रतिशत छ?", o: ["२९.८%", "३५%", "२०%", "२५.५%"], a: 0 },
+            { q: "६०) जनगणना २०७८ मा प्रयोग गरिएको 'सन्दर्भ दिन' (Reference Day) कुन थियो?", o: ["२०७८ जेठ २५", "२०७८ मंसिर ९", "२०७८ कार्तिक २५", "२०७८ असार ८"], a: 1 }
+        ];
+
+        // Assign IDs dynamically
+        const allQuestions = rawData.map((item, index) => ({ id: index + 1, ...item }));
+
+        // --- STATE & VARIABLES ---
+        let currentQueue = [];
+        let currentIndex = 0;
+        let score = 0;
+        let timerInterval;
+        let timeRemaining;
+        const totalTime = 50 * 60; // 50 mins
+
+        // Texts
+        const praises = ["Wow Amazing!", "You are a Genius!", "Spectacular!", "Outstanding!", "Correct!", "Sharp Memory!"];
+        const motivates = ["Don't Give Up!", "Keep Learning!", "You'll Get Next!", "Stay Focused!", "Note This Down!", "Try Again!"];
+
+        // --- LOCAL STORAGE FUNCTIONS ---
+        function getMistakes() {
+            const stored = localStorage.getItem('mistakeBank_Loksewa');
+            return stored ? JSON.parse(stored) : [];
+        }
+
+        function saveMistake(question) {
+            let bank = getMistakes();
+            if (!bank.some(q => q.id === question.id)) {
+                bank.push(question);
+                localStorage.setItem('mistakeBank_Loksewa', JSON.stringify(bank));
+                updateHomeStats();
+            }
+        }
+
+        function updateHomeStats() {
+            const bank = getMistakes();
+            document.getElementById('mistake-count').innerText = bank.length;
+            
+            const lastScore = localStorage.getItem('lastScore_Loksewa');
+            document.getElementById('last-score').innerText = lastScore ? lastScore : "0%";
+
+            const btn = document.getElementById('mistake-btn');
+            if (bank.length > 0) {
+                btn.style.display = 'block';
+                btn.innerHTML = `Practice Mistakes (${bank.length})`;
+            } else {
+                btn.style.display = 'none';
+            }
+        }
+
+        // --- APP LOGIC ---
+        function switchScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function goHome() {
+            clearInterval(timerInterval);
+            switchScreen('home-screen');
+            updateHomeStats();
+        }
+
+        function startQuiz(mode) {
+            score = 0;
+            currentIndex = 0;
+            timeRemaining = totalTime;
+
+            if (mode === 'mistake') {
+                currentQueue = getMistakes();
+                // Optional: Shuffle mistakes? 
+                currentQueue.sort(() => Math.random() - 0.5);
+            } else {
+                // Clone all questions
+                currentQueue = [...allQuestions];
+                // Keep sequence as requested "one by one in sequence", 
+                // but usually for quiz apps, random is better? 
+                // User asked: "display questions one by one in a sequence". I will respect the order provided.
+            }
+
+            if(currentQueue.length === 0) return alert("No questions available!");
+
+            switchScreen('quiz-screen');
+            loadQuestion();
+            startTimer();
+        }
+
+        function loadQuestion() {
+            const q = currentQueue[currentIndex];
+            document.getElementById('question-text').innerText = q.q;
+            document.getElementById('q-progress').innerText = `Q ${currentIndex + 1}/${currentQueue.length}`;
+            
+            const ul = document.getElementById('options-container');
+            ul.innerHTML = '';
+            document.getElementById('next-btn').style.display = 'none';
+
+            q.o.forEach((opt, idx) => {
+                const li = document.createElement('li');
+                li.className = 'option-item';
+                li.innerText = opt;
+                li.onclick = () => checkAnswer(idx, li, q);
+                ul.appendChild(li);
+            });
+        }
+
+        function checkAnswer(selectedIdx, el, questionObj) {
+            // Disable all options
+            const allOpts = document.querySelectorAll('.option-item');
+            allOpts.forEach(o => o.classList.add('disabled'));
+
+            const isCorrect = (selectedIdx === questionObj.a);
+            
+            if (isCorrect) {
+                el.classList.add('correct');
+                score++;
+                showFeedback(true);
+            } else {
+                el.classList.add('wrong');
+                allOpts[questionObj.a].classList.add('correct'); // Show right answer
+                showFeedback(false);
+                saveMistake(questionObj);
+            }
+
+            document.getElementById('next-btn').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            currentIndex++;
+            if (currentIndex < currentQueue.length) {
+                loadQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function finishQuiz() {
+            clearInterval(timerInterval);
+            switchScreen('result-screen');
+            
+            const percentage = Math.round((score / currentQueue.length) * 100);
+            
+            document.getElementById('final-percentage').innerText = percentage + '%';
+            document.getElementById('score-circle').style.background = `conic-gradient(var(--success-color) ${percentage * 3.6}deg, #dfe6e9 0deg)`;
+            
+            document.getElementById('total-q').innerText = currentQueue.length;
+            document.getElementById('total-c').innerText = score;
+            document.getElementById('total-w').innerText = currentQueue.length - score;
+
+            localStorage.setItem('lastScore_Loksewa', percentage + '%');
+        }
+
+        // --- UTILS ---
+        function startTimer() {
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+                if (timeRemaining <= 0) finishQuiz();
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const m = Math.floor(timeRemaining / 60);
+            const s = timeRemaining % 60;
+            document.getElementById('timer').innerText = 
+                `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function showFeedback(isCorrect) {
+            const msgBox = document.getElementById('feedback-msg');
+            const list = isCorrect ? praises : motivates;
+            const text = list[Math.floor(Math.random() * list.length)];
+            
+            msgBox.innerText = text;
+            msgBox.style.color = isCorrect ? 'var(--success-color)' : 'var(--error-color)';
+            msgBox.style.display = 'block';
+            
+            // Particles
+            spawnParticles(window.innerWidth / 2, window.innerHeight / 3, isCorrect);
+
+            setTimeout(() => { msgBox.style.display = 'none'; }, 2000);
+        }
+
+        function spawnParticles(x, y, isHappy) {
+            const count = 30;
+            const colors = isHappy ? ['#00b894', '#fdcb6e', '#0984e3', '#e84393'] : ['#636e72', '#b2bec3'];
+            
+            for(let i=0; i<count; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                p.style.left = x + 'px';
+                p.style.top = y + 'px';
+                
+                // Random explosion direction
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 150 + 50;
+                
+                p.style.setProperty('--x', Math.cos(angle) * velocity + 'px');
+                p.style.setProperty('--y', Math.sin(angle) * velocity + 'px');
+                
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 1000);
+            }
+        }
+
+        // Init
+        window.onload = updateHomeStats;
+
+    </script>
+</body>
+</html>
