@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Madhesh 4th Mock Test 1</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* [NEW BEAUTIFUL BRIGHT SUNSET COLOR PALETTE] */
+        :root { --primary: #FF3366; --secondary: #FF9933; --accent: #00E5FF; --glass-bg: rgba(255, 255, 255, 0.15); --glass-border: rgba(255, 255, 255, 0.3); --text-color: #ffffff; --card-bg: rgba(15, 15, 30, 0.92); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: linear-gradient(135deg, #FF0844 0%, #FFB199 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; color: var(--text-color); padding: 15px; overflow-x: hidden; }
+
+        .app-container { width: 100%; max-width: 650px; background: var(--card-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 24px; padding: 2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative; overflow: hidden; transition: all 0.4s ease; }
+        h1 { font-size: 2rem; font-weight: 800; background: linear-gradient(to right, #00E5FF, #B400FB); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+        h2 { font-size: 1.5rem; margin-bottom: 20px; }
+        p { color: #ccc; font-size: 0.95rem; line-height: 1.6; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .label { display: block; font-size: 0.8rem; margin-bottom: 5px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+        .glass-input { width: 100%; padding: 15px; background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); border-radius: 12px; color: white; font-size: 1rem; outline: none; transition: 0.3s; }
+        .glass-input:focus { border-color: var(--primary); background: rgba(255,255,255,0.15); }
+        .glass-input:read-only { background: rgba(0,0,0,0.2); color: #888; cursor: not-allowed; }
+        select.glass-input option { background: #0F0F1E; color: white; }
+        .btn { background: linear-gradient(90deg, #00E5FF, #B400FB); border: none; color: white; padding: 16px; width: 100%; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-top: 20px; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 5px 20px rgba(0, 229, 255, 0.3); min-height: 50px; }
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { filter: grayscale(1); cursor: wait; }
+        .btn-outline { background: transparent; border: 2px solid var(--glass-border); box-shadow: none; margin-top: 10px; }
+        .personal-header { text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--glass-border); min-height: 50px; display: flex; align-items: center; justify-content: center; }
+        .animate-praise { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .info-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: rgba(255,255,255,0.05); padding: 10px 15px; border-radius: 10px; }
+        .timer-badge { font-family: monospace; font-weight: 700; color: var(--accent); font-size: 1.1rem; }
+        .question-text { font-size: 1.2rem; font-weight: 600; margin-bottom: 20px; line-height: 1.5; }
+        .option-btn { width: 100%; padding: 18px; margin-bottom: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 12px; text-align: left; color: #ddd; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; -webkit-user-select: none; user-select: none; }
+        .option-marker { width: 30px; height: 30px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-weight: 700; flex-shrink: 0; }
+        .correct { background: rgba(0, 255, 136, 0.2) !important; border-color: #00FF88 !important; color: white !important; }
+        .correct .option-marker { background: #00FF88; color: black; }
+        .wrong { background: rgba(255, 51, 102, 0.2) !important; border-color: #FF3366 !important; color: white !important; }
+        .wrong .option-marker { background: #FF3366; color: white; }
+        .explanation-box { margin-top: 20px; padding: 15px; background: rgba(180, 0, 251, 0.15); border-left: 4px solid var(--secondary); border-radius: 8px; font-size: 0.9rem; display: none; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .score-circle { width: 160px; height: 160px; border-radius: 50%; border: 5px solid var(--primary); margin: 0 auto 20px auto; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 0 30px rgba(0, 229, 255, 0.2); }
+        .score-val { font-size: 3.5rem; font-weight: 800; color: white; line-height: 1; }
+        .hidden { display: none !important; }
+        #opts-list { max-height: 50vh; overflow-y: auto; padding-right: 5px; }
+        #auth-msg { text-align: center; margin-top: 15px; font-weight: 600; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="app">
+    <div id="view-login">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h1 id="title-display">Madhesh 4th Mock Test 1</h1>
+            <p>5th Edition | Civil Engineering</p>
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Full Name</span>
+            <input type="text" id="inp-name" class="glass-input" placeholder="Enter your name">
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Qualification</span>
+            <select id="inp-qual" class="glass-input">
+                <option value="Engineer">Engineer</option>
+                <option value="Sub-Engineer">Sub-Engineer</option>
+                <option value="Asst. Sub-Engineer">Asst. Sub-Engineer</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <span class="label">Unique Code</span>
+            <input type="tel" id="inp-code" class="glass-input" placeholder="Enter 5-digit code">
+        </div>
+
+        <div class="input-group">
+            <span class="label">Password (Auto-Fill)</span>
+            <input type="password" id="inp-pass" class="glass-input" placeholder="Verifying..." readonly>
+        </div>
+
+        <button class="btn" id="btn-verify" onclick="App.verifyAndLogin()">Verify & Login</button>
+        <p id="auth-msg"></p>
+    </div>
+
+    <div id="view-dash" class="hidden">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2 id="greet-msg" style="color: var(--primary);">Welcome!</h2>
+            <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 16px; margin-bottom: 20px;">
+                <p style="text-transform: uppercase; font-size: 0.8rem; color: #aaa;">Active Session</p>
+                <h3 id="dash-topic-display" style="font-size: 1.5rem; margin: 10px 0;"></h3>
+                <p>50 Questions • 45 Minutes</p>
+            </div>
+        </div>
+        <button class="btn" id="btn-start" onclick="App.start(false)">Start Exam</button>
+        <p id="submitted-msg" style="color: var(--primary); text-align: center; margin-top: 15px; display: none;">✅ Score Submitted Successfully</p>
+        <button class="btn btn-outline" id="btn-review" onclick="App.start(true)" style="display: none;">Review Mistakes</button>
+    </div>
+
+    <div id="view-quiz" class="hidden">
+        <div class="personal-header">
+            <div id="praise-txt" style="font-size: 1.2rem; font-weight: 700; color: white;">Good Luck!</div>
+        </div>
+
+        <div class="info-bar">
+            <span>Q: <span id="q-idx">1</span> / <span id="q-total">50</span></span>
+            <span class="timer-badge" id="timer">45:00</span>
+        </div>
+
+        <div id="q-container">
+            <div class="question-text" id="q-text">Loading...</div>
+            <div id="opts-list"></div>
+            <div class="explanation-box" id="exp-box"></div>
+        </div>
+
+        <button class="btn hidden" id="btn-next" onclick="App.next()">Next Question</button>
+    </div>
+
+    <div id="view-result" class="hidden" style="text-align: center;">
+        <h2>Quiz Completed!</h2>
+        <div class="score-circle">
+            <span class="score-val" id="res-score">0</span>
+            <span style="font-size: 0.8rem; text-transform: uppercase; color: #aaa;">Correct</span>
+        </div>
+        <div style="margin-bottom: 30px;">
+            <h3 id="res-pct" style="color: var(--primary);">0% Accuracy</h3>
+            <p id="sync-status" style="font-size: 0.9rem; margin-top: 10px; opacity: 0.8;">Syncing score...</p>
+        </div>
+        <button class="btn" onclick="App.dash()">Back to Dashboard</button>
+    </div>
+</div>
+
+<script>
+/**
+ * --- UPDATED AUDIO HELPER SYSTEM ---
+ * Uses Free Google Audio API + Browser Synthesis fallback
+ */
+const AudioHelper = {
+    ctx: null,
+    init: function() {
+        if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if(this.ctx.state === 'suspended') this.ctx.resume();
+        
+        // Mobile warm-up
+        if ('speechSynthesis' in window) {
+            let warmupMsg = new SpeechSynthesisUtterance('');
+            warmupMsg.volume = 0; 
+            window.speechSynthesis.speak(warmupMsg);
+        }
+    },
+    playTing: function() {
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.type = 'sine'; 
+        osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1500, this.ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.5);
+    },
+    playFush: function() {
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.type = 'square'; 
+        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.3);
+    },
+    speak: function(text) {
+        // Free Google Translate TTS API (Human Sounding)
+        const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=${encodeURIComponent(text)}`;
+        const audio = new Audio(url);
+        audio.play().catch(() => {
+            // Fallback to robotic browser voice if blocked
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const msg = new SpeechSynthesisUtterance(text);
+                msg.lang = 'en-US';
+                window.speechSynthesis.speak(msg);
+            }
+        });
+    }
+};
+
+/**
+ * ----------------------------------------------------
+ * CONFIGURATION - CHANGE ONLY THIS SECTION FOR NEW APPS
+ * ----------------------------------------------------
+ */
+const CFG = {
+    topic: "Madhesh 4th Mock Test 1", 
+    scoreScript: "https://script.google.com/macros/s/AKfycbwlARXNg2vbAH3-xPgt4Mt_MlPydwuZOtA7dkjyD0LVQlYX2IBDUKULT8rlZVIy034H/exec",
+    authScript: "https://script.google.com/macros/s/AKfycbyUGMGXI7vml6jzJsCxhXvHgnq4V4Aq6sl6blkJkdfC8_haCxI__kx3EwFzZrW942E6/exec"
+};
+
+const _tid = CFG.topic.replace(/[^a-zA-Z0-9]/g, "_");
+const KEYS = {
+    user: "v2_civil_eng_global_user",
+    mistakes: `v2_mistakes_${_tid}`,
+    sent: `v2_sent_status_${_tid}`,
+    pending: `v2_pending_${_tid}`
+};
+  const DB = [
+  {
+    "id": 1,
+    "q": "भविष्यमा प्रदेश निजामती सेवाको निमित्त अयोग्य नठहरिने गरी सेवाबाट हटाउने सजाय कुन अवस्थामा दिइन्छ?",
+    "o": [
+      "कार्यक्षमताको अभाव भएमा",
+      "भष्टाचार गरेमा",
+      "नैतिक पतन देखिने फौजदारी अभियोग लागेमा",
+      "माथिका सबै"
+    ],
+    "a": 0,
+    "e": "नियम १०० (ख) (१) अनुसार कार्यक्षमताको अभाव भएमा भविष्यमा अयोग्य नठहरिने गरी हटाइन्छ। भ्रष्टाचार र नैतिक पतनमा भने बर्खास्त गरिन्छ।"
+  },
+  {
+    "id": 2,
+    "q": "आर्थिक कार्यविधि तथा वित्तीय उत्तरदायित्व ऐन, २०७६ अनुसार मध्यमकालीन खर्च संरचना (MTEF) को खाका कति वर्षको अवधिको तयार गर्नुपर्छ?",
+    "o": [ "२ वर्ष", "३ वर्ष", "५ वर्ष", "१० वर्ष" ],
+    "a": 1,
+    "e": "बजेट निर्माणलाई यथार्थपरक बनाउन हरेक वर्ष आगामी ३ वर्षको खर्चको अनुमानित खाका (MTEF) तयार गरिन्छ।"
+  },
+  {
+    "id": 3,
+    "q": "नेपालको संविधानको धारा २४१ बमोजिम महालेखापरीक्षकले कुन संस्थाको प्रत्यक्ष लेखापरीक्षण गर्दैन तर परामर्श अनिवार्य हुन्छ?",
+    "o": [
+      "प्रदेश सरकारका मन्त्रालयहरू",
+      "५० प्रतिशतभन्दा बढी स्वामित्व भएको संगठित संस्था",
+      "स्थानीय तह",
+      "सुरक्षा निकायहरू"
+    ],
+    "a": 1,
+    "e": "सार्वजनिक संस्थानहरूको लेखापरीक्षण गर्न महालेखापरीक्षकको परामर्श अनिवार्य रूपमा लिनुपर्ने संवैधानिक व्यवस्था छ।"
+  },
+  {
+    "id": 4,
+    "q": "सार्वजनिक सेवा वडापत्रलाई कसको अधिकार पत्रको रूपमा लिइन्छ?",
+    "o": [ "कर्मचारीको", "नागरिकको", "सरकारको", "राजनीतिक दलको" ],
+    "a": 1,
+    "e": "नागरिक बडापत्रले सेवाग्राही (नागरिक) लाई सेवा प्राप्त गर्ने अधिकार प्रदान गर्दछ।"
+  },
+  {
+    "id": 5,
+    "q": "सूचनाको हक सम्बन्धी ऐन, २०६४ बमोजिम वर्गीकृत सूचना अधिकतम कति वर्षसम्म गोप्य राख्न सकिन्छ?",
+    "o": [ "१० वर्ष", "१५ वर्ष", "२० वर्ष", "३० वर्ष" ],
+    "a": 3,
+    "e": "राष्ट्रिय सुरक्षा सम्बन्धी गम्भीर सूचनाहरू दफा २७ बमोजिम ३० वर्षसम्म संरक्षण गर्न सकिने व्यवस्था छ।"
+  },
+  {
+    "id": 6,
+    "q": "कुनै वडाको केन्द्र हेरफेर गर्न आवश्यक भएमा सभाको कति बहुमतले प्रस्ताव पारित गर्नुपर्छ?",
+    "o": [ "साधारण बहुमत", "दुई तिहाइ बहुमत", "तीन चौथाइ बहुमत", "वडा अध्यक्षको एकल निर्णय" ],
+    "a": 1,
+    "e": "दफा ६ (७) बमोजिम वडाको केन्द्र हेरफेर गर्न तत्काल कायम रहेको सदस्य संख्याको दुई तिहाइ बहुमत आवश्यक पर्दछ।"
+  },
+  {
+    "id": 7,
+    "q": "सार्वजनिक खरिद ऐन, २०६३ अनुसार कति रकमसम्मको खरिद गर्न लागत अनुमान (Cost Estimate) गर्नु पर्ने छैन?",
+    "o": [ "रु. ५०,०००", "रु. १,००,०००", "रु. १,५०,०००", "रु. ५,००,०००" ],
+    "a": 1,
+    "e": "निर्माण कार्य बाहेक एक लाख रुपैयाँसम्मको खरिद गर्न लागत अनुमान गर्नु पर्ने छैन।"
+  },
+  {
+    "id": 8,
+    "q": "२०२५ को आर्थिक स्वतन्त्रता सूचकांक (Economic Freedom Index) अनुसार नेपाल कति औँ स्थानमा रहेको छ?",
+    "o": [ "१३१ औँ", "१४५ औँ", "१०७ औँ", "१०१ औँ" ],
+    "a": 0,
+    "e": "सन् २०२५ को प्रतिवेदन अनुसार नेपाल १३१ औँ स्थानमा परेको छ।"
+  },
+  {
+    "id": 9,
+    "q": "नेपालको संविधानको कुन भागदेखि कुन भागसम्म १३ वटा संवैधानिक निकाय सम्बन्धी व्यवस्था गरिएको छ?",
+    "o": [ "भाग २० देखि २६ सम्म", "भाग २१ देखि २७ सम्म", "भाग २२ देखि २८ सम्म", "भाग १९ देखि २५ सम्म" ],
+    "a": 1,
+    "e": "संविधानको भाग २१ (अख्तियार) देखि भाग २७ (अन्य आयोगहरू) सम्म संवैधानिक निकायको व्यवस्था छ।"
+  },
+  {
+    "id": 10,
+    "q": "कुन माध्यमबाट पत्र पठाइएको हो भन्ने कुराको जानकारी कहाँबाट प्राप्त हुन्छ?",
+    "o": [ "दर्ता किताब", "तोक आदेश", "चलानी किताब", "टिप्पणी" ],
+    "a": 2,
+    "e": "चलानी किताबमा पत्र पठाइएको माध्यम (साधारण, जरुरी, तुरुन्त) उल्लेख गरिन्छ।"
+  },
+  {
+    "id": 11,
+    "q": "The exterior corner of wall is known as .................",
+    "o": [ "perpend", "jamb", "quoin", "frog" ],
+    "a": 2,
+    "e": "Quoins are large rectangular blocks of masonry used to reinforce exterior corners of a building."
+  },
+  
+  {
+    "id": 12,
+    "q": "The maximum permissible differential settlement in the case of foundations on sandy soils is generally about .................",
+    "o": [ "5 mm", "10 mm", "20 mm", "25 mm" ],
+    "a": 3,
+    "e": "Sandy soils allow less differential settlement compared to clayey soils, typically limited to 25 mm."
+  },
+  {
+    "id": 13,
+    "q": "The minimum depth of foundation below the ground level in any soil is .................",
+    "o": [ "120 cm", "100 cm", "80 cm", "60 cm" ],
+    "a": 2,
+    "e": "Generally, foundations should be at least 80 cm to 90 cm deep to be safe from seasonal moisture changes."
+  },
+  {
+    "id": 14,
+    "q": "The safe bearing capacity of the soil can be improved by .................",
+    "o": [ "increasing the depth of foundation", "grouting the soil", "draining the soil", "all the above" ],
+    "a": 3,
+    "e": "All listed methods help consolidate or reinforce the soil to carry more load."
+  },
+  {
+    "id": 15,
+    "q": "The soil investigation method using the penetrometers belongs to the category of .................",
+    "o": [ "open excavation", "borings", "sub-surface soundings", "geophysical" ],
+    "a": 2,
+    "e": "Sub-surface sounding involves pushing or driving a probe into the ground to measure resistance."
+  },
+  {
+    "id": 16,
+    "q": "A 'Check Valve' (Non-Return Valve) is installed in a pumping system to:",
+    "o": [ "Allow water to flow in only one direction", "Stop the pump automatically", "Increase the pressure", "Measure the volume" ],
+    "a": 0,
+    "e": "Check valves prevent backflow, ensuring water moves only toward the discharge side."
+  },
+  
+  {
+    "id": 17,
+    "q": "A 'Bulkhead' light fixture is most commonly used in:",
+    "o": [ "Luxury living rooms", "Outdoor areas and basements", "Under-cabinet kitchen", "Desk lamps" ],
+    "a": 1,
+    "e": "Bulkhead lights are heavy-duty, weather-resistant fixtures designed for tough environments."
+  },
+  {
+    "id": 18,
+    "q": "Glare' is caused by:",
+    "o": [ "Low light levels", "Excessive contrast or direct light", "Using LED lights", "Turning off lights" ],
+    "a": 1,
+    "e": "Glare occurs when a light source is significantly brighter than its surroundings, causing discomfort."
+  },
+  {
+    "id": 19,
+    "q": "The area of most acute vision of a driver is a cone of ............ ",
+    "o": [ "3°", "10°", "15°", "20°" ],
+    "a": 0,
+    "e": "The central cone of highly focused vision (foveal vision) is approximately 3 degrees."
+  },
+  {
+    "id": 20,
+    "q": "Economic survey of a proposed road project includes a detailed survey of ............ ",
+    "o": [ "agricultural and industrial products in the area", "toll tax resources", "origin and destination of traffic", "soil characteristics" ],
+    "a": 0,
+    "e": "Economic survey assesses the potential traffic generation based on local production and trade."
+  },
+  {
+    "id": 21,
+    "q": "A river training work is generally required when the river is .............",
+    "o": [ "aggrading type", "degrading type", "meandering type", "stable type" ],
+    "a": 2,
+    "e": "Meandering rivers migrate laterally, requiring training works like spurs or embankments to protect banks."
+  },
+  
+  {
+    "id": 22,
+    "q": "A solid construction put across the river to raise its water level and divert the water into the canal, is known as .............",
+    "o": [ "marginal bund", "weir", "barrage", "dam" ],
+    "a": 1,
+    "e": "A weir is a low-head barrier used to raise the water level for diversion."
+  },
+  {
+    "id": 23,
+    "q": "The yield of the well depends upon the .............",
+    "o": [ "permeability of the soil", "position of water table", "depth of well", "all of these" ],
+    "a": 3,
+    "e": "Yield is a function of aquifer characteristics, drawdown, and physical well design."
+  },
+  {
+    "id": 24,
+    "q": "An artesian spring is formed .............",
+    "o": [ "at a vertical cut", "due to rock faults", "porous strata enclosed between two impervious strata", "none of the above" ],
+    "a": 2,
+    "e": "Artesian conditions occur when groundwater is trapped under pressure between impermeable layers."
+  },
+  
+  {
+    "id": 25,
+    "q": "नुवाकोटको विदुर कुन नदीको किनारमा अवस्थित छ ?",
+    "o": [ "बागमती", "मोदी", "त्रिशुली", "राप्ती" ],
+    "a": 2,
+    "e": "विदुर नगरपालिका त्रिशुली नदीको किनारमा अवस्थित छ।"
+  },
+  {
+    "id": 26,
+    "q": "नेपालमा शासन गर्ने पहिलो वंश कुन हो ?",
+    "o": [ "अहिरवंश", "गोपालवंश", "किराँतवंश", "लिच्छविवंश" ],
+    "a": 1,
+    "e": "नेपालको इतिहासमा गोपालवंशलाई पहिलो शासक वंश मानिन्छ।"
+  },
+  {
+    "id": 27,
+    "q": "तलका मध्ये कुन कृति भानुभक्त आचार्यको होइन ?",
+    "o": [ "शकुन्तला", "बधुशिक्षा", "प्रश्नोत्तर", "भक्तमाला" ],
+    "a": 0,
+    "e": "शकुन्तला महाकवि लक्ष्मीप्रसाद देवकोटाको कृति हो।"
+  },
+  {
+    "id": 28,
+    "q": "गिद्धे प्रेसको स्थापना कहिले भएको हो ?",
+    "o": [ "वि.सं. १९०८", "वि.सं. १९११", "वि.सं. १९१५", "वि.सं. १९१०" ],
+    "a": 0,
+    "e": "जंगबहादुर राणाले बेलायतबाट फर्किदा १९०८ मा यो प्रेस ल्याएका थिए।"
+  },
+  {
+    "id": 29,
+    "q": "हरेक वर्ष बाघ दिवस कहिले मनाइन्छ ?",
+    "o": [ "July 29", "June 29", "June 21", "July 21" ],
+    "a": 0,
+    "e": "International Tiger Day is observed globally on July 29th."
+  },
+  {
+    "id": 30,
+    "q": "कुन सिद्धान्तको अनुसन्धान गरिरहेकै बेला आइन्स्टाइनको मृत्यु भएको थियो ?",
+    "o": [ "Theory of Relativity", "Unified Field Theory", "Quantum Mechanics", "Photo-Electric Effect" ],
+    "a": 1,
+    "e": "Einstein spent his final years trying to develop a Unified Field Theory to unite all fundamental forces."
+  },
+  {
+    "id": 31,
+    "q": "सेरामिक्सको उपयोगिता कुन हो ?",
+    "o": [ "भट्टी बनाउन", "नक्कली दाँत र हाडजोर्नी बनाउन", "भाँडाकुँडा बनाउन", "माथिका सबै" ],
+    "a": 3,
+    "e": "Ceramics are used in engineering, medicine, and household items due to their heat resistance."
+  },
+  {
+    "id": 32,
+    "q": "नेपालको संविधान संविधानसभाबाट कहिले पारित भएको हो ?",
+    "o": [ "२०७२ असोज ३", "२०७२ भाद्र ३०", "२०७२ असोज १", "२०७३ बैशाख १" ],
+    "a": 1,
+    "e": "संविधान भाद्र ३० मा पारित भई असोज ३ मा जारी (जारी) भएको हो।"
+  },
+  {
+    "id": 33,
+    "q": "संयुक्त राष्ट्रसंघ (UNO) को स्थापना कहिले भएको हो ?",
+    "o": [ "सन् १९४४ अक्टोबर २४", "सन् १९४५ अक्टोबर २४", "सन् १९४५ अक्टोबर २०", "सन् १९४६ अक्टोबर २४" ],
+    "a": 1,
+    "e": "UNO was established on October 24, 1945, after WWII."
+  },
+  {
+    "id": 34,
+    "q": "दक्षिण एसियाली क्षेत्रीय सहयोग संगठन (सार्क) को स्थापना कहिले भएको हो ?",
+    "o": [ "सन् १९८४ डिसेम्बर ८", "सन् १९८५ डिसेम्बर ८", "सन् १९८६ डिसेम्बर ८", "सन् १९८७ डिसेम्बर ८" ],
+    "a": 1,
+    "e": "SAARC was established in Dhaka, Bangladesh on Dec 8, 1985."
+  },
+  {
+    "id": 35,
+    "q": "Chain thin line denotes ............... in engineering drawing.",
+    "o": [ "A center line", "Outer line", "Outlines of adjacent parts", "A cross section" ],
+    "a": 0,
+    "e": "A center line is drawn using long and short dashes (chain line)."
+  },
+  {
+    "id": 36,
+    "q": "Orthographic projection represents three dimensional objects in ...........",
+    "o": [ "One Dimension", "Two Dimension", "Three Dimension", "All of the above" ],
+    "a": 1,
+    "e": "Orthographic projection uses multiple 2D views to represent a 3D object."
+  },
+
+  {
+    "id": 37,
+    "q": "The main objective of writing letters or alphabets on the drawing is to make the drawing",
+    "o": [ "More informative", "More fantastic", "More attractive", "All of the above" ],
+    "a": 0,
+    "e": "Lettering provides essential dimensions, titles, and notes."
+  },
+  {
+    "id": 38,
+    "q": "The unit of payment for fixing of glass panes or cleaning is in",
+    "o": [ "Kg", "Sq.m", "Cu.m", "Number" ],
+    "a": 3,
+    "e": "Fixing glass is typically estimated by quantity (Number), whereas supply is by area (Sq.m)."
+  },
+  {
+    "id": 39,
+    "q": "The excavation exceeding 1.5 m in width and 10 sq.m in plan area with a depth not exceeding 30 cm, is termed as",
+    "o": [ "Excavation", "Surface dressing", "Cutting", "Surface excavation" ],
+    "a": 3,
+    "e": "Surface excavation is shallow but covers a large horizontal area."
+  },
+  {
+    "id": 40,
+    "q": "In the estimation of color washing of A.C corrugated sheet, the plan area is increased by",
+    "o": [ "10%", "15%", "20%", "25%" ],
+    "a": 2,
+    "e": "20% is added for corrugations when estimating surface area for painting/washing."
+  },
+  {
+    "id": 41,
+    "q": "Blast furnace slag cement is used for",
+    "o": [ "Dams", "Bridge abutments", "Retaining walls", "All of the above" ],
+    "a": 3,
+    "e": "Slag cement has low heat of hydration and sulfate resistance, making it ideal for mass concrete."
+  },
+  {
+    "id": 42,
+    "q": "The joint preferred in a single brick wall to save facing bricks is",
+    "o": [ "English bond", "Flemish bond", "double bond", "Garden wall bond" ],
+    "a": 3,
+    "e": "Garden wall bond is economical and often used for thin boundary walls."
+  },
+  {
+    "id": 43,
+    "q": "The approximate ratio of the strength of cement concrete at 3 months to that at 28 days of curing is",
+    "o": [ "1.15", "1.30", "1.0", "0.75" ],
+    "a": 0,
+    "e": "Concrete gains about 15% more strength at 3 months compared to its 28-day strength."
+  },
+  {
+    "id": 44,
+    "q": "Line joining the points of equal declination is called",
+    "o": [ "Agonic line", "Isogonic line", "Isoclinic line", "Dip" ],
+    "a": 1,
+    "e": "Isogonic lines connect points where magnetic declination is the same."
+  },
+  
+  {
+    "id": 45,
+    "q": "Pantagraph is used for",
+    "o": [ "Measuring distances", "Enlarging or reducing plans", "Measuring areas", "Setting out right angles" ],
+    "a": 1,
+    "e": "A pantagraph is a mechanical instrument used to copy a drawing to a different scale."
+  },
+ 
+  {
+    "id": 46,
+    "q": "Plastering is also called",
+    "o": [ "Pre-casting", "Polishing", "Porting", "Pargeting" ],
+    "a": 3,
+    "e": "Pargeting is an old term for protective or decorative plastering."
+  },
+  {
+    "id": 47,
+    "q": "Minimum slope for thatched roof is",
+    "o": [ "30°", "45°", "60°", "75°" ],
+    "a": 1,
+    "e": "45 degrees is the minimum steepness needed to drain water quickly from thatch."
+  },
+  {
+    "id": 48,
+    "q": "Which type of cement is used for dam construction?",
+    "o": [ "Portland Cement", "Low Heat Cement", "Rapid Hardening Cement", "Ordinary Cement" ],
+    "a": 1,
+    "e": "Low Heat Cement is used for dam construction due to its lower heat generation during hydration."
+  },
+  {
+    "id": 49,
+    "q": "The 'Scum' layer in a septic tank acts as:",
+    "o": [ "A seal for anaerobic decomposition", "A habitat for aerobic bacteria", "A filter for effluent", "A pH neutralizer" ],
+    "a": 0,
+    "e": "The scum layer prevents air entry, facilitating the anaerobic breakdown of solids."
+  },
+  {
+    "id": 50,
+    "q": "Isogonic line joins points of:",
+    "o": [ "Zero declination", "Equal declination", "Equal dip", "Zero dip" ],
+    "a": 1,
+    "e": "Isogonic lines connect points with equal magnetic declination."
+  }
+];
+
+// --- 10 + 10 DYNAMIC COMPLIMENTS ---
+const PRAISE = {
+    good: [
+        "Awesome, {name}!", "Wow {name}, you are a Genius!", "Fantastic job, {name}!", 
+        "Excellent work, {name}!", "You nailed it, {name}!", "Brilliant answer, {name}!", 
+        "You are on fire, {name}!", "Perfect, {name}!", "Spot on, {name}!", "Great job, {name}!"
+    ],
+    bad: [
+        "Don't give up, {name}!", "You can do this, {name}!", "Nice try {name}, keep going!", 
+        "Learn from this, {name}!", "Almost there, {name}!", "Keep pushing, {name}!", 
+        "Stay focused, {name}!", "You will get the next one, {name}!", "Mistakes help you grow, {name}!", 
+        "Shake it off {name}, try again!"
+    ]
+};
+
+const App = {
+    state: { user: null, quiz: [], curr: 0, score: 0, mistakes: [], timer: null, submitted: false },
+
+    save: (k, v) => { try { localStorage.setItem(k, v) } catch(e) {} },
+    load: (k) => { try { return localStorage.getItem(k) } catch(e) { return null } },
+
+    verifyAndLogin: () => {
+        const n = document.getElementById('inp-name').value.trim();
+        const q = document.getElementById('inp-qual').value;
+        const c = document.getElementById('inp-code').value.trim();
+        const msg = document.getElementById('auth-msg');
+        const btn = document.getElementById('btn-verify');
+
+        if(!n || !c) {
+            msg.innerText = "New Month Subscription started";
+            msg.style.display = 'block'; return;
+        }
+
+        AudioHelper.init(); // Warm up audio
+
+        btn.disabled = true; btn.innerText = "Verifying..."; msg.style.display = 'none';
+
+        fetch(`${CFG.authScript}?code=${c}&name=${n}&qual=${q}`)
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === 'success') {
+                document.getElementById('inp-pass').value = data.password;
+                App.state.user = { name: n, qual: q, code: c };
+                App.save(KEYS.user, JSON.stringify(App.state.user));
+                setTimeout(() => App.dash(), 800);
+            } else {
+                btn.disabled = false; btn.innerText = "Verify & Login";
+                msg.style.display = 'block'; msg.style.color = "#FF3366";
+                msg.innerHTML = data.message.includes("used") ? "Code already used or expired." : "Invalid Code";
+            }
+        })
+        .catch(() => {
+            btn.disabled = false; btn.innerText = "Verify & Login";
+            msg.style.display = 'block'; msg.innerText = "Connection Error";
+        });
+    },
+
+    dash: () => {
+        document.getElementById('title-display').innerText = CFG.topic;
+        document.getElementById('dash-topic-display').innerText = CFG.topic;
+        const stored = App.load(KEYS.user);
+        if(!stored) return;
+        App.state.user = JSON.parse(stored);
+        document.getElementById('greet-msg').innerText = `Namaste, ${App.state.user.name.split(' ')[0]}!`;
+        document.getElementById('view-login').classList.add('hidden');
+        document.getElementById('view-result').classList.add('hidden');
+        document.getElementById('view-dash').classList.remove('hidden');
+        
+        if(App.load(KEYS.sent)) {
+            document.getElementById('btn-start').innerText = "Retake (Practice Mode)";
+            document.getElementById('submitted-msg').style.display = 'block';
+            document.getElementById('submitted-msg').innerText = "✅ Previous Score Submitted";
+        } else {
+            document.getElementById('btn-start').innerText = "Start Exam";
+            document.getElementById('submitted-msg').style.display = 'none';
+        }
+        const m = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        document.getElementById('btn-review').style.display = m.length > 0 ? 'inline-block' : 'none';
+    },
+
+    start: (review) => {
+        AudioHelper.init(); // Warm up audio
+        App.state.curr = 0; App.state.score = 0; App.state.mistakes = []; App.state.submitted = false;
+        const prevM = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        const flatDB = DB.flat ? DB.flat() : DB;
+        let source = review ? flatDB.filter(q => prevM.includes(q.id)) : [...flatDB];
+        if(!source.length) return alert("No questions available.");
+
+        App.state.quiz = source.map(q => {
+            let opts = q.o.map((txt, i) => ({ t: txt, c: i === q.a }));
+            return { ...q, shuffledOpts: opts.sort(() => Math.random() - 0.5) };
+        }).sort(() => Math.random() - 0.5);
+
+        document.getElementById('view-dash').classList.add('hidden');
+        document.getElementById('view-quiz').classList.remove('hidden');
+        document.getElementById('q-total').innerText = App.state.quiz.length;
+        App.timer(45*60);
+        App.render();
+    },
+
+    render: () => {
+        const q = App.state.quiz[App.state.curr];
+        document.getElementById('q-idx').innerText = App.state.curr + 1;
+        document.getElementById('q-text').innerText = q.q;
+        document.getElementById('exp-box').style.display = 'none';
+        document.getElementById('btn-next').classList.add('hidden');
+        const list = document.getElementById('opts-list');
+        list.innerHTML = '';
+        q.shuffledOpts.forEach((opt, i) => {
+            const btn = document.createElement('div');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<div class="option-marker">${String.fromCharCode(65+i)}</div>${opt.t}`;
+            btn.onclick = () => App.check(btn, opt, q);
+            list.appendChild(btn);
+        });
+    },
+
+    check: (btn, opt, q) => {
+        const all = document.querySelectorAll('.option-btn');
+        all.forEach(b => { b.onclick = null; b.style.opacity = '0.6'; });
+        btn.style.opacity = '1';
+        const praise = document.getElementById('praise-txt');
+        praise.classList.remove('animate-praise');
+        void praise.offsetWidth; praise.classList.add('animate-praise');
+        const userName = App.state.user ? App.state.user.name.split(' ')[0] : 'Student';
+
+        if(opt.c) {
+            btn.classList.add('correct');
+            App.state.score++;
+            let rawTxt = PRAISE.good[Math.floor(Math.random()*PRAISE.good.length)];
+            let finalTxt = rawTxt.replace('{name}', userName);
+            praise.innerText = finalTxt;
+            praise.style.color = "#00FF88";
+            AudioHelper.playTing();
+            AudioHelper.speak(finalTxt);
+            let m = JSON.parse(App.load(KEYS.mistakes) || "[]").filter(id => id !== q.id);
+            App.save(KEYS.mistakes, JSON.stringify(m));
+        } else {
+            btn.classList.add('wrong');
+            all.forEach((b, i) => { if(q.shuffledOpts[i].c) b.classList.add('correct'); });
+            App.state.mistakes.push(q.id);
+            let rawTxt = PRAISE.bad[Math.floor(Math.random()*PRAISE.bad.length)];
+            let finalTxt = rawTxt.replace('{name}', userName);
+            praise.innerText = finalTxt;
+            praise.style.color = "#FF3366";
+            AudioHelper.playFush();
+            AudioHelper.speak(finalTxt);
+        }
+
+        if(q.e) {
+            document.getElementById('exp-box').innerHTML = `<strong>Explanation:</strong> ${q.e}`;
+            document.getElementById('exp-box').style.display = 'block';
+        }
+        document.getElementById('btn-next').classList.remove('hidden');
+    },
+
+    next: () => {
+        App.state.curr++;
+        if(App.state.curr < App.state.quiz.length) App.render();
+        else App.finish();
+    },
+
+    timer: (sec) => {
+        if(App.state.timer) clearInterval(App.state.timer);
+        App.state.timer = setInterval(() => {
+            sec--;
+            let m = Math.floor(sec/60), s = sec%60;
+            document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
+            if(sec<=0) App.finish();
+        }, 1000);
+    },
+
+    finish: () => {
+        clearInterval(App.state.timer);
+        document.getElementById('view-quiz').classList.add('hidden');
+        document.getElementById('view-result').classList.remove('hidden');
+        let m = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        m = [...new Set([...m, ...App.state.mistakes])];
+        App.save(KEYS.mistakes, JSON.stringify(m));
+        const pct = Math.round((App.state.score / App.state.quiz.length) * 100);
+        document.getElementById('res-score').innerText = App.state.score;
+        document.getElementById('res-pct').innerText = `${pct}% Accuracy`;
+        App.sync();
+    },
+
+    sync: () => {
+        if(App.state.submitted || App.load(KEYS.sent)) return;
+        App.state.submitted = true;
+        const formData = new FormData();
+        formData.append("name", App.state.user.name);
+        formData.append("qualification", App.state.user.qual);
+        formData.append("examTitle", CFG.topic);
+        formData.append("score", App.state.score);
+        if(navigator.onLine) {
+            fetch(CFG.scoreScript, { method: 'POST', mode: 'no-cors', body: formData })
+            .then(() => {
+                App.save(KEYS.sent, "true");
+                document.getElementById('sync-status').innerText = "✅ Score Saved!";
+                document.getElementById('sync-status').style.color = "#00FF88";
+            }).catch(() => App.offline(formData));
+        } else App.offline(formData);
+    },
+
+    offline: (d) => {
+        let p = JSON.parse(App.load(KEYS.pending) || "[]");
+        p.push(Object.fromEntries(d));
+        App.save(KEYS.pending, JSON.stringify(p));
+        document.getElementById('sync-status').innerText = "Saved offline.";
+    }
+};
+
+window.onload = () => { if(App.load(KEYS.user)) App.dash(); };
+</script>
+</body>
+</html>
