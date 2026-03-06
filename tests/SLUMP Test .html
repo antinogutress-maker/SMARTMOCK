@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slump Test Virtual Lab - Loksewa Prep</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #3b82f6;
+            --accent: #ef4444;
+            --bg: #f0fdf4;
+            --surface: #ffffff;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --border: #cbd5e1;
+            --concrete-color: #787b7a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--surface);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 { margin-bottom: 5px; font-size: 1.8rem; }
+        .header p { font-size: 0.9rem; opacity: 0.9; }
+
+        .lab-section {
+            display: flex;
+            flex-direction: column;
+            border-bottom: 2px solid var(--border);
+        }
+
+        @media (min-width: 768px) {
+            .lab-section { flex-direction: row; }
+        }
+
+        .controls {
+            flex: 1;
+            padding: 20px;
+            background: #f8fafc;
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .slider-group {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .slider-group label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--secondary);
+            cursor: pointer;
+        }
+
+        .val-badge {
+            background: var(--primary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+        }
+
+        .step-display {
+            background: #e0f2fe;
+            border-left: 4px solid var(--secondary);
+            padding: 15px;
+            border-radius: 4px;
+            min-height: 80px;
+        }
+
+        .step-display h3 { color: #0369a1; font-size: 1rem; margin-bottom: 5px; }
+        .step-display p { font-size: 0.9rem; color: #0c4a6e; }
+
+        .action-btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+            text-transform: uppercase;
+        }
+
+        .action-btn:hover { background: #2563eb; transform: translateY(-2px); }
+        .action-btn:active { transform: translateY(0); }
+        .action-btn:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .animation-box {
+            flex: 2;
+            background: radial-gradient(circle, #ffffff 0%, #e2e8f0 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            min-height: 450px;
+            padding: 20px;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+            max-height: 500px;
+            overflow: visible;
+        }
+
+        /* SVG Elements */
+        .glass-cone {
+            fill: url(#glass-gradient);
+            stroke: #64748b;
+            stroke-width: 2;
+            transition: all 1s ease-in-out;
+        }
+        
+        .cone-lines {
+            stroke: rgba(0,0,0,0.3);
+            stroke-width: 1.5;
+            stroke-dasharray: 5,5;
+        }
+
+        .concrete {
+            fill: url(#concrete-texture);
+            transition: d 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .rod {
+            fill: url(#metal-rod);
+            stroke: #475569;
+            transition: transform 0.05s linear;
+        }
+
+        .ruler {
+            fill: #fcd34d;
+            stroke: #b45309;
+            stroke-width: 1;
+            transition: all 1s ease-in-out;
+            opacity: 0;
+        }
+
+        .ruler-ticks { stroke: #78350f; stroke-width: 1; }
+        .ruler-text { font-size: 12px; fill: #78350f; font-family: monospace; font-weight: bold;}
+
+        /* Theory Section */
+        .theory-section { padding: 30px; }
+        .theory-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        @media (min-width: 768px) {
+            .theory-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        h2 { border-bottom: 2px solid var(--secondary); padding-bottom: 8px; margin-bottom: 15px; color: var(--primary); }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 8px; }
+
+        .apparatus-sketches {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px dashed var(--text-light);
+            text-align: center;
+        }
+
+        .apparatus-sketches svg {
+            max-height: 250px;
+            margin: 0 auto;
+        }
+
+        .hidden { visibility: hidden; opacity: 0; }
+        .fade { transition: opacity 0.5s ease; opacity: 1; visibility: visible; }
+        
+        .slump-result-box {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            opacity: 0;
+            transition: opacity 0.5s;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Standard Slump Test (IS 1199)</h1>
+        <p>Interactive Civil Engineering Lab Practical for Loksewa Preparation</p>
+    </div>
+
+    <!-- LAB SECTION -->
+    <div class="lab-section">
+        <div class="controls">
+            <div class="slider-group">
+                <label>
+                    Water-Cement (W/C) Ratio 
+                    <span class="val-badge" id="wc-display">0.55</span>
+                </label>
+                <input type="range" id="wc-slider" min="0.30" max="0.90" step="0.01" value="0.55">
+                <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#64748b; margin-top:5px;">
+                    <span>Dry (0.3)</span>
+                    <span>Standard</span>
+                    <span>Wet (0.9)</span>
+                </div>
+            </div>
+
+            <div class="step-display">
+                <h3 id="step-title">Step 0: Preparation</h3>
+                <p id="step-desc">Set the Water-Cement ratio. Ensure the base plate is clean and horizontal. Click "Start Practical" to begin.</p>
+            </div>
+
+            <button class="action-btn" id="main-btn" onclick="nextAction()">Start Practical</button>
+            <button class="action-btn" id="reset-btn" onclick="resetLab()" style="background: #64748b; display: none;">Reset Lab</button>
+        </div>
+
+        <div class="animation-box">
+            <div class="slump-result-box" id="result-box">
+                Slump: <span id="slump-value" style="color:var(--accent); font-size:1.2rem;">0 mm</span><br>
+                Type: <span id="slump-type" style="color:var(--primary);">True Slump</span>
+            </div>
+
+            <!-- MAIN ANIMATION SVG -->
+            <svg viewBox="0 0 600 500" id="lab-svg">
+                <defs>
+                    <radialGradient id="concrete-texture" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#9ca3af" />
+                        <stop offset="60%" stop-color="#6b7280" />
+                        <stop offset="100%" stop-color="#4b5563" />
+                    </radialGradient>
+                    <linearGradient id="glass-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#e2e8f0" stop-opacity="0.3" />
+                        <stop offset="20%" stop-color="#ffffff" stop-opacity="0.7" />
+                        <stop offset="80%" stop-color="#94a3b8" stop-opacity="0.2" />
+                        <stop offset="100%" stop-color="#64748b" stop-opacity="0.5" />
+                    </linearGradient>
+                    <linearGradient id="metal-rod" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#94a3b8" />
+                        <stop offset="50%" stop-color="#f8fafc" />
+                        <stop offset="100%" stop-color="#475569" />
+                    </linearGradient>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444" />
+                    </marker>
+                </defs>
+
+                <!-- Base Plate -->
+                <rect x="50" y="400" width="500" height="15" rx="5" fill="#334155" />
+
+                <!-- CONCRETE SHAPES -->
+                <!-- The 4 independent layers for filling animation -->
+                <g id="fill-layers">
+                    <!-- Base is y=400. Top is y=100. Height = 300. Layer height = 75 -->
+                    <polygon id="layer1" class="concrete hidden" points="200,400 400,400 387.5,325 212.5,325" />
+                    <polygon id="layer2" class="concrete hidden" points="212.5,325 387.5,325 375,250 225,250" />
+                    <polygon id="layer3" class="concrete hidden" points="225,250 375,250 362.5,175 237.5,175" />
+                    <polygon id="layer4" class="concrete hidden" points="237.5,175 362.5,175 350,100 250,100" />
+                </g>
+
+                <!-- Morphable Final Concrete -->
+                <path id="morph-concrete" class="concrete hidden" d="M 200 400 L 400 400 L 350 100 L 250 100 Z" />
+
+                <!-- APPARATUS -->
+                <g id="cone-group">
+                    <!-- Cone polygon: Top(250-350, y=100), Bottom(200-400, y=400) -->
+                    <polygon class="glass-cone" points="250,100 350,100 400,400 200,400" />
+                    <!-- Layer indication lines -->
+                    <line x1="237.5" y1="175" x2="362.5" y2="175" class="cone-lines" />
+                    <line x1="225" y1="250" x2="375" y2="250" class="cone-lines" />
+                    <line x1="212.5" y1="325" x2="387.5" y2="325" class="cone-lines" />
+                    <!-- Handles -->
+                    <path d="M 225 250 C 200 250 200 280 218 280" fill="none" stroke="#64748b" stroke-width="6" stroke-linecap="round"/>
+                    <path d="M 375 250 C 400 250 400 280 382 280" fill="none" stroke="#64748b" stroke-width="6" stroke-linecap="round"/>
+                </g>
+
+                <!-- Tamping Rod (Width 10, Height 400) -->
+                <g id="tamping-rod" style="transform: translateY(-500px);">
+                    <rect class="rod" x="295" y="0" width="10" height="400" rx="5" />
+                </g>
+
+                <!-- Measurement Setup (Hidden until end) -->
+                <g id="measurement-setup" class="hidden">
+                    <!-- Horizontal Tamping Rod placed over reference cone -->
+                    <rect class="rod" x="70" y="95" width="400" height="10" rx="5" />
+                    
+                    <!-- Vertical Ruler -->
+                    <g id="ruler-group" transform="translate(300, 105)">
+                        <rect class="ruler" x="0" y="0" width="25" height="300" rx="2" />
+                        <!-- JS will populate ruler ticks here -->
+                        <g id="ruler-ticks-container"></g>
+                    </g>
+                    
+                    <!-- Measuring Arrow -->
+                    <line id="measure-arrow" x1="280" y1="105" x2="280" y2="105" stroke="#ef4444" stroke-width="2" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+                </g>
+
+                <!-- Reference duplicate cone for measuring -->
+                <polygon id="ref-cone" class="glass-cone hidden" points="100,100 200,100 250,400 50,400" style="opacity: 0.3;" />
+
+            </svg>
+        </div>
+    </div>
+
+    <!-- THEORY SECTION -->
+    <div class="theory-section">
+        <div class="theory-grid">
+            <div>
+                <h2>Standard Notes for Loksewa</h2>
+                <p><strong>Objective:</strong> To determine the workability and consistency of fresh concrete.</p>
+                <p><strong>Apparatus Specifications (Crucial for MCQs):</strong></p>
+                <ul>
+                    <li><strong>Slump Cone:</strong> Top Dia = 10 cm, Bottom Dia = 20 cm, Height = 30 cm. Made of metal (min 1.6mm thick).</li>
+                    <li><strong>Tamping Rod:</strong> 16 mm diameter, 60 cm length, bullet-pointed at one end.</li>
+                </ul>
+                <p><strong>Procedure (IS 1199):</strong></p>
+                <ol>
+                    <li>Place the cleaned, oiled mould on a smooth, horizontal, non-porous base plate.</li>
+                    <li>Fill the mould with concrete in <strong>4 approximately equal layers</strong> (by height/depth).</li>
+                    <li>Tamp each layer exactly <strong>25 times</strong> uniformly with the bullet end of the tamping rod.</li>
+                    <li>Strike off the excess concrete flush with the top using a trowel or the rod.</li>
+                    <li>Remove the cone immediately and slowly in a vertical direction.</li>
+                    <li>Measure the subsidence (slump) in millimeters from the top of the cone to the highest point of the specimen.</li>
+                </ol>
+            </div>
+            
+            <div class="apparatus-sketches">
+                <h2>Apparatus Details</h2>
+                <svg viewBox="0 0 400 300">
+                    <!-- Sketch Cone -->
+                    <polygon points="150,50 250,50 300,250 100,250" fill="none" stroke="#1e293b" stroke-width="2"/>
+                    <!-- Dimensions -->
+                    <line x1="80" y1="50" x2="80" y2="250" stroke="#ef4444" stroke-width="1" stroke-dasharray="4" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+                    <text x="30" y="155" fill="#ef4444" font-size="14" font-weight="bold">30 cm</text>
+                    
+                    <line x1="150" y1="30" x2="250" y2="30" stroke="#ef4444" stroke-width="1" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+                    <text x="175" y="20" fill="#ef4444" font-size="14" font-weight="bold">10 cm</text>
+                    
+                    <line x1="100" y1="270" x2="300" y2="270" stroke="#ef4444" stroke-width="1" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+                    <text x="175" y="290" fill="#ef4444" font-size="14" font-weight="bold">20 cm</text>
+
+                    <!-- Sketch Rod -->
+                    <rect x="340" y="50" width="8" height="200" rx="4" fill="none" stroke="#1e293b" stroke-width="2"/>
+                    <text x="360" y="150" fill="#1e293b" font-size="12" transform="rotate(-90 360 150)">16mm Ø, 60cm Long</text>
+                </svg>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Elements
+    const wcSlider = document.getElementById('wc-slider');
+    const wcDisplay = document.getElementById('wc-display');
+    const mainBtn = document.getElementById('main-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const stepTitle = document.getElementById('step-title');
+    const stepDesc = document.getElementById('step-desc');
+    
+    // SVG Elements
+    const layer1 = document.getElementById('layer1');
+    const layer2 = document.getElementById('layer2');
+    const layer3 = document.getElementById('layer3');
+    const layer4 = document.getElementById('layer4');
+    const layers = [layer1, layer2, layer3, layer4];
+    const morphConcrete = document.getElementById('morph-concrete');
+    const coneGroup = document.getElementById('cone-group');
+    const tampingRod = document.getElementById('tamping-rod');
+    const measurementSetup = document.getElementById('measurement-setup');
+    const measureArrow = document.getElementById('measure-arrow');
+    const refCone = document.getElementById('ref-cone');
+    const rulerGroup = document.getElementById('ruler-group');
+    const resultBox = document.getElementById('result-box');
+    
+    // Constants mapping to SVG coordinates
+    const Y_BOTTOM = 400;
+    const Y_TOP = 100;
+    // Layer bounds (Bottom to top)
+    const layerBounds = [
+        { b: 400, t: 325 },
+        { b: 325, t: 250 },
+        { b: 250, t: 175 },
+        { b: 175, t: 100 }
+    ];
+
+    let currentLayer = 0;
+    let labState = 0; // 0: Init, 1: Filling, 2: Lift, 3: Measure, 4: Done
+    let wcValue = 0.55;
+
+    // Generate Ruler Ticks dynamically
+    const ticksContainer = document.getElementById('ruler-ticks-container');
+    for(let i=0; i<=30; i++) {
+        const y = i * 10; // 10px = 1cm scale
+        const isMajor = i % 5 === 0;
+        const width = isMajor ? 15 : 8;
+        ticksContainer.innerHTML += `<line x1="0" y1="${y}" x2="${width}" y2="${y}" class="ruler-ticks" />`;
+        if(isMajor && i > 0) {
+            ticksContainer.innerHTML += `<text x="16" y="${y+4}" class="ruler-text">${i*10}</text>`;
+        }
+    }
+
+    // Slider Event
+    wcSlider.addEventListener('input', (e) => {
+        wcValue = parseFloat(e.target.value);
+        wcDisplay.innerText = wcValue.toFixed(2);
+    });
+
+    const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    // Calculate Slump Logic
+    function getSlumpProfile(wc) {
+        let drop = 0; // mm (1 SVG unit = 1mm here)
+        let type = "";
+        let path = "";
+
+        if (wc < 0.40) {
+            drop = Math.floor(Math.random() * 10) + 5; // 5-15mm
+            type = "Zero Slump";
+            path = `M 210 400 L 390 400 L 355 ${Y_TOP + drop} L 245 ${Y_TOP + drop} Z`;
+        } else if (wc >= 0.40 && wc <= 0.50) {
+            drop = Math.floor(Math.random() * 30) + 20; // 20-50mm
+            type = "True Slump (Low)";
+            path = `M 205 400 Q 300 390 395 400 L 360 ${Y_TOP + drop} Q 300 ${Y_TOP + drop + 10} 240 ${Y_TOP + drop} Z`;
+        } else if (wc > 0.50 && wc <= 0.60) {
+            drop = Math.floor(Math.random() * 50) + 50; // 50-100mm
+            type = "True Slump (Medium)";
+            path = `M 200 400 Q 300 380 400 400 Q 380 250 370 ${Y_TOP + drop} Q 300 ${Y_TOP + drop + 15} 230 ${Y_TOP + drop} Q 220 250 200 400`;
+        } else if (wc > 0.60 && wc <= 0.75) {
+            drop = Math.floor(Math.random() * 50) + 120; // 120-170mm
+            type = "Shear Slump";
+            path = `M 180 400 L 420 400 L 390 ${Y_TOP + drop + 30} L 240 ${Y_TOP + drop - 30} Z`; 
+        } else {
+            drop = Math.floor(Math.random() * 40) + 200; // 200-240mm
+            type = "Collapse Slump";
+            path = `M 150 400 Q 300 330 450 400 Q 380 ${Y_TOP + drop} 300 ${Y_TOP + drop - 10} Q 220 ${Y_TOP + drop} 150 400`;
+        }
+        return { drop, type, path };
+    }
+
+    async function performTamping() {
+        const bounds = layerBounds[currentLayer];
+        tampingRod.style.transition = 'transform 0.5s ease-in-out';
+        
+        // Move rod to top of current layer
+        let startY = bounds.t - 400; // offset based on svg setup
+        let endY = bounds.b - 400;
+
+        tampingRod.style.transform = `translate(0, ${startY - 100}px)`;
+        await wait(500);
+
+        tampingRod.style.transition = 'transform 0.08s linear';
+        
+        // 25 strokes
+        for(let i=1; i<=25; i++) {
+            mainBtn.innerText = `Tamping... ${i}/25`;
+            let jx = (Math.random() - 0.5) * 60; // Random X jitter
+            
+            // Down
+            tampingRod.style.transform = `translate(${jx}px, ${endY}px)`;
+            await wait(80);
+            // Up
+            tampingRod.style.transform = `translate(${jx}px, ${startY - 20}px)`;
+            await wait(80);
+        }
+
+        tampingRod.style.transition = 'transform 0.5s ease-in-out';
+        tampingRod.style.transform = `translate(0, -500px)`; // Hide
+        await wait(500);
+    }
+
+    async function nextAction() {
+        mainBtn.disabled = true;
+        wcSlider.disabled = true;
+
+        if (labState === 0) {
+            // State: Filling layers
+            stepTitle.innerText = `Step 2: Filling Layer ${currentLayer + 1}/4`;
+            stepDesc.innerText = `Adding concrete and tamping exactly 25 times to ensure proper compaction without segregation.`;
+            mainBtn.innerText = "Filling...";
+
+            layers[currentLayer].classList.remove('hidden');
+            layers[currentLayer].classList.add('fade');
+            await wait(800);
+
+            await performTamping();
+
+            currentLayer++;
+            if (currentLayer < 4) {
+                mainBtn.innerText = `Fill & Tamp Layer ${currentLayer + 1}`;
+                mainBtn.disabled = false;
+            } else {
+                labState = 1;
+                stepTitle.innerText = `Step 3: Strike-off`;
+                stepDesc.innerText = `Top is struck off level with the cone. Ready to lift the cone.`;
+                mainBtn.innerText = "Lift Cone Slowly";
+                mainBtn.disabled = false;
+            }
+        } 
+        else if (labState === 1) {
+            // State: Lifting Cone
+            stepTitle.innerText = `Step 4: Lifting & Slumping`;
+            stepDesc.innerText = `Lifting the cone vertically. Observe how the unsupported concrete subsides (slumps).`;
+            mainBtn.innerText = "Processing...";
+
+            // Swap to morph shape
+            layers.forEach(l => { l.style.opacity = '0'; });
+            morphConcrete.classList.remove('hidden');
+            morphConcrete.classList.add('fade');
+
+            // Lift Cone
+            coneGroup.style.transform = "translateY(-350px)";
+            await wait(1000);
+
+            // Morph concrete based on W/C
+            const slumpData = getSlumpProfile(wcValue);
+            morphConcrete.setAttribute('d', slumpData.path);
+            
+            // Move cone to side (Reference)
+            coneGroup.classList.add('hidden');
+            refCone.classList.remove('hidden');
+            refCone.classList.add('fade');
+
+            await wait(1500);
+
+            labState = 2;
+            stepTitle.innerText = `Step 5: Measurement`;
+            stepDesc.innerText = `Place tamping rod over the reference cone. Measure the drop from the rod to the highest point of concrete.`;
+            mainBtn.innerText = "Measure Slump";
+            mainBtn.disabled = false;
+            
+            // Store data for next step
+            window.currentSlumpData = slumpData;
+        }
+        else if (labState === 2) {
+            // State: Measure
+            const data = window.currentSlumpData;
+            
+            measurementSetup.classList.remove('hidden');
+            measurementSetup.classList.add('fade');
+            
+            // Drop ruler
+            rulerGroup.style.transform = `translate(300, 105)`; // Default
+            await wait(500);
+            
+            // Extend arrow
+            measureArrow.style.transition = "all 1s ease";
+            measureArrow.setAttribute('y2', 105 + data.drop);
+            
+            await wait(1000);
+
+            // Show Results
+            document.getElementById('slump-value').innerText = `${data.drop} mm`;
+            document.getElementById('slump-type').innerText = data.type;
+            resultBox.style.opacity = "1";
+
+            stepTitle.innerText = `Practical Complete!`;
+            stepDesc.innerText = `Result recorded. Note the relationship between the W/C ratio (${wcValue}) and the resulting ${data.type}.`;
+            
+            mainBtn.style.display = "none";
+            resetBtn.style.display = "block";
+            resetBtn.disabled = false;
+        }
+    }
+
+    function resetLab() {
+        labState = 0;
+        currentLayer = 0;
+        wcSlider.disabled = false;
+        
+        // Reset UI Texts
+        stepTitle.innerText = `Step 0: Preparation`;
+        stepDesc.innerText = `Set the Water-Cement ratio. Ensure the base plate is clean and horizontal. Click "Start Practical" to begin.`;
+        mainBtn.innerText = "Start Practical";
+        mainBtn.style.display = "block";
+        mainBtn.disabled = false;
+        resetBtn.style.display = "none";
+        resultBox.style.opacity = "0";
+
+        // Reset SVGs
+        layers.forEach(l => {
+            l.classList.add('hidden');
+            l.classList.remove('fade');
+            l.style.opacity = '1';
+        });
+        
+        morphConcrete.classList.add('hidden');
+        morphConcrete.classList.remove('fade');
+        morphConcrete.setAttribute('d', `M 200 400 L 400 400 L 350 100 L 250 100 Z`);
+        
+        coneGroup.style.transform = "translateY(0)";
+        coneGroup.classList.remove('hidden');
+        
+        refCone.classList.add('hidden');
+        refCone.classList.remove('fade');
+        
+        measurementSetup.classList.add('hidden');
+        measurementSetup.classList.remove('fade');
+        measureArrow.setAttribute('y2', 105);
+        measureArrow.style.transition = "none";
+        
+        tampingRod.style.transform = "translateY(-500px)";
+    }
+
+</script>
+</body>
+</html>
+
