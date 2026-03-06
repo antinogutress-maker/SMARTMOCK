@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Proctor Compaction Virtual Lab</title>
+    <style>
+        :root {
+            --primary: #0f172a;
+            --secondary: #3b82f6;
+            --standard: #0284c7;
+            --modified: #e11d48;
+            --soil: #78350f;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text: #334155;
+            --border: #cbd5e1;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+
+        body { background-color: var(--bg); color: var(--text); padding: 15px; }
+
+        .container { max-width: 1200px; margin: 0 auto; background: var(--surface); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; }
+
+        .header { background: var(--primary); color: white; text-align: center; padding: 25px 20px; }
+        .header h1 { font-size: 2rem; margin-bottom: 8px; letter-spacing: 0.5px; }
+        .header p { color: #94a3b8; font-size: 1rem; }
+
+        /* Workspace Grid */
+        .workspace { display: grid; grid-template-columns: 1fr; border-bottom: 2px solid var(--border); }
+        @media(min-width: 800px) { .workspace { grid-template-columns: 1fr 1fr; } }
+
+        .lab-panel { padding: 25px; display: flex; flex-direction: column; align-items: center; position: relative; }
+        .lab-panel:first-child { border-bottom: 2px solid var(--border); }
+        @media(min-width: 800px) { .lab-panel:first-child { border-bottom: none; border-right: 2px solid var(--border); } }
+
+        .title-badge { font-size: 1.2rem; font-weight: bold; padding: 8px 24px; border-radius: 30px; color: white; margin-bottom: 15px; width: 100%; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .bg-std { background: linear-gradient(135deg, #0284c7, #0369a1); }
+        .bg-mod { background: linear-gradient(135deg, #e11d48, #be123c); }
+
+        .control-board { width: 100%; background: #f1f5f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
+        .stats { display: flex; justify-content: space-between; font-family: monospace; font-size: 1.1rem; font-weight: bold; color: var(--primary); margin-bottom: 15px; }
+        
+        button { width: 100%; padding: 14px; font-size: 1.05rem; font-weight: bold; color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.5px; }
+        button:active { transform: translateY(2px); }
+        button:disabled { background: #94a3b8 !important; cursor: not-allowed; transform: none; box-shadow: none; }
+        .btn-std { background: var(--standard); box-shadow: 0 4px 0 #0369a1; }
+        .btn-mod { background: var(--modified); box-shadow: 0 4px 0 #be123c; }
+
+        /* SVG Apparatus */
+        .svg-container { width: 100%; max-width: 380px; height: 450px; background: radial-gradient(circle, #ffffff 0%, #f1f5f9 100%); border: 2px solid var(--border); border-radius: 8px; display: flex; justify-content: center; overflow: hidden; }
+        svg { width: 100%; height: 100%; }
+
+        .metal { fill: url(#metal-grad); stroke: #475569; stroke-width: 1.5; }
+        .metal-dark { fill: url(#metal-dark-grad); stroke: #1e293b; stroke-width: 1; }
+        .metal-brass { fill: url(#brass-grad); stroke: #92400e; stroke-width: 1; }
+        
+        .soil-layer { fill: url(#soil-pattern); transition: height 0.1s linear, y 0.1s linear; }
+        .glass-sleeve { fill: #e2e8f0; fill-opacity: 0.4; stroke: #94a3b8; stroke-width: 1.5; }
+        
+        .dimension-line { stroke: #ef4444; stroke-width: 1.5; stroke-dasharray: 4; }
+        .dimension-text { fill: #ef4444; font-size: 12px; font-weight: bold; font-family: sans-serif; }
+
+        /* Results Graph Section */
+        .graph-section { padding: 40px 20px; background: #ffffff; display: none; flex-direction: column; align-items: center; border-bottom: 2px solid var(--border); animation: slideDown 0.8s ease-out forwards; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .graph-container { width: 100%; max-width: 700px; height: 400px; background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 20px; position: relative; }
+        .graph-svg { width: 100%; height: 100%; overflow: visible; }
+        .axis { stroke: #475569; stroke-width: 2; }
+        .grid-line { stroke: #e2e8f0; stroke-width: 1; }
+        .curve-std { fill: none; stroke: var(--standard); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1000; stroke-dashoffset: 1000; }
+        .curve-mod { fill: none; stroke: var(--modified); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1000; stroke-dashoffset: 1000; }
+        
+        .animate-draw { animation: drawCurve 2s ease-in-out forwards; }
+        @keyframes drawCurve { to { stroke-dashoffset: 0; } }
+
+        .graph-label { font-size: 12px; fill: #64748b; font-family: sans-serif; }
+        .graph-title { font-size: 16px; font-weight: bold; fill: #0f172a; }
+        .loksewa-note { position: absolute; top: 30px; right: 30px; background: #fffbeb; border-left: 4px solid #f59e0b; padding: 10px; font-size: 0.9rem; border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); color: #b45309; max-width: 250px; opacity: 0; transition: opacity 1s; }
+
+        /* Theory & Tables */
+        .theory-section { padding: 30px; background: white; }
+        h2 { color: var(--primary); border-bottom: 2px solid var(--secondary); padding-bottom: 8px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 0.95rem; }
+        th, td { padding: 12px; text-align: left; border: 1px solid #e2e8f0; }
+        th { background: var(--primary); color: white; }
+        tr:nth-child(even) { background: #f8fafc; }
+        .highlight { font-weight: bold; color: var(--modified); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Proctor Compaction Lab</h1>
+        <p>Realistic Mechanics: Guide sleeve rests on soil, rammer makes physical contact.</p>
+    </div>
+
+    <div class="workspace">
+        <!-- STANDARD PROCTOR -->
+        <div class="lab-panel">
+            <div class="title-badge bg-std">Standard Proctor (Light)</div>
+            <div class="control-board">
+                <div class="stats">
+                    <span id="std-layer">Layer: 0 / 3</span>
+                    <span id="std-blow">Blows: 0 / 25</span>
+                </div>
+                <button id="btn-std" class="btn-std" onclick="compactLayer('std')">Pour Soil & Tamp</button>
+            </div>
+            
+            <div class="svg-container">
+                <svg viewBox="0 0 300 450" id="svg-std">
+                    <!-- Definitions -->
+                    <defs>
+                        <linearGradient id="metal-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#cbd5e1" /><stop offset="50%" stop-color="#ffffff" /><stop offset="100%" stop-color="#94a3b8" />
+                        </linearGradient>
+                        <linearGradient id="metal-dark-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#475569" /><stop offset="40%" stop-color="#94a3b8" /><stop offset="100%" stop-color="#334155" />
+                        </linearGradient>
+                        <linearGradient id="brass-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#b45309" /><stop offset="50%" stop-color="#fcd34d" /><stop offset="100%" stop-color="#92400e" />
+                        </linearGradient>
+                        <pattern id="soil-pattern" width="12" height="12" patternUnits="userSpaceOnUse">
+                            <rect width="12" height="12" fill="#78350f" />
+                            <circle cx="3" cy="3" r="1.5" fill="#451a03" />
+                            <circle cx="9" cy="8" r="2" fill="#52230a" />
+                            <circle cx="4" cy="10" r="1" fill="#92400e" />
+                            <circle cx="8" cy="2" r="1" fill="#b45309" />
+                        </pattern>
+                        <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444" />
+                        </marker>
+                    </defs>
+
+                    <!-- Background Base -->
+                    <rect x="50" y="380" width="200" height="15" rx="3" class="metal" />
+                    
+                    <!-- Soil Group (Inside Mould) -->
+                    <g id="std-soil-group"></g>
+                    
+                    <!-- Mould Walls (Front) - Inside Width is 100 (100 to 200), Height is 150 (230 to 380) -->
+                    <path d="M 90 230 L 90 380 L 210 380 L 210 230" fill="none" stroke="#64748b" stroke-width="4" opacity="0.8"/>
+                    <rect x="85" y="215" width="130" height="15" class="metal" /> <!-- Collar -->
+
+                    <!-- Dynamic Assembly (Moves down with soil) -->
+                    <!-- At Y=0, the bottom of the sleeve and the bottom of the resting rammer are exactly at the soil surface -->
+                    <g id="std-assembly" style="transform: translateY(380px);">
+                        
+                        <!-- Guide Sleeve (Rests on soil) -->
+                        <g id="std-sleeve" transform="translate(125, -200)">
+                            <rect x="0" y="0" width="50" height="200" class="glass-sleeve" />
+                            <!-- Vent Holes -->
+                            <line x1="10" y1="20" x2="40" y2="20" stroke="#1e293b" stroke-width="2" />
+                            <line x1="10" y1="180" x2="40" y2="180" stroke="#1e293b" stroke-width="2" />
+                        </g>
+
+                        <!-- Rammer (Lifts and Drops inside Sleeve) -->
+                        <!-- Bottom plate is exactly at 0,0 relative to assembly -->
+                        <g id="std-rammer" style="transform: translateY(0px);">
+                            <!-- Drop Handle / Guide Rod -->
+                            <rect x="146" y="-350" width="8" height="300" fill="#94a3b8" />
+                            <rect x="125" y="-350" width="50" height="10" rx="3" class="metal" /> <!-- Top Handle -->
+                            
+                            <!-- 2.6kg Mass -->
+                            <rect x="135" y="-60" width="30" height="50" rx="2" class="metal-dark" />
+                            
+                            <!-- 50mm Foot Plate (Touches Soil) -->
+                            <rect x="126" y="-10" width="48" height="10" rx="2" class="metal-brass" />
+                        </g>
+
+                        <!-- Dynamic Drop Height & Weight Labels (Moves with sleeve) -->
+                        <line x1="190" y1="-140" x2="190" y2="0" class="dimension-line" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+                        <text x="198" y="-65" class="dimension-text">Drop: 310mm</text>
+                        <text x="65" y="-35" class="dimension-text" fill="#1e293b">Wt: 2.6kg</text>
+                    </g>
+                    
+                    <!-- Static Dimensions -->
+                    <line x1="230" y1="230" x2="230" y2="380" class="dimension-line" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+                    <text x="240" y="310" class="dimension-text">127.3 mm</text>
+
+                    <!-- Mould Diameter -->
+                    <line x1="100" y1="405" x2="200" y2="405" class="dimension-line" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+                    <text x="115" y="425" class="dimension-text">Ø 100 mm (Inner)</text>
+                </svg>
+            </div>
+        </div>
+
+        <!-- MODIFIED PROCTOR -->
+        <div class="lab-panel">
+            <div class="title-badge bg-mod">Modified Proctor (Heavy)</div>
+            <div class="control-board">
+                <div class="stats">
+                    <span id="mod-layer">Layer: 0 / 5</span>
+                    <span id="mod-blow">Blows: 0 / 25</span>
+                </div>
+                <button id="btn-mod" class="btn-mod" onclick="compactLayer('mod')">Pour Soil & Tamp</button>
+            </div>
+            
+            <div class="svg-container">
+                <svg viewBox="0 0 300 450" id="svg-mod">
+                    <!-- Background Base -->
+                    <rect x="50" y="380" width="200" height="15" rx="3" class="metal" />
+                    
+                    <!-- Soil Group -->
+                    <g id="mod-soil-group"></g>
+                    
+                    <!-- Mould Walls -->
+                    <path d="M 90 230 L 90 380 L 210 380 L 210 230" fill="none" stroke="#64748b" stroke-width="4" opacity="0.8"/>
+                    <rect x="85" y="215" width="130" height="15" class="metal" />
+                    
+                    <!-- Dynamic Assembly -->
+                    <g id="mod-assembly" style="transform: translateY(380px);">
+                        
+                        <!-- Guide Sleeve (Taller for 450mm drop) -->
+                        <g id="mod-sleeve" transform="translate(125, -280)">
+                            <rect x="0" y="0" width="50" height="280" class="glass-sleeve" />
+                            <line x1="10" y1="20" x2="40" y2="20" stroke="#1e293b" stroke-width="2" />
+                            <line x1="10" y1="260" x2="40" y2="260" stroke="#1e293b" stroke-width="2" />
+                        </g>
+
+                        <!-- Heavy Rammer -->
+                        <g id="mod-rammer" style="transform: translateY(0px);">
+                            <!-- Guide Rod -->
+                            <rect x="146" y="-450" width="8" height="380" fill="#94a3b8" />
+                            <rect x="120" y="-450" width="60" height="12" rx="3" class="metal" /> <!-- Top Handle -->
+                            
+                            <!-- 4.9kg Mass (Visually larger/heavier) -->
+                            <rect x="130" y="-80" width="40" height="70" rx="2" class="metal-dark" fill="#be123c"/>
+                            
+                            <!-- 50mm Foot Plate -->
+                            <rect x="126" y="-10" width="48" height="10" rx="2" class="metal-brass" />
+                        </g>
+
+                        <!-- Dynamic Drop Height & Weight Labels (Moves with sleeve) -->
+                        <line x1="190" y1="-220" x2="190" y2="0" class="dimension-line" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+                        <text x="198" y="-105" class="dimension-text">Drop: 450mm</text>
+                        <text x="60" y="-45" class="dimension-text" fill="#1e293b">Wt: 4.9kg</text>
+                    </g>
+                    
+                    <!-- Static Dimensions -->
+                    <line x1="230" y1="230" x2="230" y2="380" class="dimension-line" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+                    <text x="240" y="310" class="dimension-text">127.3 mm</text>
+
+                    <!-- Mould Diameter -->
+                    <line x1="100" y1="405" x2="200" y2="405" class="dimension-line" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+                    <text x="115" y="425" class="dimension-text">Ø 100 mm (Inner)</text>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESULT GRAPH SECTION (Reveals after tests) -->
+    <div class="graph-section" id="graph-section">
+        <h2 style="border:none; margin-bottom: 5px;">Compaction Curve Comparison</h2>
+        <p style="color: #64748b; margin-bottom: 20px;">Standard vs. Modified Proctor Test Results</p>
+        
+        <div class="graph-container">
+            <div class="loksewa-note" id="loksewa-note">
+                <strong>💡 Loksewa Exam Tip:</strong><br>
+                Notice how the Modified curve shifts <strong>UP and to the LEFT</strong>. <br>Higher Compactive Effort = Higher MDD & Lower OMC.
+            </div>
+
+            <svg class="graph-svg" viewBox="0 0 600 350">
+                <!-- Grid -->
+                <g id="grid"></g>
+                
+                <!-- Axes -->
+                <line x1="60" y1="300" x2="560" y2="300" class="axis" marker-end="url(#arrow)"/>
+                <line x1="60" y1="300" x2="60" y2="40" class="axis" marker-end="url(#arrow)"/>
+                
+                <!-- Labels -->
+                <text x="310" y="340" class="graph-title" text-anchor="middle">Water Content (w) %</text>
+                <text x="20" y="170" class="graph-title" transform="rotate(-90 20,170)" text-anchor="middle">Dry Density (γd) g/cc</text>
+                
+                <!-- Curves (Drawn by JS class toggle) -->
+                <path id="curve-std" d="M 150 280 Q 300 100 450 260" class="curve-std" />
+                <path id="curve-mod" d="M 100 240 Q 220 30 380 280" class="curve-mod" />
+
+                <!-- Legends -->
+                <rect x="400" y="50" width="15" height="15" fill="var(--standard)" />
+                <text x="425" y="62" class="graph-label">Standard (Light)</text>
+                
+                <rect x="400" y="75" width="15" height="15" fill="var(--modified)" />
+                <text x="425" y="87" class="graph-label">Modified (Heavy)</text>
+
+                <!-- Points of Interest (Hidden initially) -->
+                <g id="poi-markers" style="opacity: 0; transition: opacity 1s 2s;">
+                    <!-- Standard MDD/OMC -->
+                    <circle cx="295" cy="148" r="5" fill="var(--standard)" />
+                    <line x1="60" y1="148" x2="295" y2="148" stroke="var(--standard)" stroke-dasharray="4" />
+                    <line x1="295" y1="300" x2="295" y2="148" stroke="var(--standard)" stroke-dasharray="4" />
+                    <text x="295" y="315" class="graph-label" fill="var(--standard)" text-anchor="middle">OMC₁</text>
+                    <text x="45" y="152" class="graph-label" fill="var(--standard)" text-anchor="end">MDD₁</text>
+
+                    <!-- Modified MDD/OMC -->
+                    <circle cx="215" cy="88" r="5" fill="var(--modified)" />
+                    <line x1="60" y1="88" x2="215" y2="88" stroke="var(--modified)" stroke-dasharray="4" />
+                    <line x1="215" y1="300" x2="215" y2="88" stroke="var(--modified)" stroke-dasharray="4" />
+                    <text x="215" y="315" class="graph-label" fill="var(--modified)" text-anchor="middle">OMC₂</text>
+                    <text x="45" y="92" class="graph-label" fill="var(--modified)" text-anchor="end">MDD₂</text>
+
+                    <!-- Shift Arrow -->
+                    <line x1="285" y1="140" x2="225" y2="95" stroke="#f59e0b" stroke-width="3" marker-end="url(#arrow)" />
+                </g>
+            </svg>
+        </div>
+    </div>
+
+    <div class="theory-section">
+        <h2>Apparatus Differences (IS 2720)</h2>
+        <table>
+            <tr><th>Parameter</th><th>Standard Proctor</th><th>Modified Proctor</th></tr>
+            <tr><td>Rammer Weight</td><td>2.6 kg</td><td class="highlight">4.89 kg (approx 4.9 kg)</td></tr>
+            <tr><td>Drop Height</td><td>310 mm</td><td class="highlight">450 mm</td></tr>
+            <tr><td>Soil Layers</td><td>3 Layers</td><td class="highlight">5 Layers</td></tr>
+            <tr><td>Blows / Layer</td><td>25</td><td>25</td></tr>
+            <tr><td>Compactive Effort</td><td>594 kJ/m³</td><td class="highlight">2696 kJ/m³ (~4.5x more)</td></tr>
+        </table>
+
+        <h2>Combined Test Procedure</h2>
+        <ol style="padding-left: 20px; line-height: 1.8;">
+            <li>Take ~3kg (Std) or ~5kg (Mod) air-dried soil passing a 4.75mm sieve. Add a specific initial % of water and mix.</li>
+            <li>Place the mould on a solid base. Place the guide sleeve directly on the soil surface.</li>
+            <li>Fill and compact the soil in <strong>3 layers (Standard)</strong> or <strong>5 layers (Modified)</strong>.</li>
+            <li>For every layer, lift the internal rammer exactly to its limit (310mm or 450mm) and drop it, ensuring the foot makes direct contact with the soil. Apply <strong>25 uniformly distributed blows</strong> per layer.</li>
+            <li>Remove the collar, strike off excess soil flush with the 127.3mm high mould.</li>
+            <li>Weigh the compacted soil to find Bulk Density. Take a sample to dry in an oven to find Moisture Content.</li>
+            <li>Plot Dry Density vs Moisture Content to locate the peak of the curve (MDD and OMC).</li>
+        </ol>
+    </div>
+</div>
+
+<script>
+    // Configuration Data (Exact Math for Realistic Animation)
+    // Mould inside is Y: 230 (Top) to 380 (Bottom). Height = 150 SVG units.
+    const CFG = {
+        baseY: 380,
+        std: { layers: 3, blows: 25, layerH: 50, dropH: 140, done: false }, // 150/3 = 50
+        mod: { layers: 5, blows: 25, layerH: 30, dropH: 220, done: false }  // 150/5 = 30
+    };
+
+    const state = { std: { l: 0, isBusy: false }, mod: { l: 0, isBusy: false } };
+    const wait = ms => new Promise(r => setTimeout(r, ms));
+
+    async function compactLayer(type) {
+        if (state[type].isBusy || state[type].l >= CFG[type].layers) return;
+        
+        state[type].isBusy = true;
+        const btn = document.getElementById(`btn-${type}`);
+        btn.disabled = true;
+
+        state[type].l++;
+        document.getElementById(`${type}-layer`).innerText = `Layer: ${state[type].l} / ${CFG[type].layers}`;
+        
+        // Math coordinates
+        const compactedHeight = CFG[type].layerH; // Final height of this layer
+        const looseHeight = compactedHeight + 20; // Starts fluffy
+        const finalTopY = CFG.baseY - (state[type].l * compactedHeight); // Where soil surface ends up
+        const initialTopY = finalTopY - 20; // Where loose soil surface starts
+
+        // 1. Pour Soil
+        const soilGroup = document.getElementById(`${type}-soil-group`);
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', '100');
+        rect.setAttribute('y', initialTopY);
+        rect.setAttribute('width', '100');
+        rect.setAttribute('height', looseHeight);
+        rect.setAttribute('class', 'soil-layer');
+        soilGroup.appendChild(rect);
+
+        // Move Assembly (Sleeve + Rammer) to rest EXACTLY on the loose soil surface
+        const assembly = document.getElementById(`${type}-assembly`);
+        assembly.style.transition = 'transform 0.5s ease';
+        assembly.style.transform = `translateY(${initialTopY}px)`;
+        
+        btn.innerText = "Pouring Soil...";
+        await wait(600);
+
+        // 2. Animate 25 Blows
+        const rammer = document.getElementById(`${type}-rammer`);
+        rammer.style.transition = 'transform 0.08s ease-in';
+        assembly.style.transition = 'transform 0.08s ease-in'; // Assembly follows soil down
+
+        for (let b = 1; b <= CFG[type].blows; b++) {
+            document.getElementById(`${type}-blow`).innerText = `Blows: ${b} / 25`;
+            btn.innerText = `Ramming... (${b}/25)`;
+
+            // Lift rammer INSIDE the sleeve
+            rammer.style.transform = `translateY(-${CFG[type].dropH}px)`;
+            await wait(100);
+
+            // Drop rammer. It always drops to Y=0 (relative to assembly)
+            // But the soil is compacting, so the assembly itself must move down!
+            let progress = b / CFG[type].blows;
+            let currentTopY = initialTopY + (20 * progress); // Moves down 20 units total
+            let currentLayerH = looseHeight - (20 * progress);
+
+            // Update Soil visually
+            rect.setAttribute('y', currentTopY);
+            rect.setAttribute('height', currentLayerH);
+            
+            // Move Assembly down to match new soil surface
+            // Also add X jitter to the Rammer for realism
+            let jx = (Math.random() - 0.5) * 40; 
+            
+            assembly.style.transform = `translateY(${currentTopY}px)`;
+            rammer.style.transform = `translate(${jx}px, 0px)`; // Hits exactly at Y=0 of assembly = currentTopY
+            
+            await wait(80);
+        }
+
+        // Center rammer after layer
+        rammer.style.transition = 'transform 0.3s ease';
+        rammer.style.transform = `translate(0px, 0px)`;
+        
+        document.getElementById(`${type}-blow`).innerText = `Blows: 0 / 25`;
+        state[type].isBusy = false;
+        
+        if (state[type].l < CFG[type].layers) {
+            btn.innerText = "Pour Soil & Tamp";
+            btn.disabled = false;
+        } else {
+            btn.innerText = "Test Completed";
+            btn.style.background = "#10b981";
+            btn.style.boxShadow = "0 4px 0 #059669";
+            CFG[type].done = true;
+            checkCompletion();
+        }
+    }
+
+    function checkCompletion() {
+        if (CFG.std.done && CFG.mod.done) {
+            // Hide standard assembly so we can see the full soil core
+            document.getElementById('std-assembly').style.opacity = '0';
+            document.getElementById('mod-assembly').style.opacity = '0';
+            
+            // Show graph
+            setTimeout(() => {
+                document.getElementById('graph-section').style.display = 'flex';
+                // Trigger curve drawing animations
+                document.getElementById('curve-std').classList.add('animate-draw');
+                document.getElementById('curve-mod').classList.add('animate-draw');
+                
+                // Show Loksewa Note and Points of Interest after curves draw
+                setTimeout(() => {
+                    document.getElementById('poi-markers').style.opacity = '1';
+                    document.getElementById('loksewa-note').style.opacity = '1';
+                }, 2000);
+                
+                // Scroll to graph safely
+                document.getElementById('graph-section').scrollIntoView({ behavior: 'smooth' });
+            }, 1000);
+        }
+    }
+
+    // Generate Graph Grid Background
+    const grid = document.getElementById('grid');
+    for(let i=1; i<=10; i++) {
+        // Vertical
+        let lineV = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        lineV.setAttribute('x1', 60 + (i*50)); lineV.setAttribute('y1', 40);
+        lineV.setAttribute('x2', 60 + (i*50)); lineV.setAttribute('y2', 300);
+        lineV.setAttribute('class', 'grid-line');
+        grid.appendChild(lineV);
+        
+        // Horizontal
+        let lineH = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        lineH.setAttribute('x1', 60); lineH.setAttribute('y1', 300 - (i*26));
+        lineH.setAttribute('x2', 560); lineH.setAttribute('y2', 300 - (i*26));
+        lineH.setAttribute('class', 'grid-line');
+        grid.appendChild(lineH);
+    }
+</script>
+
+</body>
+</html>
+
+
