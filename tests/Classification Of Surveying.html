@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
+    <title>Advanced Surveying Engineering Map</title>
+    <style>
+        :root {
+            --bg-canvas: #f0f2f5;
+            --paper-bg: #fffdf5;
+            --line-color: #94a3b8;
+            --root-color: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            --primary-color: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            --secondary-color: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+            --leaf-color: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            --text-dark: #0f172a;
+            --text-muted: #475569;
+            --shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-canvas);
+        }
+
+        /* Full-screen Interaction Canvas */
+        #viewport {
+            width: 100vw;
+            height: 100vh;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: none;
+        }
+
+        #viewport:active { cursor: grabbing; }
+
+        #canvas {
+            transform-origin: center center;
+            transition: transform 0.1s ease-out;
+            display: inline-block;
+            padding: 400px;
+        }
+
+        /* Controls UI */
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .btn-ctrl {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: white;
+            border: 1px solid #ddd;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            color: var(--text-dark);
+        }
+
+        .header-overlay {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .header-overlay h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            background: rgba(255,255,255,0.85);
+            padding: 12px 24px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            color: var(--text-dark);
+            box-shadow: var(--shadow);
+        }
+
+        /* Tree Styles */
+        .tree ul {
+            padding-top: 40px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            margin: 0;
+            padding-left: 0;
+        }
+
+        .tree li {
+            text-align: center;
+            list-style-type: none;
+            position: relative;
+            padding: 40px 15px 0 15px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Connecting Lines */
+        .tree li::before, .tree li::after {
+            content: '';
+            position: absolute; top: 0; right: 50%;
+            border-top: 3px solid var(--line-color);
+            width: 50%; height: 40px;
+        }
+        .tree li::after {
+            right: auto; left: 50%;
+            border-left: 3px solid var(--line-color);
+        }
+
+        .tree li:only-child::after, .tree li:only-child::before { display: none; }
+        .tree li:only-child { padding-top: 0; }
+        .tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
+        .tree li:last-child::before { border-right: 3px solid var(--line-color); border-radius: 0 15px 0 0; }
+        .tree li:first-child::after { border-radius: 15px 0 0 0; }
+
+        .tree ul ul::before {
+            content: '';
+            position: absolute; top: 0; left: 50%;
+            border-left: 3px solid var(--line-color);
+            width: 0; height: 40px;
+        }
+
+        /* Node Styling */
+        .node-container {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .node {
+            padding: 15px 28px;
+            border-radius: 16px;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s, filter 0.2s, box-shadow 0.2s;
+            white-space: nowrap;
+            border: none;
+            position: relative;
+            z-index: 5;
+        }
+
+        .node:hover { 
+            transform: scale(1.08); 
+            filter: brightness(1.1);
+            box-shadow: 0 15px 25px -5px rgba(0,0,0,0.2);
+        }
+
+        .lvl-0 { background: var(--root-color); font-size: 1.2rem; }
+        .lvl-1 { background: var(--primary-color); }
+        .lvl-2 { background: var(--secondary-color); }
+        .lvl-leaf { background: var(--leaf-color); }
+
+        /* Paper Definition Block */
+        .paper-def {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-in-out, opacity 0.3s;
+            opacity: 0;
+            width: 280px;
+            background: var(--paper-bg);
+            border-left: 6px solid #d97706;
+            text-align: left;
+            padding: 0 18px;
+            margin-top: 10px;
+            border-radius: 4px 12px 12px 4px;
+            box-shadow: 4px 6px 15px rgba(0,0,0,0.08);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .paper-def.show {
+            max-height: 600px;
+            opacity: 1;
+            padding: 18px;
+        }
+
+        .paper-def ul {
+            display: block !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            list-style: none !important;
+        }
+
+        .paper-def li {
+            padding: 6px 0 !important;
+            border: none !important;
+            color: var(--text-dark) !important;
+            display: list-item !important;
+            text-align: left !important;
+        }
+
+        .paper-def li::before {
+            content: "•";
+            color: #d97706;
+            font-weight: bold;
+            display: inline-block; 
+            width: 1.2em;
+            margin-left: -1em;
+        }
+
+        .branch-hidden { display: none !important; }
+
+        .zoom-info {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(15, 23, 42, 0.7);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            pointer-events: none;
+            backdrop-filter: blur(4px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-overlay">
+        <h1>Engineering Survey Mind Map</h1>
+    </div>
+
+    <div class="zoom-info" id="zoom-label">Zoom: 80%</div>
+
+    <div class="controls">
+        <button class="btn-ctrl" onclick="zoom(1.25)" title="Zoom In">+</button>
+        <button class="btn-ctrl" onclick="zoom(0.8)" title="Zoom Out">-</button>
+        <button class="btn-ctrl" onclick="resetView()" title="Reset View">⟲</button>
+    </div>
+
+    <div id="viewport">
+        <div id="canvas">
+            <div class="tree">
+                <ul>
+                    <li>
+                        <div class="node-container">
+                            <div class="node lvl-0" onclick="toggleNode(this)">Classification of Surveying</div>
+                            <ul id="main-root">
+                                <!-- Primary -->
+                                <li>
+                                    <div class="node-container">
+                                        <div class="node lvl-1" onclick="toggleNode(this)">Primary Division</div>
+                                        <ul class="branch-hidden">
+                                            <li>
+                                                <div class="node-container">
+                                                    <div class="node lvl-leaf" onclick="toggleDef(this, 'plane')">Plane Surveying</div>
+                                                    <div id="def-plane" class="paper-def"></div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="node-container">
+                                                    <div class="node lvl-leaf" onclick="toggleDef(this, 'geodetic')">Geodetic Surveying</div>
+                                                    <div id="def-geodetic" class="paper-def"></div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <!-- Secondary -->
+                                <li>
+                                    <div class="node-container">
+                                        <div class="node lvl-1" onclick="toggleNode(this)">Secondary Division</div>
+                                        <ul class="branch-hidden">
+                                            <!-- Field -->
+                                            <li>
+                                                <div class="node-container">
+                                                    <div class="node lvl-2" onclick="toggleNode(this)">Nature of Field</div>
+                                                    <ul class="branch-hidden">
+                                                        <li>
+                                                            <div class="node-container">
+                                                                <div class="node lvl-leaf" onclick="toggleNode(this)">Land Survey</div>
+                                                                <ul class="branch-hidden">
+                                                                    <li>
+                                                                        <div class="node-container">
+                                                                            <div class="node lvl-leaf" onclick="toggleDef(this, 'topo')">Topographical</div>
+                                                                            <div id="def-topo" class="paper-def"></div>
+                                                                        </div>
+                                                                    </li>
+                                                                    <li>
+                                                                        <div class="node-container">
+                                                                            <div class="node lvl-leaf" onclick="toggleDef(this, 'cadastral')">Cadastral</div>
+                                                                            <div id="def-cadastral" class="paper-def"></div>
+                                                                        </div>
+                                                                    </li>
+                                                                    <li>
+                                                                        <div class="node-container">
+                                                                            <div class="node lvl-leaf" onclick="toggleDef(this, 'city')">City Survey</div>
+                                                                            <div id="def-city" class="paper-def"></div>
+                                                                        </div>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="node-container">
+                                                                <div class="node lvl-leaf" onclick="toggleDef(this, 'hydro')">Hydrographic</div>
+                                                                <div id="def-hydro" class="paper-def"></div>
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="node-container">
+                                                                <div class="node lvl-leaf" onclick="toggleDef(this, 'astro')">Astronomical</div>
+                                                                <div id="def-astro" class="paper-def"></div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </li>
+                                            <!-- Purpose -->
+                                            <li>
+                                                <div class="node-container">
+                                                    <div class="node lvl-2" onclick="toggleNode(this)">Based on Purpose</div>
+                                                    <ul class="branch-hidden">
+                                                        <li>
+                                                            <div class="node-container">
+                                                                <div class="node lvl-leaf" onclick="toggleDef(this, 'eng')">Engineering Survey</div>
+                                                                <div id="def-eng" class="paper-def"></div>
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="node-container">
+                                                                <div class="node lvl-leaf" onclick="toggleDef(this, 'mil')">Military Survey</div>
+                                                                <div id="def-mil" class="paper-def"></div>
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="node-container">
+                                                                <div class="node lvl-leaf" onclick="toggleDef(this, 'mine')">Mine Survey</div>
+                                                                <div id="def-mine" class="paper-def"></div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </li>
+                                            <!-- Instrument -->
+                                            <li>
+                                                <div class="node-container">
+                                                    <div class="node lvl-2" onclick="toggleNode(this)">Instrument Used</div>
+                                                    <ul class="branch-hidden">
+                                                        <li>
+                                                            <div class="node-container">
+                                                                <div class="node lvl-leaf" onclick="toggleDef(this, 'chain')">Chain Surveying</div>
+                                                                <div id="def-chain" class="paper-def"></div>
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="node-container">
+                                                                <div class="node lvl-leaf" onclick="toggleDef(this, 'comp')">Compass Surveying</div>
+                                                                <div id="def-comp" class="paper-def"></div>
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="node-container">
+                                                                <div class="node lvl-leaf" onclick="toggleDef(this, 'total')">Total Station</div>
+                                                                <div id="def-total" class="paper-def"></div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </li>
+                                            <!-- Method -->
+                                            <li>
+                                                <div class="node-container">
+                                                    <div class="node lvl-2" onclick="toggleNode(this)">Method Used</div>
+                                                    <ul class="branch-hidden">
+                                                        <li>
+                                                            <div class="node-container">
+                                                                <div class="node lvl-leaf" onclick="toggleDef(this, 'tri')">Triangulation</div>
+                                                                <div id="def-tri" class="paper-def"></div>
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="node-container">
+                                                                <div class="node lvl-leaf" onclick="toggleDef(this, 'trav')">Traversing</div>
+                                                                <div id="def-trav" class="paper-def"></div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const content = {
+            plane: ["Area < 260 km²", "Curvature ignored", "Survey lines: Straight", "Level lines: Straight"],
+            geodetic: ["Area > 260 km²", "Curvature included", "Lines: Spherical arcs", "High precision geoids"],
+            topo: ["Natural features (hills, rivers)", "Artificial (roads, rails)", "Vertical & Horizontal relief"],
+            cadastral: ["Establishing property lines", "Legal/Judicial boundaries", "Land ownership records"],
+            city: ["Urban planning (streets, sewers)", "Water supply layouts", "Metropolitan infrastructure"],
+            hydro: ["Surveying water bodies", "Sounding for depth", "Navigation charting"],
+            astro: ["Absolute position (Lat/Long)", "Observations of Sun/Stars", "True meridian alignment"],
+            eng: ["For design of works (Dams, roads)", "Detailed engineering layouts", "Construction control points"],
+            mil: ["Strategic military mapping", "Tactical battlefield info", "Defense infrastructure planning"],
+            mine: ["Underground tunneling", "Mineral deposit mapping", "Shaft and gallery alignment"],
+            chain: ["Linear measurements only", "Uses chain or tapes", "Suitable for small plane areas"],
+            comp: ["Angular measurements", "Magnetic needle bearing", "Determining direction of lines"],
+            total: ["Electronic Distance & Angles", "On-board data storage", "Modern high-precision tool"],
+            tri: ["Large area networking", "Formation of triangles", "Precise control establishment"],
+            trav: ["Connected series of survey lines", "Closed or Open traverse", "General boundary control"]
+        };
+
+        let scale = 0.8;
+        let pointX = 0;
+        let pointY = 0;
+        let startX = 0;
+        let startY = 0;
+        let isDragging = false;
+
+        const viewport = document.getElementById('viewport');
+        const canvas = document.getElementById('canvas');
+        const zoomLabel = document.getElementById('zoom-label');
+
+        function updateTransform() {
+            canvas.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+            zoomLabel.innerText = `Zoom: ${Math.round(scale * 100)}%`;
+        }
+
+        // Panning Logic
+        viewport.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX - pointX;
+            startY = e.clientY - pointY;
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            pointX = e.clientX - startX;
+            pointY = e.clientY - startY;
+            updateTransform();
+        });
+
+        window.addEventListener('mouseup', () => isDragging = false);
+
+        // Mobile Pan Logic
+        viewport.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                isDragging = true;
+                startX = e.touches[0].clientX - pointX;
+                startY = e.touches[0].clientY - pointY;
+            }
+        }, { passive: true });
+
+        viewport.addEventListener('touchmove', (e) => {
+            if (!isDragging || e.touches.length > 1) return;
+            pointX = e.touches[0].clientX - startX;
+            pointY = e.touches[0].clientY - startY;
+            updateTransform();
+        }, { passive: true });
+
+        viewport.addEventListener('touchend', () => isDragging = false);
+
+        // Zoom Logic
+        function zoom(factor) {
+            scale *= factor;
+            scale = Math.min(Math.max(0.1, scale), 4);
+            updateTransform();
+        }
+
+        function resetView() {
+            scale = 0.8;
+            pointX = 0;
+            pointY = 0;
+            updateTransform();
+        }
+
+        // Interaction Logic
+        function toggleNode(btn) {
+            const list = btn.nextElementSibling;
+            if (list) list.classList.toggle('branch-hidden');
+        }
+
+        function toggleDef(btn, key) {
+            const defBox = btn.nextElementSibling;
+            if (defBox.innerHTML === "") {
+                let html = '<ul>';
+                content[key].forEach(p => html += `<li>${p}</li>`);
+                html += '</ul>';
+                defBox.innerHTML = html;
+            }
+            defBox.classList.toggle('show');
+        }
+
+        updateTransform();
+    </script>
+</body>
+</html>
+
