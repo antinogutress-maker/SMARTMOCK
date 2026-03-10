@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Reinforced Beam Mechanical State Simulator</title>
+    <style>
+        :root {
+            --bg-dark: #09090b;
+            --panel-bg: #111114;
+            --border: #27272a;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --accent: #3b82f6;
+            --danger: #ef4444;
+            --warning: #eab308;
+            --success: #22c55e;
+            --panel-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .dashboard {
+            width: 100%;
+            max-width: 768px;
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: var(--panel-shadow);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%);
+        }
+
+        .header h1 { font-size: 1.1rem; font-weight: 600; letter-spacing: -0.5px; }
+        .header p { color: var(--text-muted); font-size: 0.8rem; margin-top: 2px; }
+
+        .status-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .status-badge {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: var(--accent);
+            padding: 6px 12px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .val-display {
+            font-size: 1.1rem; font-weight: 700; font-variant-numeric: tabular-nums;
+        }
+
+        .svg-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 135%; /* Taller for spread out graph */
+            background: radial-gradient(circle at 50% 15%, #1e1e24 0%, #09090b 100%);
+            overflow: hidden;
+        }
+
+        svg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
+        }
+
+        .control-panel {
+            background: #141417;
+            border-top: 1px solid var(--border);
+            padding: 20px;
+            display: flex; flex-direction: column; gap: 15px;
+        }
+
+        .slider-container { position: relative; padding: 15px 0; }
+        
+        input[type=range] {
+            -webkit-appearance: none; width: 100%; background: transparent; cursor: pointer;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; height: 32px; width: 32px; border-radius: 50%;
+            background: #ffffff; margin-top: -14px;
+            box-shadow: 0 0 15px rgba(255,255,255,0.4), 0 2px 5px rgba(0,0,0,0.5);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 6px; border-radius: 3px;
+            background: linear-gradient(90deg, var(--success) 0%, var(--warning) 60%, var(--danger) 100%);
+        }
+
+        /* Stages List */
+        .stages-list {
+            display: flex; flex-direction: column; gap: 10px; margin-top: 10px;
+            background: #0d0d10; padding: 15px; border-radius: 8px; border: 1px solid var(--border);
+        }
+        .stage-item {
+            display: flex; flex-direction: column; gap: 4px; padding-left: 12px;
+            border-left: 2px solid var(--border); transition: border-color 0.3s;
+        }
+        .stage-item.active { border-left-color: var(--accent); }
+        .stage-item.active-danger { border-left-color: var(--danger); }
+        .stage-item.active-warning { border-left-color: var(--warning); }
+        .stage-title { font-size: 0.85rem; font-weight: 700; color: #d4d4d8; }
+        .stage-desc { font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; }
+
+        .accuracy-note {
+            font-size: 0.7rem; color: #71717a; text-align: center; margin-top: 10px; padding: 10px;
+            background: rgba(255,255,255,0.02); border-radius: 6px;
+        }
+
+        /* SVG Inner Animations */
+        .svg-anim { transition: d 0.1s linear, transform 0.1s linear, opacity 0.2s ease; }
+        .stress-path { transition: d 0.1s ease; }
+        .graph-point { transition: opacity 0.2s ease, r 0.2s ease, fill 0.2s ease; }
+        
+        .active-label { fill: #ffffff !important; font-weight: 700; font-size: 16px; }
+        .active-point { stroke-width: 3 !important; stroke: #ffffff !important; fill: var(--accent) !important; r: 8 !important; }
+
+        /* Fractured State Animation */
+        @keyframes shake {
+            0%, 100% { transform: translate(0, 0); }
+            20% { transform: translate(-3px, 3px) rotate(-1deg); }
+            40% { transform: translate(3px, -2px) rotate(1deg); }
+            60% { transform: translate(-3px, -2px) rotate(-1deg); }
+            80% { transform: translate(3px, 3px) rotate(1deg); }
+        }
+        .fracture-shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        .falling { transform: translateY(30px) rotate(2deg); transition: transform 0.5s cubic-bezier(0.5, 0, 1, 1); }
+    </style>
+</head>
+<body>
+
+<div class="dashboard">
+    <div class="header">
+        <p>Fixed-Fixed Reinforced Concrete Beam</p>
+        <h1>Deformation & Failure Simulator</h1>
+        <div class="status-container">
+            <div class="status-badge" id="phase-badge">Elastic State</div>
+            <div class="val-display" id="val-load">0.0 % Load</div>
+        </div>
+    </div>
+    
+    <div class="svg-container" id="sim-container">
+        <svg viewBox="0 0 1200 1600" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+            <defs>
+                <linearGradient id="concreteGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#52525b" />
+                    <stop offset="20%" stop-color="#71717a" />
+                    <stop offset="80%" stop-color="#3f3f46" />
+                    <stop offset="100%" stop-color="#27272a" />
+                </linearGradient>
+                <linearGradient id="steelGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#18181b" />
+                    <stop offset="30%" stop-color="#a1a1aa" />
+                    <stop offset="50%" stop-color="#f4f4f5" />
+                    <stop offset="70%" stop-color="#71717a" />
+                    <stop offset="100%" stop-color="#09090b" />
+                </linearGradient>
+                <filter id="dropShadow" x="-10%" y="-10%" width="120%" height="130%">
+                    <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#000" flood-opacity="0.8"/>
+                </filter>
+                <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+                    <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#27272a" stroke-width="0.5" stroke-opacity="0.5" />
+                </pattern>
+            </defs>
+
+            <path d="M 0 0 L 1200 0 L 1200 1600 L 0 1600 Z" fill="url(#grid)" />
+
+            <g transform="translate(0, 80)">
+                <g filter="url(#dropShadow)">
+                    <path d="M 50 100 L 150 100 L 150 350 L 50 350 Z" fill="#27272a" stroke="#3f3f46" stroke-width="2"/>
+                    <path d="M 120 100 L 150 100 L 150 350 L 120 350 Z" fill="#18181b" />
+                </g>
+                <g filter="url(#dropShadow)">
+                    <path d="M 1050 100 L 1150 100 L 1150 350 L 1050 350 Z" fill="#27272a" stroke="#3f3f46" stroke-width="2"/>
+                    <path d="M 1050 100 L 1080 100 L 1080 350 L 1050 350 Z" fill="#18181b" />
+                </g>
+
+                <g id="intact-beam" filter="url(#dropShadow)">
+                    <path id="concrete-body" class="svg-anim" d="" fill="url(#concreteGrad)" stroke="#18181b" stroke-width="2" />
+                    <path id="top-rebar" class="svg-anim" d="" fill="none" stroke="url(#steelGrad)" stroke-width="7" stroke-linecap="round" />
+                    <path id="bot-rebar" class="svg-anim" d="" fill="none" stroke="url(#steelGrad)" stroke-width="9" stroke-linecap="round" />
+                    <g id="midspan-cracks" stroke="#09090b" stroke-width="2.5" fill="none" opacity="0">
+                        <path class="crack-path" d="M 600 280 C 595 260, 605 240, 600 220" />
+                        <path class="crack-path" d="M 560 278 C 550 260, 565 240, 555 220" />
+                        <path class="crack-path" d="M 640 278 C 650 260, 635 240, 645 220" />
+                        <path class="crack-path" d="M 580 280 C 585 260, 575 250, 580 230" />
+                        <path class="crack-path" d="M 620 280 C 615 260, 625 250, 620 230" />
+                    </g>
+                </g>
+
+                <g id="broken-beam" filter="url(#dropShadow)" opacity="0" style="display:none;">
+                    <g id="broken-left">
+                        <path d="M 150 180 C 350 180, 450 180, 580 255 L 590 285 L 570 310 L 590 355 C 450 355, 350 280, 150 280 Z" fill="url(#concreteGrad)" stroke="#18181b" stroke-width="2"/>
+                        <path d="M 100 200 C 350 200, 450 200, 575 270" fill="none" stroke="url(#steelGrad)" stroke-width="7" />
+                        <path d="M 100 260 C 350 260, 450 260, 585 340" fill="none" stroke="url(#steelGrad)" stroke-width="9" />
+                    </g>
+                    <g id="broken-right">
+                        <path d="M 610 255 L 600 285 L 620 310 L 600 355 C 750 355, 850 280, 1050 280 L 1050 180 C 850 180, 750 180, 610 255 Z" fill="url(#concreteGrad)" stroke="#18181b" stroke-width="2"/>
+                        <path d="M 615 270 C 750 200, 850 200, 1100 200" fill="none" stroke="url(#steelGrad)" stroke-width="7" />
+                        <path d="M 605 340 C 750 260, 850 260, 1100 260" fill="none" stroke="url(#steelGrad)" stroke-width="9" />
+                    </g>
+                    <path d="M 595 290 L 605 295 L 600 305 Z M 580 330 L 590 325 L 585 340 Z" fill="#3f3f46"/>
+                </g>
+
+                <g id="load-system" class="svg-anim">
+                    <path d="M 585 -50 L 615 -50 L 615 130 L 585 130 Z" fill="url(#steelGrad)" stroke="#18181b" stroke-width="2"/>
+                    <path d="M 560 130 L 640 130 L 620 180 L 580 180 Z" fill="#3f3f46" stroke="#18181b" stroke-width="2"/>
+                </g>
+            </g>
+
+            <g transform="translate(150, 550)">
+                <text x="50" y="-30" fill="#a1a1aa" font-size="16" font-weight="600" letter-spacing="1">SECTION</text>
+                <text x="350" y="-30" fill="#a1a1aa" font-size="16" font-weight="600" letter-spacing="1">STRAIN</text>
+                <text x="750" y="-30" fill="#a1a1aa" font-size="16" font-weight="600" letter-spacing="1">STRESS (Whitney)</text>
+                
+                <g>
+                    <path d="M 0 0 C 5 0, 145 0, 150 0 C 150 5, 150 245, 150 250 C 145 250, 5 250, 0 250 C 0 245, 0 5, 0 0" fill="#27272a" stroke="#52525b" stroke-width="2"/>
+                    <circle cx="40" cy="30" r="10" fill="#a1a1aa" stroke="#18181b"/>
+                    <circle cx="110" cy="30" r="10" fill="#a1a1aa" stroke="#18181b"/>
+                    <circle cx="30" cy="208" r="12" fill="#a1a1aa" stroke="#18181b"/>
+                    <circle cx="75" cy="208" r="12" fill="#a1a1aa" stroke="#18181b"/>
+                    <circle cx="120" cy="208" r="12" fill="#a1a1aa" stroke="#18181b"/>
+                    <path id="sec-na" class="svg-anim" d="M -20 125 L 170 125" stroke="#ef4444" stroke-width="2" stroke-dasharray="6 6" />
+                </g>
+
+                <g transform="translate(420, 0)">
+                    <path d="M 0 0 L 0 250" stroke="#3f3f46" stroke-width="2" />
+                    <path id="strain-na" class="svg-anim" d="M -70 125 L 180 125" stroke="#ef4444" stroke-width="2" stroke-dasharray="6 6" />
+                    <path id="strain-comp-fill" class="stress-path" d="M 0 0 L 0 0 L 0 125 Z" fill="rgba(59, 130, 246, 0.15)" />
+                    <path id="strain-tens-fill" class="stress-path" d="M 0 125 L 0 250 L 0 250 Z" fill="rgba(239, 68, 68, 0.15)" />
+                    <path id="strain-profile" class="stress-path" d="M 0 0 L 0 250" stroke="#f4f4f5" stroke-width="2.5" />
+                    <text id="lbl-ec" x="15" y="15" fill="#3b82f6" font-size="14" font-weight="600">ε_c</text>
+                    <text id="lbl-es" x="-100" y="245" fill="#ef4444" font-size="14" font-weight="600">ε_s</text>
+                </g>
+
+                <g transform="translate(850, 0)">
+                    <path d="M 0 0 L 0 250" stroke="#3f3f46" stroke-width="2" />
+                    <path id="stress-na" class="svg-anim" d="M -150 125 L 150 125" stroke="#ef4444" stroke-width="2" stroke-dasharray="6 6" />
+                    <path id="stress-comp-block" class="stress-path" d="M 0 125 Q 0 125, 0 125" fill="rgba(59, 130, 246, 0.25)" stroke="#3b82f6" stroke-width="2" />
+                    <path id="force-cc" class="stress-path" d="M 0 40 L 0 40" fill="none" stroke="#60a5fa" stroke-width="4" stroke-linecap="round"/>
+                    <text id="lbl-cc" x="10" y="45" fill="#60a5fa" font-size="16" font-weight="700" opacity="0">Cc</text>
+                    <path id="force-t" class="stress-path" d="M 0 208 L 0 208" fill="none" stroke="#ef4444" stroke-width="4" stroke-linecap="round"/>
+                    <text id="lbl-t" x="-40" y="213" fill="#ef4444" font-size="16" font-weight="700" opacity="0">T</text>
+                </g>
+            </g>
+
+            <g transform="translate(100, 1000)" filter="url(#dropShadow)">
+                <text x="500" y="-30" fill="#a1a1aa" font-size="18" font-weight="700" letter-spacing="1" text-anchor="middle">STEEL REBAR: STRESS VS STRAIN</text>
+                
+                <path d="M 100 0 L 100 450 L 1000 450" fill="none" stroke="#52525b" stroke-width="3" stroke-linecap="round"/>
+                <text x="60" y="225" fill="#f4f4f5" font-size="18" font-weight="600" transform="rotate(-90 60 225)" text-anchor="middle">Stress (σ)</text>
+                <text x="550" y="500" fill="#f4f4f5" font-size="18" font-weight="600" text-anchor="middle">Strain (ε)</text>
+
+                <path id="graph-curve-bg" d="M 100 450 L 200 300 Q 215 285, 230 280 Q 245 270, 260 260 Q 275 280, 290 300 L 450 300 C 600 300, 700 150, 800 150 C 900 150, 950 200, 1000 250" fill="none" stroke="#27272a" stroke-width="6" stroke-dasharray="10 10"/>
+                
+                <path id="graph-curve" d="M 100 450 L 200 300 Q 215 285, 230 280 Q 245 270, 260 260 Q 275 280, 290 300 L 450 300 C 600 300, 700 150, 800 150 C 900 150, 950 200, 1000 250" fill="none" stroke="var(--accent)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+
+                <g font-size="14" font-weight="600" fill="#a1a1aa">
+                    <circle id="pt-p" class="graph-point" cx="200" cy="300" r="6" fill="#09090b" stroke="#a1a1aa" stroke-width="2"/>
+                    <text id="lbl-p" x="180" y="285">P</text>
+                    
+                    <circle id="pt-e" class="graph-point" cx="230" cy="280" r="6" fill="#09090b" stroke="#a1a1aa" stroke-width="2"/>
+                    <text id="lbl-e" x="210" y="265">E</text>
+
+                    <circle id="pt-yu" class="graph-point" cx="260" cy="260" r="6" fill="#09090b" stroke="#eab308" stroke-width="2"/>
+                    <text id="lbl-yu" x="250" y="240" fill="#eab308">Yu</text>
+
+                    <circle id="pt-yl" class="graph-point" cx="290" cy="300" r="6" fill="#09090b" stroke="#eab308" stroke-width="2"/>
+                    <text id="lbl-yl" x="280" y="325" fill="#eab308">Yl</text>
+
+                    <circle id="pt-u" class="graph-point" cx="800" cy="150" r="6" fill="#09090b" stroke="#ef4444" stroke-width="2"/>
+                    <text id="lbl-u" x="790" y="130" fill="#ef4444">U</text>
+
+                    <path id="pt-f-cross" d="M 990 240 L 1010 260 M 1010 240 L 990 260" stroke="#ef4444" stroke-width="4" opacity="0.3"/>
+                    <text id="lbl-f" x="1015" y="255" fill="#ef4444">F</text>
+                </g>
+                
+                <circle id="graph-active-pt" cx="100" cy="450" r="12" fill="#ffffff" stroke="var(--accent)" stroke-width="4"/>
+            </g>
+        </svg>
+    </div>
+
+    <div class="control-panel">
+        <div>
+            <label style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">Apply Load Constraint (%)</label>
+            <div class="slider-container">
+                <input type="range" id="load-slider" min="0" max="100" value="0" step="0.5">
+            </div>
+        </div>
+
+        <div class="stages-list">
+            <div class="stage-item" id="stage-P">
+                <span class="stage-title">Origin to P: Proportional Limit</span>
+                <span class="stage-desc">Stress is strictly proportional to Strain (Hooke's Law: σ = Eε). The graph is a perfect straight line.</span>
+            </div>
+            <div class="stage-item" id="stage-E">
+                <span class="stage-title">P to E: Elastic Limit</span>
+                <span class="stage-desc">Material remains elastic (will return to original shape if unloaded), but the relationship is no longer perfectly linear.</span>
+            </div>
+            <div class="stage-item" id="stage-Yu">
+                <span class="stage-title">E to Yu: Upper Yield Point</span>
+                <span class="stage-desc">The maximum stress reached before the material yields. Plastic (permanent) deformation begins here.</span>
+            </div>
+            <div class="stage-item" id="stage-Yl">
+                <span class="stage-title">Yu to Yl: Lower Yield Point & Plateau</span>
+                <span class="stage-desc">Stress drops slightly and internal atomic slip occurs. Strain increases significantly without needing more stress.</span>
+            </div>
+            <div class="stage-item" id="stage-U">
+                <span class="stage-title">Strain Hardening to U (Ultimate Strength)</span>
+                <span class="stage-desc">Material crystalline structure reorganizes, gaining strength. U is the absolute maximum stress the steel can handle.</span>
+            </div>
+            <div class="stage-item" id="stage-F">
+                <span class="stage-title">Necking to F (Fracture / Break)</span>
+                <span class="stage-desc">Cross-section area rapidly decreases (necking). Engineering stress falls until the material physically snaps at F.</span>
+            </div>
+        </div>
+
+        <div class="accuracy-note">
+            <strong>Accuracy Note:</strong> The Strain profile shape is perfectly linear, confirming the <em>Euler-Bernoulli hypothesis</em> (plane sections remain plane). The Stress profile correctly transitions into an <em>equivalent rectangular stress block (Whitney model)</em> near ultimate failure, which accurately represents internal compressive forces for design.
+        </div>
+    </div>
+</div>
+
+<script>
+    const slider = document.getElementById('load-slider');
+    const valLoad = document.getElementById('val-load');
+    const phaseBadge = document.getElementById('phase-badge');
+    const simContainer = document.getElementById('sim-container');
+    
+    // Beam SVG Elements
+    const body = document.getElementById('concrete-body');
+    const topReb = document.getElementById('top-rebar');
+    const botReb = document.getElementById('bot-rebar');
+    const cracks = document.getElementById('midspan-cracks');
+    const crackPaths = cracks.querySelectorAll('.crack-path');
+    const loadSys = document.getElementById('load-system');
+    
+    // Fracture elements
+    const intactBeam = document.getElementById('intact-beam');
+    const brokenBeam = document.getElementById('broken-beam');
+    const brokenRight = document.getElementById('broken-right');
+
+    // Profile Elements
+    const sNa = document.getElementById('sec-na');
+    const strNa = document.getElementById('strain-na');
+    const strNaStress = document.getElementById('stress-na');
+    const strFillC = document.getElementById('strain-comp-fill');
+    const strFillT = document.getElementById('strain-tens-fill');
+    const strProf = document.getElementById('strain-profile');
+    const stressBlock = document.getElementById('stress-comp-block');
+    const fCc = document.getElementById('force-cc'); const lCc = document.getElementById('lbl-cc');
+    const fT = document.getElementById('force-t'); const lT = document.getElementById('lbl-t');
+
+    // Graph Elements
+    const gCurve = document.getElementById('graph-curve');
+    const gActive = document.getElementById('graph-active-pt');
+    const totalCurveLen = gCurve.getTotalLength();
+    gCurve.style.strokeDashoffset = totalCurveLen;
+
+    // Helper: Find exact length on path for an X coordinate (Approximation for performance)
+    function getPathLengthAtX(targetX) {
+        let start = 0, end = totalCurveLen;
+        for (let i = 0; i < 20; i++) {
+            let mid = (start + end) / 2;
+            let pt = gCurve.getPointAtLength(mid);
+            if (pt.x > targetX) end = mid;
+            else start = mid;
+        }
+        return (start + end) / 2;
+    }
+
+    // Graph node physical x-coordinates
+    const nodeX = { P: 200, E: 230, Yu: 260, Yl: 290, PlatEnd: 450, U: 800, F: 1000 };
+    const lenX = {
+        P: getPathLengthAtX(nodeX.P) / totalCurveLen,
+        E: getPathLengthAtX(nodeX.E) / totalCurveLen,
+        Yu: getPathLengthAtX(nodeX.Yu) / totalCurveLen,
+        Yl: getPathLengthAtX(nodeX.Yl) / totalCurveLen,
+        PlatEnd: getPathLengthAtX(nodeX.PlatEnd) / totalCurveLen,
+        U: getPathLengthAtX(nodeX.U) / totalCurveLen,
+        F: 1.0
+    };
+
+    function activatePt(id, isActive) {
+        const pt = document.getElementById('pt-' + id);
+        const lbl = document.getElementById('lbl-' + id);
+        if(pt) pt.classList.toggle('active-point', isActive);
+        if(lbl) lbl.classList.toggle('active-label', isActive);
+    }
+
+    function highlightStage(stageId, colorClass) {
+        document.querySelectorAll('.stage-item').forEach(el => el.className = 'stage-item');
+        const active = document.getElementById('stage-' + stageId);
+        if(active) active.classList.add('active', colorClass || '');
+    }
+
+    function updateSimulation() {
+        let lp = parseFloat(slider.value);
+        let delta, phase, xu, graphNorm, stageId, colorClass = '';
+        
+        // --- 1. Map Load % to Physical Regions & Graph ---
+        if (lp <= 20) {
+            phase = "Elastic Linear"; stageId = "P";
+            let norm = lp / 20; delta = norm * 10; xu = 125;
+            graphNorm = norm * lenX.P;
+            activatePt('p', lp === 20); activatePt('e', false); activatePt('yu', false); activatePt('yl', false); activatePt('u', false);
+        } 
+        else if (lp <= 25) {
+            phase = "Non-linear Elastic"; stageId = "E";
+            let norm = (lp - 20) / 5; delta = 10 + norm * 5; xu = 120 - norm * 5;
+            graphNorm = lenX.P + norm * (lenX.E - lenX.P);
+            activatePt('p', true); activatePt('e', lp === 25);
+        }
+        else if (lp <= 30) {
+            phase = "Yielding Starts"; stageId = "Yu"; colorClass = "active-warning";
+            let norm = (lp - 25) / 5; delta = 15 + norm * 10; xu = 115 - norm * 10;
+            graphNorm = lenX.E + norm * (lenX.Yu - lenX.E);
+            activatePt('e', true); activatePt('yu', lp === 30);
+        }
+        else if (lp <= 35) {
+            phase = "Yield Drop"; stageId = "Yl"; colorClass = "active-warning";
+            let norm = (lp - 30) / 5; delta = 25 + norm * 15; xu = 105 - norm * 5;
+            graphNorm = lenX.Yu + norm * (lenX.Yl - lenX.Yu);
+            activatePt('yu', true); activatePt('yl', lp === 35);
+        }
+        else if (lp <= 60) {
+            phase = "Yield Plateau"; stageId = "Yl"; colorClass = "active-warning";
+            let norm = (lp - 35) / 25; delta = 40 + norm * 25; xu = 100 - norm * 10;
+            graphNorm = lenX.Yl + norm * (lenX.PlatEnd - lenX.Yl);
+            activatePt('yl', true); activatePt('u', false);
+        }
+        else if (lp <= 95) {
+            phase = "Strain Hardening"; stageId = "U"; colorClass = "active-danger";
+            let norm = (lp - 60) / 35; delta = 65 + norm * 20; xu = 90 - norm * 15;
+            graphNorm = lenX.PlatEnd + norm * (lenX.U - lenX.PlatEnd);
+            activatePt('u', lp === 95);
+            document.getElementById('pt-f-cross').style.opacity = 0.3;
+        }
+        else {
+            phase = "Necking & Failure"; stageId = "F"; colorClass = "active-danger";
+            let norm = (lp - 95) / 5; delta = 85 + norm * 10; xu = 75 + norm * 5; // NA drops slightly at crush
+            graphNorm = lenX.U + norm * (lenX.F - lenX.U);
+            activatePt('u', true);
+            document.getElementById('pt-f-cross').style.opacity = (lp === 100) ? 1 : 0.3;
+        }
+
+        valLoad.innerText = `${lp.toFixed(1)}% Load`;
+        phaseBadge.innerText = phase;
+        highlightStage(stageId, colorClass);
+
+        if (lp >= 95) phaseBadge.style.color = "var(--danger)";
+        else if (lp >= 30) phaseBadge.style.color = "var(--warning)";
+        else phaseBadge.style.color = "var(--accent)";
+
+        // --- 2. Update Graph ---
+        gCurve.style.strokeDashoffset = totalCurveLen * (1 - graphNorm);
+        const pt = gCurve.getPointAtLength(graphNorm * totalCurveLen);
+        gActive.setAttribute('cx', pt.x);
+        gActive.setAttribute('cy', pt.y);
+        gActive.style.stroke = lp >= 95 ? "var(--danger)" : lp >= 30 ? "var(--warning)" : "var(--accent)";
+
+        // --- 3. Manage Fracture Snap State ---
+        if (lp === 100) {
+            simContainer.classList.add('fracture-shake');
+            intactBeam.style.display = "none";
+            brokenBeam.style.display = "block";
+            brokenBeam.setAttribute('opacity', 1);
+            brokenRight.classList.add('falling');
+            loadSys.setAttribute('transform', `translate(0, ${delta + 20}) rotate(3)`);
+            return; // Stop rendering continuous geometry
+        } else {
+            simContainer.classList.remove('fracture-shake');
+            intactBeam.style.display = "block";
+            brokenBeam.style.display = "none";
+            brokenBeam.setAttribute('opacity', 0);
+            brokenRight.classList.remove('falling');
+        }
+
+        // --- 4. Update Continuous Beam Geometry ---
+        let cpOff = 200, startX = 150, endX = 1050, midX = 600;
+        let d_top = 180, d_bot = 280, rebTop_y = 200, rebBot_y = 260;
+        
+        let tC = `M ${startX} ${d_top} C ${startX+cpOff} ${d_top}, ${midX-cpOff/2} ${d_top+delta}, ${midX} ${d_top+delta} C ${midX+cpOff/2} ${d_top+delta}, ${endX-cpOff} ${d_top}, ${endX} ${d_top}`;
+        let bC = `L ${endX} ${d_bot} C ${endX-cpOff} ${d_bot}, ${midX+cpOff/2} ${d_bot+delta}, ${midX} ${d_bot+delta} C ${midX-cpOff/2} ${d_bot+delta}, ${startX+cpOff} ${d_bot}, ${startX} ${d_bot} Z`;
+        body.setAttribute('d', tC + " " + bC);
+        
+        let rT = `M ${startX-50} ${rebTop_y} L ${startX} ${rebTop_y} C ${startX+cpOff} ${rebTop_y}, ${midX-cpOff/2} ${rebTop_y+delta}, ${midX} ${rebTop_y+delta} C ${midX+cpOff/2} ${rebTop_y+delta}, ${endX-cpOff} ${rebTop_y}, ${endX} ${rebTop_y} L ${endX+50} ${rebTop_y}`;
+        topReb.setAttribute('d', rT);
+
+        let rB = `M ${startX-50} ${rebBot_y} L ${startX} ${rebBot_y} C ${startX+cpOff} ${rebBot_y}, ${midX-cpOff/2} ${rebBot_y+delta}, ${midX} ${rebBot_y+delta} C ${midX+cpOff/2} ${rebBot_y+delta}, ${endX-cpOff} ${rebBot_y}, ${endX} ${rebBot_y} L ${endX+50} ${rebBot_y}`;
+        botReb.setAttribute('d', rB);
+
+        loadSys.setAttribute('transform', `translate(0, ${delta})`);
+
+        let crk = lp > 20 ? (lp - 20) / 80 : 0;
+        cracks.setAttribute('opacity', crk);
+        crackPaths.forEach(p => p.style.strokeDashoffset = 100 - (crk * 100));
+
+        // --- 5. Update Profiles (Strain/Stress) ---
+        sNa.setAttribute('d', `M -20 ${xu} L 170 ${xu}`);
+        strNa.setAttribute('d', `M -70 ${xu} L 180 ${xu}`);
+        strNaStress.setAttribute('d', `M -150 ${xu} L 150 ${xu}`);
+
+        let strMax = 100; // visual bounds
+        let str_c = (lp/100) * strMax;
+        let str_s = (lp/100) * strMax * 1.5; 
+        
+        strProf.setAttribute('d', `M ${str_c} 0 L ${-str_s} 250`);
+        strFillC.setAttribute('d', `M 0 0 L ${str_c} 0 L 0 ${xu} Z`);
+        strFillT.setAttribute('d', `M 0 ${xu} L ${-str_s} 250 L 0 250 Z`);
+
+        // Stress: Parabolic to Rectangular
+        let stressW = (lp/100) * 120;
+        if (lp < 50) {
+            // Parabolic (Elastic / early cracks)
+            stressBlock.setAttribute('d', `M 0 0 L ${stressW} 0 Q ${stressW} ${xu*0.5} 0 ${xu} Z`);
+            fCc.setAttribute('d', `M 0 ${xu*0.33} L ${stressW+15} ${xu*0.33}`); lCc.setAttribute('y', xu*0.33+6);
+        } else {
+            // Whitney Equivalent Rectangular Stress Block 
+            let a = xu * 0.8; // Depth of rectangular block
+            stressBlock.setAttribute('d', `M 0 0 L ${stressW} 0 L ${stressW} ${a} L 0 ${xu} Z`);
+            fCc.setAttribute('d', `M 0 ${a*0.5} L ${stressW+15} ${a*0.5}`); lCc.setAttribute('y', a*0.5+6);
+        }
+        lCc.setAttribute('x', stressW + 20);
+        
+        fCc.setAttribute('opacity', lp > 5 ? 1 : 0); lCc.setAttribute('opacity', lp > 5 ? 1 : 0);
+        
+        let tMag = lp > 25 ? stressW * 1.1 : stressW;
+        if (tMag > 5) {
+            fT.setAttribute('d', `M 0 208 L ${-tMag} 208 M ${-tMag+10} 203 L ${-tMag} 208 L ${-tMag+10} 213`);
+            fT.setAttribute('opacity', 1); lT.setAttribute('opacity', 1); lT.setAttribute('x', -tMag - 35);
+        } else {
+            fT.setAttribute('opacity', 0); lT.setAttribute('opacity', 0);
+        }
+    }
+
+    slider.addEventListener('input', updateSimulation);
+    slider.addEventListener('change', updateSimulation); // For keyboard
+    slider.addEventListener('touchmove', updateSimulation, { passive: true });
+    
+    updateSimulation();
+</script>
+</body>
+</html>
