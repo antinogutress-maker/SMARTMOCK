@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gravity Water Supply System Simulator</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    
+    <style>
+        :root {
+            --bg-base: #06090e;
+            --panel-bg: rgba(13, 18, 28, 0.95);
+            --border: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-cyan: #06b6d4;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            
+            /* Static Automatic Flow Variables */
+            --dist-flow-speed: 0.6s;
+            --source-flow-speed: 0.8s;
+            --res-level: 0.45; /* Steady equilibrium state */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        header {
+            padding: 1.2rem 1.5rem;
+            background: rgba(6, 9, 14, 0.9);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(12px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h1::before {
+            content: '';
+            display: block;
+            width: 10px;
+            height: 10px;
+            background: var(--accent-cyan);
+            box-shadow: 0 0 10px var(--accent-cyan);
+            border-radius: 50%;
+            animation: pulse-dot 1.5s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(6, 182, 212, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(6, 182, 212, 0); }
+        }
+
+        .badge-auto {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .simulator-window {
+            width: 100%;
+            height: 60vh;
+            min-height: 550px;
+            background-image: linear-gradient(180deg, #04060a 0%, #06090e 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border);
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+            max-width: 1200px;
+            filter: drop-shadow(0 15px 30px rgba(0,0,0,0.8));
+        }
+
+        /* SVG Flow Animations */
+        .flow-main {
+            stroke-dasharray: 12 18;
+            stroke-dashoffset: 0;
+            animation: flowAnim var(--source-flow-speed) linear infinite;
+        }
+
+        .flow-dist {
+            stroke-dasharray: 12 18;
+            stroke-dashoffset: 0;
+            animation: flowAnim var(--dist-flow-speed) linear infinite;
+        }
+
+        .res-water {
+            transform-origin: bottom;
+            transform: scaleY(var(--res-level));
+            transition: transform 0.5s ease;
+        }
+
+        @keyframes flowAnim {
+            to { stroke-dashoffset: -30; }
+        }
+
+        @keyframes pulse-glow {
+            0% { filter: drop-shadow(0 0 4px var(--accent-cyan)); }
+            50% { filter: drop-shadow(0 0 12px var(--accent-blue)); }
+            100% { filter: drop-shadow(0 0 4px var(--accent-cyan)); }
+        }
+
+        .water-glow { animation: pulse-glow 2s ease-in-out infinite; }
+
+        /* Telemetry Panel */
+        .telemetry-panel {
+            background: var(--panel-bg);
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .telemetry-header {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .hud-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .hud-card {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 1.2rem;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hud-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--accent-blue);
+        }
+        .hud-card:nth-child(2)::after { background: var(--accent-cyan); }
+        .hud-card:nth-child(3)::after { background: var(--accent-green); }
+        .hud-card:nth-child(4)::after { background: #8b5cf6; }
+
+        .hud-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .hud-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.4rem;
+            color: var(--text-main);
+            font-weight: 700;
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+        
+        .hud-unit {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* High Marks Educational Section */
+        .edu-section {
+            padding: 3rem 2rem;
+            background: var(--bg-base);
+            max-width: 1100px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        .exam-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .question-text {
+            color: var(--text-muted);
+            font-style: italic;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        h2 { font-size: 1.8rem; color: #f8fafc; letter-spacing: -0.5px; }
+        h3 { font-size: 1.2rem; color: var(--accent-cyan); margin: 2rem 0 1rem 0; border-left: 3px solid var(--accent-cyan); padding-left: 10px; }
+        
+        p { color: #cbd5e1; margin-bottom: 1.2rem; font-size: 1rem; text-align: justify; }
+        
+        ul { margin-left: 1.5rem; color: #cbd5e1; font-size: 1rem; margin-bottom: 1.5rem; }
+        li { margin-bottom: 0.8rem; padding-left: 0.5rem; }
+        li strong { color: var(--text-main); }
+        
+        .math-block {
+            background: rgba(15, 23, 42, 0.4);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.05);
+            margin: 1.5rem 0;
+            font-size: 1.1rem;
+            overflow-x: auto;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .marks-callout {
+            font-family: serif;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* SVG Text Styling */
+        text { user-select: none; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Gravity Water Supply Simulator</h1>
+        <div class="badge-auto">System: Auto 100% Open</div>
+    </header>
+
+    <div class="simulator-window">
+        <svg viewBox="0 0 1000 2000" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+                    <feDropShadow dx="0" dy="20" stdDeviation="18" flood-color="#000000" flood-opacity="0.9"/>
+                </filter>
+                <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="5" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
+
+                <radialGradient id="mountain-bg" cx="50%" cy="5%" r="100%">
+                    <stop offset="0%" stop-color="#1e293b"/>
+                    <stop offset="50%" stop-color="#0f172a"/>
+                    <stop offset="100%" stop-color="#020617"/>
+                </radialGradient>
+                <linearGradient id="slope-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#0d1f14"/>
+                    <stop offset="50%" stop-color="#08140c"/>
+                    <stop offset="100%" stop-color="#040805"/>
+                </linearGradient>
+                
+                <linearGradient id="concrete-light" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#cbd5e1"/>
+                    <stop offset="100%" stop-color="#64748b"/>
+                </linearGradient>
+                <linearGradient id="concrete-dark" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#64748b"/>
+                    <stop offset="100%" stop-color="#334155"/>
+                </linearGradient>
+                <linearGradient id="pipe-mat" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#475569"/>
+                    <stop offset="40%" stop-color="#94a3b8"/>
+                    <stop offset="60%" stop-color="#e2e8f0"/>
+                    <stop offset="100%" stop-color="#1e293b"/>
+                </linearGradient>
+                <linearGradient id="water-grad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.9"/>
+                    <stop offset="100%" stop-color="#0055ff" stop-opacity="0.8"/>
+                </linearGradient>
+                <linearGradient id="roof-grad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#b91c1c"/>
+                    <stop offset="100%" stop-color="#7f1d1d"/>
+                </linearGradient>
+
+                <g id="house">
+                    <path d="M 0 20 L 55 45 L 110 20 L 55 -5 Z" fill="#000" opacity="0.7" filter="url(#shadow)"/>
+                    <path d="M 55 40 L 105 18 L 105 -20 L 55 0 Z" fill="#d6d3d1"/>
+                    <path d="M 5 18 L 55 40 L 55 0 L 5 -20 Z" fill="#a8a29e"/>
+                    <path d="M 28 28 L 38 33 L 38 10 L 28 5 Z" fill="#292524"/> <path d="M 75 25 L 90 18 L 90 5 L 75 12 Z" fill="#38bdf8" opacity="0.6"/> <path d="M -8 -15 L 55 0 L 118 -15 L 55 -38 Z" fill="url(#roof-grad)"/>
+                    <path d="M -8 -15 L 55 0 L 55 6 L -8 -9 Z" fill="#7f1d1d"/>
+                    <path d="M 55 0 L 118 -15 L 118 -9 L 55 6 Z" fill="#450a0a"/>
+                </g>
+
+                <g id="tap">
+                    <path d="M 0 0 L 24 12 L 48 0 L 24 -12 Z" fill="url(#concrete-light)"/>
+                    <path d="M 0 0 L 24 12 L 24 18 L 0 6 Z" fill="url(#concrete-dark)"/>
+                    <path d="M 48 0 L 24 12 L 24 18 L 48 6 Z" fill="#1e293b"/>
+                    <path d="M 18 -6 L 30 0 L 30 -40 L 18 -46 Z" fill="url(#concrete-dark)"/>
+                    <path d="M 30 0 L 36 -3 L 36 -43 L 30 -40 Z" fill="#1e293b"/>
+                    <path d="M 18 -30 L -5 -18 L -5 -12 L 18 -24 Z" fill="url(#pipe-mat)"/>
+                    <path class="flow-dist" d="M -2 -14 C -8 -2, 8 12, 18 12 C 8 7, 0 0, 0 -14 Z" fill="#00f0ff" filter="url(#glow)"/>
+                </g>
+            </defs>
+
+            <path d="M -100 0 C 250 150, 500 -80, 1100 250 L 1100 2000 L -100 2000 Z" fill="url(#mountain-bg)"/>
+            <path d="M -100 350 C 450 500, 650 300, 1100 700 L 1100 2000 L -100 2000 Z" fill="url(#slope-grad)" filter="url(#shadow)"/>
+            <path d="M -100 1000 C 350 1050, 550 1300, 1100 1500 L 1100 2000 L -100 2000 Z" fill="#09120c" filter="url(#shadow)"/>
+            <path d="M -100 1600 C 450 1550, 850 1700, 1100 1800 L 1100 2000 L -100 2000 Z" fill="#040805" filter="url(#shadow)"/>
+
+            <g stroke="url(#pipe-mat)" stroke-linecap="round" stroke-linejoin="round" fill="none" filter="url(#shadow)">
+                <path d="M 180 220 C 260 280, 310 310, 370 380" stroke-width="14"/> <path d="M 420 450 C 500 600, 670 700, 700 820" stroke-width="16"/> <path d="M 670 890 C 620 1020, 470 1180, 520 1330" stroke-width="18"/> <path d="M 520 1430 L 520 1520" stroke-width="18"/> <path d="M 520 1520 C 520 1600, 460 1650, 400 1700" stroke-width="14"/>
+                <path d="M 400 1700 C 280 1750, 180 1800, 120 1850" stroke-width="8"/>
+                <path d="M 280 1750 C 330 1800, 380 1880, 360 1950" stroke-width="6"/>
+                <path d="M 400 1700 C 580 1750, 780 1800, 880 1850" stroke-width="8"/>
+                <path d="M 720 1780 C 660 1850, 600 1900, 550 1950" stroke-width="6"/>
+            </g>
+
+            <g stroke="#00f0ff" stroke-width="5" stroke-linecap="round" fill="none" filter="url(#glow)">
+                <path class="flow-main" d="M 180 220 C 260 280, 310 310, 370 380"/>
+                <path class="flow-main" d="M 420 450 C 500 600, 670 700, 700 820" stroke-width="6"/>
+                <path class="flow-main" d="M 670 890 C 620 1020, 470 1180, 520 1330" stroke-width="7"/>
+                
+                <path class="flow-dist" d="M 520 1520 C 520 1600, 460 1650, 400 1700" stroke-width="6"/>
+                <path class="flow-dist" d="M 400 1700 C 280 1750, 180 1800, 120 1850" stroke-width="3"/>
+                <path class="flow-dist" d="M 280 1750 C 330 1800, 380 1880, 360 1950" stroke-width="2"/>
+                <path class="flow-dist" d="M 400 1700 C 580 1750, 780 1800, 880 1850" stroke-width="3"/>
+                <path class="flow-dist" d="M 720 1780 C 660 1850, 600 1900, 550 1950" stroke-width="2"/>
+            </g>
+
+            <g transform="translate(100, 170)">
+                <path d="M 0 0 C 50 -40, 90 -10, 110 40 C 130 90, 60 110, 20 100 C -30 90, -40 50, 0 0 Z" fill="#0f172a" filter="url(#shadow)"/>
+                <path class="water-glow" d="M 20 20 C 55 35, 80 60, 90 60 C 65 75, 30 60, 20 20 Z" fill="url(#water-grad)"/>
+                
+                <path d="M 50 60 L 130 15 L 165 40 L 85 85 Z" fill="url(#concrete-light)"/>
+                <path d="M 50 60 L 85 85 L 85 120 L 50 95 Z" fill="url(#concrete-dark)"/>
+                <path d="M 85 85 L 165 40 L 165 75 L 85 120 Z" fill="#1e293b"/>
+                <path d="M 60 55 L 120 20 M 65 60 L 125 25 M 70 65 L 130 30 M 75 70 L 135 35" stroke="#020617" stroke-width="2"/>
+                
+                <text x="180" y="30" fill="#f8fafc" font-size="24" font-weight="bold" filter="url(#shadow)">1. INTAKE</text>
+                <text x="180" y="55" fill="#94a3b8" font-size="14">Spring Catchment</text>
+            </g>
+
+            <g transform="translate(340, 360)" filter="url(#shadow)">
+                <path d="M 50 0 L 140 -35 L 140 25 L 50 60 Z" fill="#0f172a"/>
+                <path d="M 0 -25 L 50 0 L 50 60 L 0 35 Z" fill="#020617"/>
+                
+                <path d="M 5 -20 L 50 0 L 135 -33 L 85 -53 Z" fill="url(#water-grad)"/>
+                <path d="M 5 -20 L 50 0 L 50 25 L 5 5 Z" fill="#0284c7" opacity="0.8"/>
+                <path d="M 50 0 L 135 -33 L 135 -8 L 50 25 Z" fill="#0f172a" opacity="0.8"/>
+                
+                <path d="M -5 -30 L 50 0 L 145 -40 L 85 -70 Z" fill="none" stroke="url(#concrete-light)" stroke-width="6"/>
+                <path d="M -5 -30 L 50 0 L 50 70 L -5 40 Z" fill="url(#concrete-dark)" opacity="0.9"/>
+                <path d="M 50 0 L 145 -40 L 145 30 L 50 70 Z" fill="#1e293b" opacity="0.9"/>
+                
+                <path d="M 20 -18 L 20 30 M 40 -10 L 40 40 M 80 -15 L 80 35 M 105 -25 L 105 20" stroke="#cbd5e1" stroke-width="2" opacity="0.4"/>
+                
+                <text x="160" y="-15" fill="#f8fafc" font-size="24" font-weight="bold">2. SEDIMENTATION</text>
+                <text x="160" y="10" fill="#94a3b8" font-size="14">Suspended Solid Removal</text>
+            </g>
+
+            <g transform="translate(650, 790)" filter="url(#shadow)">
+                <path d="M 45 0 L 100 -25 L 100 35 L 45 60 Z" fill="#0f172a"/>
+                <path d="M 0 -25 L 45 0 L 45 60 L 0 35 Z" fill="#020617"/>
+                
+                <path class="flow-main" d="M 45 -20 L 45 45" stroke="#00f0ff" stroke-width="7"/>
+                <path d="M 5 -22 L 45 0 L 95 -22 L 55 -45 Z" fill="url(#water-grad)"/>
+                
+                <path d="M -5 -30 L 45 0 L 105 -25 L 55 -55 Z" fill="none" stroke="url(#concrete-light)" stroke-width="6"/>
+                <path d="M -5 -30 L 45 0 L 45 70 L -5 40 Z" fill="url(#concrete-dark)" opacity="0.9"/>
+                <path d="M 45 0 L 105 -25 L 105 45 L 45 70 Z" fill="#1e293b" opacity="0.9"/>
+                
+                <text x="-190" y="-10" fill="#f8fafc" font-size="24" font-weight="bold">4. IC</text>
+                <text x="-190" y="15" fill="#94a3b8" font-size="14">Resets Head (H=0)</text>
+            </g>
+
+            <g transform="translate(420, 1220)" filter="url(#shadow)">
+                <path d="M 0 0 C 0 35, 220 35, 220 0 L 220 130 C 220 165, 0 165, 0 130 Z" fill="#0f172a"/>
+                
+                <g class="res-water" transform="translate(0, 140)">
+                    <path d="M 5 -100 C 5 -65, 215 -65, 215 -100 C 215 -135, 5 -135, 5 -100 Z" fill="url(#water-grad)"/>
+                    <path d="M 5 -100 C 5 -65, 215 -65, 215 -100 L 215 -10 C 215 25, 5 25, 5 -10 Z" fill="#0284c7" opacity="0.85"/>
+                </g>
+
+                <path d="M 0 0 C 0 35, 220 35, 220 0 L 220 130 C 220 165, 0 165, 0 130 Z" fill="url(#concrete-light)" opacity="0.25"/>
+                <path d="M 0 0 C 0 35, 220 35, 220 0" fill="none" stroke="url(#concrete-light)" stroke-width="4"/>
+                <path d="M 0 130 C 0 165, 220 165, 220 130" fill="none" stroke="#1e293b" stroke-width="5"/>
+                <path d="M 0 0 L 0 130 M 220 0 L 220 130" stroke="url(#concrete-light)" stroke-width="4"/>
+
+                <path d="M -5 0 C -5 -130, 225 -130, 225 0 C 225 40, -5 40, -5 0 Z" fill="url(#concrete-dark)"/>
+                <path d="M 0 0 C 0 -120, 210 -120, 210 0" fill="none" stroke="#cbd5e1" stroke-width="2" opacity="0.4"/> <text x="250" y="60" fill="#f8fafc" font-size="24" font-weight="bold">3. RESERVOIR</text>
+                <text x="250" y="85" fill="#94a3b8" font-size="14">Balancing Storage</text>
+            </g>
+
+            <g transform="translate(520, 1520)" filter="url(#shadow)">
+                <path d="M -18 -12 L 18 -12 L 30 12 L -30 12 Z" fill="url(#pipe-mat)"/>
+                <path d="M -12 -24 L 12 -24 L 18 -12 L -18 -12 Z" fill="#1e293b"/>
+                <path d="M -6 -45 L 6 -45 L 6 -24 L -6 -24 Z" fill="#cbd5e1"/> <g transform="translate(0, -50)">
+                    <path d="M -24 -6 L 24 -6 L 24 6 L -24 6 Z" fill="#10b981"/> <path d="M -6 -24 L 6 -24 L 6 24 L -6 24 Z" fill="#10b981"/>
+                    <path d="M 0 -30 C 16 -30, 30 -16, 30 0 C 30 16, 16 30, 0 30 C -16 30, -30 16, -30 0 C -30 -16, -16 -30, 0 -30 Z M 0 -24 C -13 -24, -24 -13, -24 0 C -24 13, -13 24, 0 24 C 13 24, 24 13, 24 0 C 24 -13, 13 -24, 0 -24 Z" fill="#047857"/>
+                </g>
+                <text x="50" y="-35" fill="#10b981" font-size="20" font-weight="bold">VALVE OPEN</text>
+            </g>
+
+            <text x="520" y="1650" fill="#f8fafc" font-size="24" font-weight="bold" text-anchor="middle" filter="url(#shadow)">5. DISTRIBUTION LINES</text>
+            
+            <g transform="translate(120, 1810)">
+                <use href="#house" x="0" y="0" transform="scale(1.2)"/>
+                <use href="#house" x="90" y="-30" transform="scale(0.9)"/>
+                <use href="#house" x="-60" y="40" transform="scale(1)"/>
+                <use href="#tap" x="-40" y="90" transform="scale(1.4)"/>
+                <use href="#tap" x="140" y="40" transform="scale(1.4)"/>
+                <text x="50" y="130" fill="#94a3b8" font-size="18" font-weight="bold">6. TAPS & 7. HOUSES</text>
+            </g>
+            
+            <g transform="translate(340, 1880)">
+                <use href="#house" x="0" y="0" transform="scale(1.1)"/>
+                <use href="#tap" x="-35" y="60" transform="scale(1.4)"/>
+            </g>
+
+            <g transform="translate(730, 1780)">
+                <use href="#house" x="0" y="0" transform="scale(1.3)"/>
+                <use href="#house" x="100" y="40" transform="scale(1)"/>
+                <use href="#house" x="-70" y="50" transform="scale(0.9)"/>
+                <use href="#tap" x="-25" y="100" transform="scale(1.4)"/>
+                <use href="#tap" x="170" y="90" transform="scale(1.4)"/>
+            </g>
+            
+            <g transform="translate(580, 1910)">
+                <use href="#house" x="0" y="0" transform="scale(1.1)"/>
+                <use href="#tap" x="-25" y="60" transform="scale(1.4)"/>
+            </g>
+
+        </svg>
+    </div>
+
+    <div class="telemetry-panel">
+        <div class="telemetry-header">Live System Telemetry (Automated State)</div>
+        <div class="hud-grid">
+            <div class="hud-card">
+                <span class="hud-label">Source Yield (Spring)</span>
+                <span class="hud-val" id="tel-yield">12.45 <span class="hud-unit">L/s</span></span>
+            </div>
+            <div class="hud-card">
+                <span class="hud-label">Reservoir Level</span>
+                <span class="hud-val" id="tel-res">45.2 <span class="hud-unit">%</span></span>
+            </div>
+            <div class="hud-card">
+                <span class="hud-label">Distribution Flow</span>
+                <span class="hud-val" id="tel-dist">12.40 <span class="hud-unit">L/s</span></span>
+            </div>
+            <div class="hud-card">
+                <span class="hud-label">Main Line Pressure</span>
+                <span class="hud-val" id="tel-press">Dynamic <span class="hud-unit" style="color:#10b981;">(Safe)</span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="edu-section">
+        <div class="exam-header">
+            <div>
+                <p class="question-text">Q: Describe the layout, components, and fundamental hydraulic principles of a Gravity-Fed Water Supply System in a hilly topographical region. Support your answer with appropriate equations.</p>
+            </div>
+            <div class="marks-callout">[10 Marks]</div>
+        </div>
+
+        <h2>Gravity Water Supply System Layout & Principles</h2>
+
+        <p>A <strong>Gravity-Fed Water Supply System</strong> is an engineered infrastructure designed to convey water from an elevated source (such as a mountain spring or stream) to a lower-elevation community. Its defining characteristic is the exclusive reliance on the Earth's gravitational pull to provide the motive force, entirely eliminating the need for electro-mechanical pumping stations. This makes it highly reliable and economically sustainable in hilly terrains.</p>
+
+        <h3>1. Hydraulic Principles (2 Marks)</h3>
+        <p>The system operates by converting potential energy into kinetic energy and pressure. According to <strong>Bernoulli's Principle</strong>, the total head (H) at any point in the system is conserved (ignoring losses) and is expressed as:</p>
+        
+      
+        <p>Where Z is the elevation head, P/¥ is the pressure head, and v²/2g is the velocity head. As water travels through the pipe network, the available head is reduced due to friction against the pipe walls. The <strong>Darcy-Weisbach equation</strong> dictates this friction head loss (hf):</p>
+
+        <p>If the valve is closed, the water velocity (v) becomes zero, friction loss (hf) becomes zero, and the system experiences maximum <strong>Static Hydrostatic Pressure</strong> </p>
+
+        <h3>2. Primary Structural Components (6 Marks)</h3>
+        <ul>
+            <li><strong>1. Catchment & Intake:</strong> A heavily protected concrete structure constructed directly at the spring eye. It captures the aquifer yield while preventing surface contamination and large debris entry via iron trash racks.</li>
+            <li><strong>2. Sedimentation Tank:</strong> Positioned shortly after the intake, this basin slows the water's horizontal velocity (vh) to allow suspended solids (silt, sand) to settle out by gravity. Settling velocity (vs) is governed by <strong>Stokes' Law</strong>.</li>
+            <li><strong>3. Transmission Main:</strong> The primary conduit transporting raw water from the sedimentation tank down the mountain. This pipeline must withstand the highest static pressures.</li>
+            <li><strong>4. Interruption Chamber (IC):</strong> <em>(Critical in Hilly Terrain)</em> When the vertical drop creates a hydrostatic pressure that exceeds the safe working pressure of the pipes (e.g., > 60m head), a IC is installed. Water freely discharges into this open tank, effectively resetting the hydrostatic head back to zero (atmospheric pressure) before continuing its descent.</li>
+            <li><strong>5. Service Reservoir (SR):</strong> A balancing tank, typically cylindrical with a semicircular dome, situated just above the village. Springs provide a low, continuous yield over 24 hours, whereas community demand peaks in the morning and evening. The SR stores water during off-peak hours to satisfy peak flow demands.</li>
+            <li><strong>6 & 7. Distribution Network & Standposts:</strong> A branching network of smaller diameter pipes terminating at community standposts (taps) where households draw water. Gate valves strategically placed allow operators to isolate branches for maintenance.</li>
+        </ul>
+
+        <h3>3. Conclusion & System Efficiency (2 Marks)</h3>
+        <p>In a fully operational state (100% automatic flow), dynamic equilibrium is achieved where the <em>Source Yield</em> effectively matches the <em>Distribution Flow</em>, maintaining a steady level within the Service Reservoir. The integration of ICs ensures catastrophic pipe failures are averted, rendering the gravity-fed model the apex standard for rural water engineering in mountainous topography.</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Live Telemetry Simulation logic to make the "Automatic" system feel alive
+            const telYield = document.getElementById('tel-yield');
+            const telRes = document.getElementById('tel-res');
+            const telDist = document.getElementById('tel-dist');
+
+            // Base nominal values
+            let baseYield = 12.5;
+            let baseRes = 45.0;
+
+            // Update loop (60 FPS visual smoothness isn't needed for text, update every 800ms)
+            setInterval(() => {
+                // Generate slight mathematical noise
+                const yieldNoise = (Math.random() * 0.2) - 0.1; // +/- 0.1
+                const resNoise = (Math.random() * 0.4) - 0.2; // +/- 0.2
+
+                const currentYield = baseYield + yieldNoise;
+                // In auto state, distribution matches yield roughly
+                const currentDist = currentYield - (Math.random() * 0.05); 
+                const currentRes = baseRes + resNoise;
+
+                // Format and update DOM
+                telYield.innerHTML = `${currentYield.toFixed(2)} <span class="hud-unit">L/s</span>`;
+                telDist.innerHTML = `${currentDist.toFixed(2)} <span class="hud-unit">L/s</span>`;
+                telRes.innerHTML = `${currentRes.toFixed(1)} <span class="hud-unit">%</span>`;
+
+            }, 800);
+        });
+    </script>
+</body>
+</html>
