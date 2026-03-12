@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Federal + Bagmati Mock test 16</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* [100% CLAYMORPHISM PALETTE & SHADOWS] */
+        :root { 
+            --primary: #FF3366; 
+            --secondary: #FF9933; 
+            --accent: #00E5FF; 
+            
+            /* Clay Base Color */
+            --clay-bg: #E8F0F8; 
+            
+            /* Clay Outer Shadows */
+            --clay-shadow-out: 12px 12px 24px rgba(166, 180, 200, 0.7), -12px -12px 24px #FFFFFF;
+            
+            /* Clay Inner Shadows (Puffy Effect) */
+            --clay-shadow-in: inset 6px 6px 12px rgba(255, 255, 255, 0.9), inset -6px -6px 12px rgba(166, 180, 200, 0.4);
+            
+            /* Clay Pressed/Inset Shadows (For Inputs) */
+            --clay-shadow-pressed: inset 6px 6px 12px rgba(166, 180, 200, 0.6), inset -6px -6px 12px #FFFFFF;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            /* Soft pastel gradient to complement the 3D clay */
+            background: linear-gradient(-45deg, #FFDEE9, #B5FFFC, #C2E9FB, #EAE5C9);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 15px; 
+            overflow-x: hidden; 
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 100% Clay Container */
+        .app-container { 
+            width: 100%; 
+            max-width: 650px; 
+            background: var(--clay-bg); 
+            border-radius: 40px; 
+            padding: 2.5rem 2rem; 
+            /* Double shadow system for 3D clay look */
+            box-shadow: var(--clay-shadow-out), var(--clay-shadow-in);
+            position: relative; 
+            overflow: hidden; 
+            transition: all 0.4s ease; 
+        }
+        
+        h1 { font-size: 2.2rem; font-weight: 800; color: #1E293B; margin-bottom: 10px; }
+        h2 { font-size: 1.6rem; margin-bottom: 20px; color: #334155; font-weight: 800; }
+        p { color: #64748B; font-size: 1rem; line-height: 1.6; font-weight: 500; }
+        
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 10px; color: #64748B; text-transform: uppercase; letter-spacing: 1.5px; }
+        
+        /* Clay Inset Inputs */
+        .glass-input { 
+            width: 100%; 
+            padding: 18px; 
+            background: var(--clay-bg); 
+            border: none; 
+            border-radius: 20px; 
+            color: #1E293B; 
+            font-size: 1.05rem; 
+            font-weight: 600;
+            outline: none; 
+            transition: 0.3s;
+            box-shadow: var(--clay-shadow-pressed);
+        }
+        .glass-input:focus { 
+            box-shadow: inset 8px 8px 16px rgba(166, 180, 200, 0.7), inset -8px -8px 16px #FFFFFF, 0 0 0 4px rgba(0, 229, 255, 0.3);
+        }
+        .glass-input::placeholder { color: #94A3B8; }
+        .glass-input:read-only { background: #DFE7F0; color: #64748B; cursor: not-allowed; }
+        select.glass-input option { background: #FFFFFF; color: #1E293B; }
+        
+        /* Clay Puffy Button */
+        .btn { 
+            background: var(--primary); 
+            border: none; 
+            color: white; 
+            padding: 18px; 
+            width: 100%; 
+            border-radius: 24px; 
+            font-size: 1.15rem; 
+            font-weight: 800; 
+            cursor: pointer; 
+            margin-top: 25px; 
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            min-height: 55px; 
+            box-shadow: 
+                8px 8px 16px rgba(255, 51, 102, 0.3), 
+                -4px -4px 10px #FFFFFF,
+                inset 4px 4px 8px rgba(255,255,255,0.4),
+                inset -4px -4px 8px rgba(0,0,0,0.1);
+        }
+        .btn:active { 
+            transform: scale(0.95); 
+            box-shadow: 
+                2px 2px 5px rgba(255, 51, 102, 0.4), 
+                inset 6px 6px 12px rgba(0,0,0,0.2),
+                inset -2px -2px 6px rgba(255,255,255,0.2);
+        }
+        .btn:disabled { filter: grayscale(1); cursor: wait; opacity: 0.7; }
+        
+        .btn-outline { 
+            background: var(--clay-bg); 
+            color: #1E293B;
+            box-shadow: var(--clay-shadow-out), var(--clay-shadow-in); 
+            margin-top: 15px; 
+        }
+        
+        .personal-header { text-align: center; margin-bottom: 25px; padding-bottom: 15px; min-height: 50px; display: flex; align-items: center; justify-content: center; }
+        .animate-praise { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        .info-bar { 
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; 
+            background: var(--clay-bg); 
+            padding: 15px 20px; 
+            border-radius: 20px; 
+            box-shadow: var(--clay-shadow-pressed);
+            font-weight: 700;
+            color: #64748B;
+        }
+        .timer-badge { font-family: monospace; font-weight: 800; color: #FF3366; font-size: 1.3rem; }
+        
+        /* [REQUIRED] Question Text is ALWAYS Black */
+        .question-text { 
+            font-size: 1.35rem; 
+            font-weight: 800; 
+            margin-bottom: 25px; 
+            line-height: 1.5; 
+            color: #000000 !important; 
+            padding: 10px 0;
+        }
+        
+        /* [REQUIRED] Options with ALWAYS Blue Text and Clay Styling */
+        .option-btn { 
+            width: 100%; 
+            padding: 18px 20px; 
+            margin-bottom: 18px; 
+            background: var(--clay-bg); 
+            border: none; 
+            border-radius: 24px; 
+            text-align: left; 
+            color: #0000FF !important; 
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            display: flex; 
+            align-items: center; 
+            -webkit-user-select: none; user-select: none;
+            
+            /* Puffy Clay Shadow for Options */
+            box-shadow: 
+                6px 6px 14px rgba(166, 180, 200, 0.6), 
+                -6px -6px 14px #FFFFFF,
+                inset 3px 3px 6px rgba(255,255,255,0.9),
+                inset -3px -3px 6px rgba(166, 180, 200, 0.3);
+        }
+        .option-btn:hover { transform: translateY(-3px); }
+        .option-btn:active { transform: scale(0.96); box-shadow: var(--clay-shadow-pressed); }
+        
+        .option-marker { 
+            width: 40px; height: 40px; 
+            background: var(--clay-bg); 
+            border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            margin-right: 18px; 
+            font-weight: 800; 
+            color: #0000FF !important; 
+            flex-shrink: 0; 
+            /* Pressed marker inside puffy button */
+            box-shadow: var(--clay-shadow-pressed);
+        }
+        
+        /* Correct/Wrong States - Only Background Changes, text remains Blue! */
+        .correct { 
+            background: #00FF88 !important; /* Green Background */
+            box-shadow: 
+                6px 6px 14px rgba(0, 255, 136, 0.4), 
+                -4px -4px 10px #FFFFFF,
+                inset 4px 4px 8px rgba(255,255,255,0.5),
+                inset -4px -4px 8px rgba(0,0,0,0.1);
+            transform: scale(1.02);
+        }
+        .correct .option-marker { background: rgba(255,255,255,0.3); }
+        
+        .wrong { 
+            background: #FF3366 !important; /* Red Background */
+            box-shadow: 
+                6px 6px 14px rgba(255, 51, 102, 0.4), 
+                -4px -4px 10px #FFFFFF,
+                inset 4px 4px 8px rgba(255,255,255,0.4),
+                inset -4px -4px 8px rgba(0,0,0,0.1);
+        }
+        .wrong .option-marker { background: rgba(255,255,255,0.3); }
+        
+        .explanation-box { 
+            margin-top: 25px; padding: 20px; 
+            background: var(--clay-bg); 
+            border-left: 6px solid var(--accent); 
+            border-radius: 20px; 
+            font-size: 1.05rem; 
+            color: #1E293B;
+            font-weight: 600;
+            display: none; 
+            animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: var(--clay-shadow-pressed);
+        }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .score-circle { 
+            width: 200px; height: 200px; 
+            border-radius: 50%; 
+            background: var(--clay-bg);
+            margin: 0 auto 30px auto; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            /* Huge puffy clay ring */
+            box-shadow: 
+                15px 15px 30px rgba(166, 180, 200, 0.7), 
+                -15px -15px 30px #FFFFFF,
+                inset 8px 8px 16px rgba(255,255,255,0.9),
+                inset -8px -8px 16px rgba(166, 180, 200, 0.4); 
+        }
+        .score-val { font-size: 4.5rem; font-weight: 800; color: #FF3366; line-height: 1; }
+        .hidden { display: none !important; }
+        #opts-list { max-height: 55vh; overflow-y: auto; padding-right: 12px; padding-bottom: 10px; padding-top: 5px; margin-left: -5px; padding-left: 5px;}
+        
+        /* Custom Scrollbar */
+        #opts-list::-webkit-scrollbar { width: 8px; }
+        #opts-list::-webkit-scrollbar-track { background: var(--clay-bg); border-radius: 10px; box-shadow: var(--clay-shadow-pressed); }
+        #opts-list::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        
+        #auth-msg { text-align: center; margin-top: 20px; font-weight: 700; color: #FF3366; background: var(--clay-bg); padding: 15px; border-radius: 16px; display: none; box-shadow: var(--clay-shadow-pressed); }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="app">
+    <div id="view-login">
+        <div style="text-align: center; margin-bottom: 35px;">
+            <h1 id="title-display">Federal + Bagmati Mock test 16</h1>
+            <p>New Edition | Civil Engineering</p>
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Full Name</span>
+            <input type="text" id="inp-name" class="glass-input" placeholder="Enter your name">
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Qualification</span>
+            <select id="inp-qual" class="glass-input">
+                <option value="Engineer">Engineer</option>
+                <option value="Sub-Engineer">Sub-Engineer</option>
+                <option value="Asst. Sub-Engineer">Asst. Sub-Engineer</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <span class="label">Unique Code</span>
+            <input type="tel" id="inp-code" class="glass-input" placeholder="Enter 5-digit code">
+        </div>
+
+        <div class="input-group">
+            <span class="label">Password (Auto-Fill)</span>
+            <input type="password" id="inp-pass" class="glass-input" placeholder="Verifying..." readonly>
+        </div>
+
+        <button class="btn" id="btn-verify" onclick="App.verifyAndLogin()">Verify & Login</button>
+        <p id="auth-msg"></p>
+    </div>
+
+    <div id="view-dash" class="hidden">
+        <div style="text-align: center; margin-bottom: 35px;">
+            <h2 id="greet-msg" style="color: #FF3366; font-size: 2.2rem;">Welcome!</h2>
+            <div style="background: var(--clay-bg); padding: 30px; border-radius: 24px; margin-bottom: 25px; box-shadow: var(--clay-shadow-pressed);">
+                <p style="text-transform: uppercase; font-size: 0.9rem; color: #94A3B8; font-weight: 800; letter-spacing: 1px;">Active Session</p>
+                <h3 id="dash-topic-display" style="font-size: 1.8rem; margin: 15px 0; color: #1E293B;"></h3>
+                <p style="font-weight: 700; color: #64748B;">50 Questions • 45 Minutes</p>
+            </div>
+        </div>
+        <button class="btn" id="btn-start" onclick="App.start(false)">Start Exam</button>
+        <p id="submitted-msg" style="color: #00C853; text-align: center; margin-top: 20px; display: none; font-weight: 800;">✅ Score Submitted Successfully</p>
+        <button class="btn btn-outline" id="btn-review" onclick="App.start(true)" style="display: none;">Review Mistakes</button>
+    </div>
+
+    <div id="view-quiz" class="hidden">
+        <div class="personal-header">
+            <div id="praise-txt" style="font-size: 1.5rem; font-weight: 800; color: #1E293B;">Good Luck!</div>
+        </div>
+
+        <div class="info-bar">
+            <span>Q: <span id="q-idx">1</span> / <span id="q-total">50</span></span>
+            <span class="timer-badge" id="timer">45:00</span>
+        </div>
+
+        <div id="q-container">
+            <div class="question-text" id="q-text">Loading...</div>
+            <div id="opts-list"></div>
+            <div class="explanation-box" id="exp-box"></div>
+        </div>
+
+        <button class="btn hidden" id="btn-next" onclick="App.next()">Next Question</button>
+    </div>
+
+    <div id="view-result" class="hidden" style="text-align: center;">
+        <h2 style="font-size: 2.2rem; margin-bottom: 30px;">Quiz Completed!</h2>
+        <div class="score-circle">
+            <span class="score-val" id="res-score">0</span>
+            <span style="font-size: 1rem; font-weight: 800; text-transform: uppercase; color: #64748B; margin-top: 10px;">Correct</span>
+        </div>
+        <div style="margin-bottom: 40px;">
+            <h3 id="res-pct" style="color: #FF3366; font-size: 2rem; font-weight: 800;">0% Accuracy</h3>
+            <p id="sync-status" style="font-size: 1.1rem; font-weight: 700; margin-top: 15px; color: #64748B;">Syncing score...</p>
+        </div>
+        <button class="btn" onclick="App.dash()">Back to Dashboard</button>
+    </div>
+</div>
+
+<script>
+/**
+ * --- UPDATED AUDIO HELPER SYSTEM ---
+ * Uses Free Google Audio API + Browser Synthesis fallback
+ */
+const AudioHelper = {
+    ctx: null,
+    init: function() {
+        if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if(this.ctx.state === 'suspended') this.ctx.resume();
+        
+        // Mobile warm-up
+        if ('speechSynthesis' in window) {
+            let warmupMsg = new SpeechSynthesisUtterance('');
+            warmupMsg.volume = 0; 
+            window.speechSynthesis.speak(warmupMsg);
+        }
+    },
+    playTing: function() {
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.type = 'sine'; 
+        osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1500, this.ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.5);
+    },
+    playFush: function() {
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.type = 'square'; 
+        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.3);
+    },
+    speak: function(text) {
+        // Free Google Translate TTS API (Human Sounding)
+        const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=${encodeURIComponent(text)}`;
+        const audio = new Audio(url);
+        audio.play().catch(() => {
+            // Fallback to robotic browser voice if blocked
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const msg = new SpeechSynthesisUtterance(text);
+                msg.lang = 'en-US';
+                window.speechSynthesis.speak(msg);
+            }
+        });
+    }
+};
+
+/**
+ * ----------------------------------------------------
+ * CONFIGURATION - CHANGE ONLY THIS SECTION FOR NEW APPS
+ * ----------------------------------------------------
+ */
+const CFG = {
+    topic: "Federal + Bagmati Mock test 16", 
+    scoreScript: "https://script.google.com/macros/s/AKfycbwlARXNg2vbAH3-xPgt4Mt_MlPydwuZOtA7dkjyD0LVQlYX2IBDUKULT8rlZVIy034H/exec",
+    authScript: "https://script.google.com/macros/s/AKfycbzMzOG0rG6JUEsDUJymyOGevOjt750FgRD9UNdxeEmDbeHukwRZTvjwd8UyDbD5icR6/exec"
+};
+
+const _tid = CFG.topic.replace(/[^a-zA-Z0-9]/g, "_");
+const KEYS = {
+    user: "v3_civil_eng_global_user",
+    mistakes: `v2_mistakes_${_tid}`,
+    sent: `v2_sent_status_${_tid}`,
+    pending: `v2_pending_${_tid}`
+};
+  const DB = [
+  {
+    "id": 1,
+    "q": "If the velocity at a section of a channel is variable with respect to time, then the flow in the channel is known as ............ ",
+    "o": [
+      "uniform",
+      "laminar",
+      "steady",
+      "unsteady"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 2,
+    "q": "The depth of flow at which specific energy is minimum is called ............ ",
+    "o": [
+      "normal depth",
+      "critical depth",
+      "alternate depth",
+      "none of the above"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 3,
+    "q": "For the laminar flow through a circular pipe ............ ",
+    "o": [
+      "the maximum velocity = 1.5 times the average velocity",
+      "the maximum velocity = 2.0 times the average velocity",
+      "the maximum velocity = 2.5 times the average velocity",
+      "none of the above"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 4,
+    "q": "In case of siphon aqueduct, the H.F.L. of the drain is .............",
+    "o": [
+      "much below the bottom of the canal trough",
+      "much higher above the canal bed",
+      "in level with the canal bed",
+      "none of the above"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 5,
+    "q": "A river meandering through an alluvial plain has a series of consecutive curves of reversed order connected with short straight sketches, is called .............",
+    "o": [
+      "crossing",
+      "meandering belt",
+      "meandering length",
+      "none of these"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 6,
+    "q": "The presence of ............. causes red colour in water.",
+    "o": [
+      "iron",
+      "manganese",
+      "sodium fluoride",
+      "calcium carbonate"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 7,
+    "q": "The open well or dug wells .............",
+    "o": [
+      "act as a small storage reservoir",
+      "are suitable for a small discharge",
+      "are cheap in construction",
+      "all of these"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 8,
+    "q": "Which of the following is not a common size of reinforcement bars ............ ",
+    "o": [
+      "16 mm",
+      "20 mm",
+      "25 mm",
+      "28 mm"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 9,
+    "q": "During calculation of R.C.C., the amount of steel deducted is ............ ",
+    "o": [
+      "0% of steel",
+      "1% of steel",
+      "2% of steel",
+      "3% of steel"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 10,
+    "q": "A channelization island provides ............ ",
+    "o": [
+      "equal entry and exit widths",
+      "funnel shaped entry and wider exit",
+      "wider entrance and funnel shaped exit",
+      "high relative speed at entry and low speed at exit"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 11,
+    "q": "66.67% of the accidents take place because of ............ ",
+    "o": [
+      "traffic moving in opposite directions",
+      "traffic changing lanes",
+      "right turning traffic",
+      "left turning traffic"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 12,
+    "q": "The bearing of the runway at threshold is 290°, the runway number is ...",
+    "o": [
+      "70",
+      "290",
+      "29",
+      "20"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 13,
+    "q": "The marking of taxiway is yellow while on apron is ...",
+    "o": [
+      "yellow",
+      "white",
+      "red",
+      "blue"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 14,
+    "q": "The main function of the construction management is ............ ",
+    "o": [
+      "planning",
+      "organising",
+      "directing",
+      "all of these"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 15,
+    "q": "The effect of network compression is increase in the ............ ",
+    "o": [
+      "total cost",
+      "direct cost",
+      "indirect cost",
+      "overheads"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 16,
+    "q": "नारायणगढ कुन नदीको किनारमा अवस्थित रहेको छ ?",
+    "o": [
+      "राप्ती",
+      "तिनाउ",
+      "त्रिशुली",
+      "नारायणी"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 17,
+    "q": "किराँतीहरुको शासन व्यवस्था कहिले प्रारम्भ भएको थियो ?",
+    "o": [
+      "इ.पू. ३००",
+      "इ.पू. ८००",
+      "इ.पू. १२००",
+      "इ.पू. १५००"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 18,
+    "q": "तलका मध्ये सुविधाबञ्चित समूहमा नपर्ने जाति कुन हो ?",
+    "o": [
+      "चेपाङ",
+      "गुरुङ",
+      "मगर",
+      "शेर्पा"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 19,
+    "q": "नेपालमा सर्वप्रथम पर्यटन नीति कहिले लागु गरिएको हो ?",
+    "o": [
+      "वि.सं. २०५१",
+      "वि.सं. २०५२",
+      "वि.सं. २०५३",
+      "वि.सं. २०५४"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 20,
+    "q": "पाटे बाघको वैज्ञानिक नाम के हो ?",
+    "o": [
+      "Panthera Uncia",
+      "Panthera Tigris",
+      "Prionailurus Bengalensi",
+      "Panthera Bengalensi"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 21,
+    "q": "आइन्स्टाइनले कहिलेदेखि जर्मनीको नागरिकता त्यागेर अमेरिका बसेका थिए ?",
+    "o": [
+      "सन् १९३० देखि",
+      "सन् १९३३ देखि",
+      "सन् १९३५ देखि",
+      "सन् १९४० देखि"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 22,
+    "q": "कुन तत्त्वको अभावमा बिरुवाका फूलहरु राम्ररी फुल्दैनन् ?",
+    "o": [
+      "नाइट्रोजन",
+      "फस्फोरस",
+      "पोटासियम",
+      "म्याग्नेसियम"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 23,
+    "q": "नेपालको संविधान कहिले प्रमाणीकरण भएको थियो ?",
+    "o": [
+      "वि.सं. २०७२ असोज १ गते",
+      "वि.सं. २०७२ भाद्र ३० गते",
+      "वि.सं. २०७२ असोज ३ गते",
+      "वि.सं. २०७३ असोज १ गते"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 24,
+    "q": "संयुक्त राष्ट्रसंघको प्रधान कार्यालय कहाँ रहेको छ ?",
+    "o": [
+      "जेनेभा, स्वीट्जरल्याण्ड",
+      "वासिङ्गटन डी.सी., अमेरिका",
+      "पेरिस, फ्रान्स",
+      "म्यानहटन टापु, न्यूयोर्क"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 25,
+    "q": "SAARC को पूरा रुप के हो ?",
+    "o": [
+      "South Asian Association for Regional Co-operation",
+      "South Asian Agency for Regional Co-operation",
+      "South Asian Alliance for Regional Co-operation",
+      "South Asian Administration for Regional Co-operation"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 26,
+    "q": "Bulking of sand is caused due to:",
+    "o": [
+      "surface moisture",
+      "viscosity",
+      "air voids",
+      "clay contents"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 27,
+    "q": "Quartzite, a metamorphic stone is:",
+    "o": [
+      "hard",
+      "brittle",
+      "crystalline",
+      "compact",
+      "All the above"
+    ],
+    "a": 4,
+    "e": ""
+  },
+  {
+    "id": 28,
+    "q": "Smith's test of stones is performed to find out:",
+    "o": [
+      "the presence of soluble matter of stone",
+      "the compressive strength of the stone",
+      "the hardness of the stone",
+      "the toughness of the stone"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 29,
+    "q": "The additional lines which are measured to show the correctness of the chain surveying are called:",
+    "o": [
+      "check clines",
+      "proof lines",
+      "tie lines",
+      "all of these"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 30,
+    "q": "The included angles of a theodolite traverse, are generally measured:",
+    "o": [
+      "clockwise from forward station",
+      "anti-clockwise from back station",
+      "anti-clockwise from forward station",
+      "clockwise from the back station"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 31,
+    "q": "The back staff reading on a B.M. of R.L. 500.000 m is 2.685 m. If foresight reading on a point is 1.345 m, the reduced level is:",
+    "o": [
+      "502.685 m",
+      "501.345 m",
+      "501.340 m",
+      "504.030 m"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 32,
+    "q": "The phenomenon of slow extension of materials having constant load, i.e. increasing with time is called:",
+    "o": [
+      "creeping",
+      "yielding",
+      "breaking",
+      "none of these"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 33,
+    "q": "For structural analysis of forces, the method refers to:",
+    "o": [
+      "moment-area-theorem",
+      "Maxwell's reciprocal theorem",
+      "three-moment equation",
+      "none of these"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 34,
+    "q": "The buckling load for a given material depends on:",
+    "o": [
+      "Slenderness ratio and area of cross-section",
+      "Poisson's ratio and modulus of elasticity",
+      "Slenderness ratio and modulus of elasticity",
+      "Slenderness ratio, area and modulus of elasticity"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 35,
+    "q": "Calculate the magnitude of capillary effect in millimeters in a glass tube of 7 mm diameter immersed in mercury (S.T = 0.51 N/m, Angle = 130°):",
+    "o": [
+      "1.40",
+      "2.80",
+      "1.70",
+      "2.10"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 36,
+    "q": "A weir, generally, used as a spillway of a dam is:",
+    "o": [
+      "narrow crested weir",
+      "broad crested weir",
+      "Ogee weir",
+      "submerged weir"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 37,
+    "q": "The time required to close a valve gradually is:",
+    "o": [
+      "(2L)/c",
+      "<= 2LC",
+      "> (2L)/c",
+      "< 4L/C"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 38,
+    "q": "The specific gravity of a soil is the ratio of unit weight of soil solids to that of water at a temperature of:",
+    "o": [
+      "1°C",
+      "17°C",
+      "27°C",
+      "36°C"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 39,
+    "q": "A dry soil sample weighing 100 g has volume of 60 ml and specific gravity 2.5. Its void ratio is:",
+    "o": [
+      "0.4",
+      "0.5",
+      "0.6",
+      "0.8"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 40,
+    "q": "The method of construction of pneumatic caisson is similar to:",
+    "o": [
+      "box caissons",
+      "open caissons",
+      "rectangular caissons",
+      "none"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 41,
+    "q": "Shaking test is also called:",
+    "o": [
+      "Dilatancy test",
+      "rolling test",
+      "dispersion test",
+      "vane test"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 42,
+    "q": "कर्मचारी निश्चित स्थानमा तोकिएको जिम्मेवारी पूरा गर्ने ठाउँलाई के भनिन्छ ?",
+    "o": [
+      "सभाहल",
+      "सङ्गठन",
+      "सचिवालय",
+      "कार्यालय"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 43,
+    "q": "कार्यालय सहायकको कार्य अन्तर्गत कुन पर्दैन ?",
+    "o": [
+      "अग्र पंक्तिमा रही सेवा प्रवाह गर्ने",
+      "निजी सहायक भएर कार्य गर्ने",
+      "टाइप गर्ने",
+      "दर्ता गर्न लगाउने"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 44,
+    "q": "कार्यालय स्रोत देहायका मध्ये कुन समावेश छन् ?",
+    "o": [
+      "आर्थिक स्रोत",
+      "भौतिक स्रोत",
+      "मानविय स्रोत",
+      "माथिका सबै"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 45,
+    "q": "Motivation शब्द कुन शब्द वाट उत्पत्ति भएको हो ?",
+    "o": [
+      "Motive",
+      "Motiveter",
+      "Mote",
+      "Movere"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 46,
+    "q": "निजामति सेवा २०४९ मा कति परिच्छेद र दफा हुन्छन् ?",
+    "o": [
+      "१० परिच्छेद ७७ दफा",
+      "१० परिच्छेद ७६ दफा",
+      "१० परिच्छेद ७३ दफा",
+      "१० परिच्छेद ७४ दफा"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 47,
+    "q": "बजेट भन्नाले के बुझिन्छ ?",
+    "o": [
+      "Mirror of financial society",
+      "मुलुकको आर्थिक जन्मकुण्डली",
+      "वित्तिय मार्ग चित्र",
+      "माथिका सबै"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 48,
+    "q": "आधुनिक अभिलेख व्यवस्थापन अभिलेखको पूर्ण जीवन चक्र भन्नाले के बुझिन्छ ?",
+    "o": [
+      "कागजातपनको सिर्जना सम्म",
+      "कागजात पत्रको विसर्जन",
+      "सिर्जना देखि विसर्जन सम्म",
+      "माथिका सबै"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 49,
+    "q": "सार्वजनिक खरिद ऐन २०६३ को प्रमाणिकरण र प्रकाशित मिति कहिले हो ?",
+    "o": [
+      "२०६३/९/३०",
+      "२०७२/११/३",
+      "२०६३/३/३०",
+      "२०७५/११/१९"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 50,
+    "q": "मालसामान भन्नाले कस्ता प्रकृतिको वस्तु सम्झनु पर्दछ ?",
+    "o": [
+      "चल अचल सम्पत्ति",
+      "सजिव -निर्जीव वस्तु",
+      "क मात्र ठिक",
+      "दुवै ठिक"
+    ],
+    "a": 3,
+    "e": ""
+  }
+];
+
+// --- 10 + 10 DYNAMIC COMPLIMENTS ---
+const PRAISE = {
+    good: [
+        "Awesome, {name}!", "Wow {name}, you are a Genius!", "Fantastic job, {name}!", 
+        "Excellent work, {name}!", "You nailed it, {name}!", "Brilliant answer, {name}!", 
+        "You are on fire, {name}!", "Perfect, {name}!", "Spot on, {name}!", "Great job, {name}!"
+    ],
+    bad: [
+        "Don't give up, {name}!", "You can do this, {name}!", "Nice try {name}, keep going!", 
+        "Learn from this, {name}!", "Almost there, {name}!", "Keep pushing, {name}!", 
+        "Stay focused, {name}!", "You will get the next one, {name}!", "Mistakes help you grow, {name}!", 
+        "Shake it off {name}, try again!"
+    ]
+};
+
+const App = {
+    state: { user: null, quiz: [], curr: 0, score: 0, mistakes: [], timer: null, submitted: false },
+
+    save: (k, v) => { try { localStorage.setItem(k, v) } catch(e) {} },
+    load: (k) => { try { return localStorage.getItem(k) } catch(e) { return null } },
+
+    verifyAndLogin: () => {
+        const n = document.getElementById('inp-name').value.trim();
+        const q = document.getElementById('inp-qual').value;
+        const c = document.getElementById('inp-code').value.trim();
+        const msg = document.getElementById('auth-msg');
+        const btn = document.getElementById('btn-verify');
+
+        if(!n || !c) {
+            msg.innerText = "New Month Subscription started";
+            msg.style.display = 'block'; return;
+        }
+
+        AudioHelper.init(); // Warm up audio
+
+        btn.disabled = true; btn.innerText = "Verifying..."; msg.style.display = 'none';
+
+        fetch(`${CFG.authScript}?code=${c}&name=${n}&qual=${q}`)
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === 'success') {
+                document.getElementById('inp-pass').value = data.password;
+                App.state.user = { name: n, qual: q, code: c };
+                App.save(KEYS.user, JSON.stringify(App.state.user));
+                setTimeout(() => App.dash(), 800);
+            } else {
+                btn.disabled = false; btn.innerText = "Verify & Login";
+                msg.style.display = 'block'; msg.style.color = "#FF3366";
+                msg.innerHTML = data.message.includes("used") ? "Code already used or expired." : "Invalid Code";
+            }
+        })
+        .catch(() => {
+            btn.disabled = false; btn.innerText = "Verify & Login";
+            msg.style.display = 'block'; msg.innerText = "Connection Error";
+        });
+    },
+
+    dash: () => {
+        document.getElementById('title-display').innerText = CFG.topic;
+        document.getElementById('dash-topic-display').innerText = CFG.topic;
+        const stored = App.load(KEYS.user);
+        if(!stored) return;
+        App.state.user = JSON.parse(stored);
+        document.getElementById('greet-msg').innerText = `Namaste, ${App.state.user.name.split(' ')[0]}!`;
+        document.getElementById('view-login').classList.add('hidden');
+        document.getElementById('view-result').classList.add('hidden');
+        document.getElementById('view-dash').classList.remove('hidden');
+        
+        if(App.load(KEYS.sent)) {
+            document.getElementById('btn-start').innerText = "Retake (Practice Mode)";
+            document.getElementById('submitted-msg').style.display = 'block';
+            document.getElementById('submitted-msg').innerText = "✅ Previous Score Submitted";
+        } else {
+            document.getElementById('btn-start').innerText = "Start Exam";
+            document.getElementById('submitted-msg').style.display = 'none';
+        }
+        const m = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        document.getElementById('btn-review').style.display = m.length > 0 ? 'inline-block' : 'none';
+    },
+
+    start: (review) => {
+        AudioHelper.init(); // Warm up audio
+        App.state.curr = 0; App.state.score = 0; App.state.mistakes = []; App.state.submitted = false;
+        const prevM = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        const flatDB = DB.flat ? DB.flat() : DB;
+        let source = review ? flatDB.filter(q => prevM.includes(q.id)) : [...flatDB];
+        if(!source.length) return alert("No questions available.");
+
+        App.state.quiz = source.map(q => {
+            let opts = q.o.map((txt, i) => ({ t: txt, c: i === q.a }));
+            return { ...q, shuffledOpts: opts.sort(() => Math.random() - 0.5) };
+        }).sort(() => Math.random() - 0.5);
+
+        document.getElementById('view-dash').classList.add('hidden');
+        document.getElementById('view-quiz').classList.remove('hidden');
+        document.getElementById('q-total').innerText = App.state.quiz.length;
+        App.timer(45*60);
+        App.render();
+    },
+
+    render: () => {
+        const q = App.state.quiz[App.state.curr];
+        document.getElementById('q-idx').innerText = App.state.curr + 1;
+        document.getElementById('q-text').innerText = q.q;
+        document.getElementById('exp-box').style.display = 'none';
+        document.getElementById('btn-next').classList.add('hidden');
+        const list = document.getElementById('opts-list');
+        list.innerHTML = '';
+        q.shuffledOpts.forEach((opt, i) => {
+            const btn = document.createElement('div');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<div class="option-marker">${String.fromCharCode(65+i)}</div>${opt.t}`;
+            btn.onclick = () => App.check(btn, opt, q);
+            list.appendChild(btn);
+        });
+    },
+
+    check: (btn, opt, q) => {
+        const all = document.querySelectorAll('.option-btn');
+        all.forEach(b => { b.onclick = null; b.style.opacity = '0.7'; b.style.transform = 'scale(0.98)'; b.style.boxShadow = 'var(--clay-shadow-pressed)'; });
+        btn.style.opacity = '1';
+        btn.style.transform = 'scale(1.02)';
+        
+        const praise = document.getElementById('praise-txt');
+        praise.classList.remove('animate-praise');
+        void praise.offsetWidth; praise.classList.add('animate-praise');
+        const userName = App.state.user ? App.state.user.name.split(' ')[0] : 'Student';
+
+        if(opt.c) {
+            btn.classList.add('correct');
+            App.state.score++;
+            let rawTxt = PRAISE.good[Math.floor(Math.random()*PRAISE.good.length)];
+            let finalTxt = rawTxt.replace('{name}', userName);
+            praise.innerText = finalTxt;
+            praise.style.color = "#00C853";
+            AudioHelper.playTing();
+            AudioHelper.speak(finalTxt);
+            let m = JSON.parse(App.load(KEYS.mistakes) || "[]").filter(id => id !== q.id);
+            App.save(KEYS.mistakes, JSON.stringify(m));
+        } else {
+            btn.classList.add('wrong');
+            all.forEach((b, i) => { if(q.shuffledOpts[i].c) b.classList.add('correct'); });
+            App.state.mistakes.push(q.id);
+            let rawTxt = PRAISE.bad[Math.floor(Math.random()*PRAISE.bad.length)];
+            let finalTxt = rawTxt.replace('{name}', userName);
+            praise.innerText = finalTxt;
+            praise.style.color = "#FF3366";
+            AudioHelper.playFush();
+            AudioHelper.speak(finalTxt);
+        }
+
+        if(q.e) {
+            document.getElementById('exp-box').innerHTML = `<strong>Explanation:</strong> ${q.e}`;
+            document.getElementById('exp-box').style.display = 'block';
+        }
+        document.getElementById('btn-next').classList.remove('hidden');
+    },
+
+    next: () => {
+        App.state.curr++;
+        if(App.state.curr < App.state.quiz.length) App.render();
+        else App.finish();
+    },
+
+    timer: (sec) => {
+        if(App.state.timer) clearInterval(App.state.timer);
+        App.state.timer = setInterval(() => {
+            sec--;
+            let m = Math.floor(sec/60), s = sec%60;
+            document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
+            if(sec<=0) App.finish();
+        }, 1000);
+    },
+
+    finish: () => {
+        clearInterval(App.state.timer);
+        document.getElementById('view-quiz').classList.add('hidden');
+        document.getElementById('view-result').classList.remove('hidden');
+        let m = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        m = [...new Set([...m, ...App.state.mistakes])];
+        App.save(KEYS.mistakes, JSON.stringify(m));
+        const pct = Math.round((App.state.score / App.state.quiz.length) * 100);
+        document.getElementById('res-score').innerText = App.state.score;
+        document.getElementById('res-pct').innerText = `${pct}% Accuracy`;
+        App.sync();
+    },
+
+    sync: () => {
+        if(App.state.submitted || App.load(KEYS.sent)) return;
+        App.state.submitted = true;
+        const formData = new FormData();
+        formData.append("name", App.state.user.name);
+        formData.append("qualification", App.state.user.qual);
+        formData.append("examTitle", CFG.topic);
+        formData.append("score", App.state.score);
+        if(navigator.onLine) {
+            fetch(CFG.scoreScript, { method: 'POST', mode: 'no-cors', body: formData })
+            .then(() => {
+                App.save(KEYS.sent, "true");
+                document.getElementById('sync-status').innerText = "✅ Score Saved!";
+                document.getElementById('sync-status').style.color = "#00C853";
+            }).catch(() => App.offline(formData));
+        } else App.offline(formData);
+    },
+
+    offline: (d) => {
+        let p = JSON.parse(App.load(KEYS.pending) || "[]");
+        p.push(Object.fromEntries(d));
+        App.save(KEYS.pending, JSON.stringify(p));
+        document.getElementById('sync-status').innerText = "Saved offline.";
+    }
+};
+
+window.onload = () => { if(App.load(KEYS.user)) App.dash(); };
+</script>
+</body>
+</html>
