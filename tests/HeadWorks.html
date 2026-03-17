@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diversion Headworks Layout</title>
+<style>
+  body { 
+    background-color: #f0f4f8; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    margin: 0; 
+    padding: 20px; 
+    color: #333;
+  }
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+  svg { 
+    width: 100%; 
+    height: auto; 
+    background-color: #e0e7ee; 
+    border-bottom: 2px solid #ccc;
+  }
+  .water { stroke-dasharray: 15; animation: flow 3s linear infinite; }
+  .silt { stroke-dasharray: 8; animation: flow 4s linear infinite; }
+  .silt-eject { stroke-dasharray: 8; animation: flow 2.5s linear infinite; }
+  @keyframes flow { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
+  .structure { fill: #9e9e9e; stroke: #424242; stroke-width: 2; }
+  .text-label { font-size: 12px; font-weight: bold; fill: #212121; }
+  
+  .content {
+    padding: 30px;
+  }
+  h1 { margin-top: 0; color: #1565c0; }
+  h3 { color: #d84315; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+  ul { line-height: 1.6; }
+  li { margin-bottom: 10px; }
+  strong { color: #212121; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <svg viewBox="0 0 1000 650" xmlns="http://www.w3.org/2000/svg">
+    <path d="M 100,0 L 400,0 L 400,650 L 100,650 Z" fill="#b3e5fc" />
+    <path d="M 400,100 L 950,100 L 950,220 L 400,220 Z" fill="#b3e5fc" />
+    <path d="M 600,220 L 600,450 L 400,450" fill="#b3e5fc" opacity="0.8"/>
+
+    <path class="water" d="M 150,0 L 150,650" fill="none" stroke="#0288d1" stroke-width="4" />
+    <path class="water" d="M 250,0 L 250,650" fill="none" stroke="#0288d1" stroke-width="4" />
+    <path class="water" d="M 350,0 L 350,650" fill="none" stroke="#0288d1" stroke-width="4" />
+
+    <path class="water" d="M 380,130 L 950,130" fill="none" stroke="#0288d1" stroke-width="4" />
+    <path class="water" d="M 380,180 L 950,180" fill="none" stroke="#0288d1" stroke-width="4" />
+
+    <path class="silt" d="M 320,0 L 320,250 L 320,650" fill="none" stroke="#795548" stroke-width="3" />
+    <path class="silt" d="M 360,0 L 360,250 L 360,650" fill="none" stroke="#795548" stroke-width="4" />
+    <path class="silt-eject" d="M 380,195 L 600,195 L 600,400 L 400,400" fill="none" stroke="#8d6e63" stroke-width="3" />
+
+    <line x1="100" y1="0" x2="100" y2="650" stroke="#388e3c" stroke-width="6" />
+    <line x1="400" y1="0" x2="400" y2="100" stroke="#388e3c" stroke-width="6" />
+    <line x1="400" y1="220" x2="400" y2="650" stroke="#388e3c" stroke-width="6" />
+    
+    <line x1="400" y1="100" x2="950" y2="100" stroke="#388e3c" stroke-width="6" />
+    <line x1="400" y1="220" x2="600" y2="220" stroke="#388e3c" stroke-width="6" />
+    <line x1="650" y1="220" x2="950" y2="220" stroke="#388e3c" stroke-width="6" />
+
+    <rect x="100" y="280" width="180" height="30" class="structure" />
+    <text x="120" y="300" class="text-label" fill="#fff">MAIN BARRAGE</text>
+
+    <rect x="280" y="50" width="15" height="300" class="structure" fill="#757575" />
+    <text x="265" y="150" class="text-label" transform="rotate(-90 265 150)">DIVIDE WALL</text>
+
+    <rect x="250" y="270" width="30" height="60" class="structure" fill="#e0e0e0" />
+    <line x1="250" y1="290" x2="270" y2="290" stroke="#424242" stroke-width="2" />
+    <line x1="260" y1="310" x2="280" y2="310" stroke="#424242" stroke-width="2" />
+    <text x="170" y="350" class="text-label">FISH LADDER</text>
+    <polyline points="210,345 255,315" fill="none" stroke="#212121" stroke-width="1.5" marker-end="url(#arrow)" />
+
+    <rect x="295" y="280" width="105" height="30" class="structure" fill="#546e7a" />
+    <text x="300" y="300" class="text-label" fill="#fff">UNDER SLUICES</text>
+
+    <rect x="390" y="100" width="20" height="120" class="structure" fill="#455a64" />
+    <text x="415" y="165" class="text-label">HEAD REGULATOR</text>
+
+    <rect x="310" y="100" width="80" height="120" fill="none" stroke="#d84315" stroke-width="3" stroke-dasharray="5" />
+    <text x="315" y="150" class="text-label" fill="#d84315" transform="rotate(-90 315 150)">SILT EXCLUDER</text>
+
+    <rect x="580" y="100" width="40" height="120" fill="none" stroke="#c62828" stroke-width="3" stroke-dasharray="5" />
+    <text x="630" y="165" class="text-label" fill="#c62828">SILT EJECTOR</text>
+    
+    <text x="450" y="390" class="text-label" fill="#c62828">ESCAPE CHANNEL</text>
+
+    <text x="120" y="40" class="text-label" fill="#1565c0" font-size="16px">RIVER (UPSTREAM)</text>
+    <text x="120" y="620" class="text-label" fill="#1565c0" font-size="16px">RIVER (DOWNSTREAM)</text>
+    <text x="750" y="165" class="text-label" fill="#1565c0" font-size="16px">OFFTAKING CANAL</text>
+
+    <defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#212121" />
+      </marker>
+    </defs>
+  </svg>
+
+  <div class="content">
+    <h1>Diversion Headworks Components</h1>
+    
+    <h3>1. Weir or Barrage</h3>
+    <ul>
+      <li><strong>Function:</strong> Raises the upstream river water level to create sufficient pressure (head) so water flows into the canal by gravity.</li>
+      <li><strong>Main Feature:</strong> A barrage uses adjustable gates across its width for precise water level control, while a weir is primarily a solid, raised concrete or masonry wall.</li>
+    </ul>
+
+    <h3>2. Divide Wall</h3>
+    <ul>
+      <li><strong>Function:</strong> Separates the turbulent water flowing over the main barrage from the calm, still water in the "pocket" directly in front of the canal, allowing heavy silt to settle.</li>
+      <li><strong>Main Feature:</strong> A solid wall built perpendicular to the barrage axis, extending upstream into the river.</li>
+    </ul>
+
+    <h3>3. Under Sluices (Scouring Sluices)</h3>
+    <ul>
+      <li><strong>Function:</strong> Periodically scours and flushes the accumulated silt from the quiet pocket back into the downstream river.</li>
+      <li><strong>Main Feature:</strong> Gate-controlled openings adjacent to the divide wall. The crest level is lower than the main barrage to enable bottom-scouring.</li>
+    </ul>
+
+    <h3>4. Canal Head Regulator</h3>
+    <ul>
+      <li><strong>Function:</strong> Regulates the exact volume of water entering the offtaking canal and completely shuts off flow during severe floods.</li>
+      <li><strong>Main Feature:</strong> Built at the immediate entrance of the canal. Its sill level is raised higher than the under sluices so only the cleaner top layer of water enters.</li>
+    </ul>
+
+    <h3>5. Fish Ladder</h3>
+    <ul>
+      <li><strong>Function:</strong> Ensures the safe migration of fish upstream and downstream past the barrage wall.</li>
+      <li><strong>Main Feature:</strong> A narrow, sloping channel with staggered baffles to reduce water velocity.</li>
+    </ul>
+
+    <h3>6. Silt Excluder</h3>
+    <ul>
+      <li><strong>Function:</strong> Prevents heavy, bottom-rolling sediment from ever entering the canal.</li>
+      <li><strong>Main Feature:</strong> Built <strong>in the river bed</strong> directly in front of the Head Regulator. Parallel tunnels direct highly-silted bottom water through the under sluices, while clean top water enters the canal.</li>
+    </ul>
+
+    <h3>7. Silt Ejector (Silt Extractor)</h3>
+    <ul>
+      <li><strong>Function:</strong> Removes finer suspended silt that managed to bypass the excluder and enter the canal.</li>
+      <li><strong>Main Feature:</strong> Built <strong>across the bed of the canal</strong>, downstream from the Head Regulator. Curved tunnels draw out the bottom silty layer and discharge it into an escape channel back to the river.</li>
+    </ul>
+<div class="comparison-box">
+<style>
+.comparison-table {
+width: 100%;
+border-collapse: collapse;
+margin-top: 10px;
+}
+.comparison-table th, .comparison-table td {
+border: 1px solid #000;
+padding: 8px;
+text-align: left;
+}
+.comparison-table th {
+background-color: #f2f2f2;
+}
+</style>
+<h3>Technical Comparison: Weir vs. Barrage</h3>
+<table class="comparison-table">
+<thead>
+<tr>
+<th>S.N.</th>
+<th>Feature</th>
+<th>Weir</th>
+<th>Barrage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Ponding Achievement</strong></td>
+<td>Ponding is achieved mainly by a fixed, solid crest obstruction.</td>
+<td>Ponding is achieved almost entirely by adjustable gates.</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Control Gates</strong></td>
+<td>Consists of no gates or very small shutters on the crest.</td>
+<td>Consists of a series of large, adjustable mechanical gates.</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Cost of Construction</strong></td>
+<td>Relatively low cost; simpler design and less mechanical parts.</td>
+<td>High cost; involves complex gate systems and heavy foundations.</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Roadway Connectivity</strong></td>
+<td>Generally cannot be connected with a roadway for heavy traffic.</td>
+<td>Can be easily connected with a roadway (bridge) over the piers.</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Crest and Gates</strong></td>
+<td>High crest with very low (or no) shutters.</td>
+<td>Low crest with large (high) gates for flow regulation.</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Silt Regulation</strong></td>
+<td>Poor capacity to scour out silt; leads to higher deposition.</td>
+<td>Excellent scouring capacity through the use of under-sluices.</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>Flood Discharge</strong></td>
+<td>Excess water flows over the crest; less control during floods.</td>
+<td>Gates can be lifted fully to pass high floods with minimal resistance.</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>Afflux (Rise in Water)</strong></td>
+<td>Causes a high afflux during high floods due to the solid crest.</td>
+<td>Produces a very low afflux as gates are lifted during floods.</td>
+</tr>
+</tbody>
+</table>
+</div>
+  </div>
+</div>
+
+</body>
+</html>
