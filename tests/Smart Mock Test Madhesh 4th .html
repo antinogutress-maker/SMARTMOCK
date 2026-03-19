@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Madhesh 4th Mock Test 07</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* [100% CLAYMORPHISM PALETTE & SHADOWS] */
+        :root { 
+            --primary: #FF3366; 
+            --secondary: #FF9933; 
+            --accent: #00E5FF; 
+            
+            /* Clay Base Color */
+            --clay-bg: #E8F0F8; 
+            
+            /* Clay Outer Shadows */
+            --clay-shadow-out: 12px 12px 24px rgba(166, 180, 200, 0.7), -12px -12px 24px #FFFFFF;
+            
+            /* Clay Inner Shadows (Puffy Effect) */
+            --clay-shadow-in: inset 6px 6px 12px rgba(255, 255, 255, 0.9), inset -6px -6px 12px rgba(166, 180, 200, 0.4);
+            
+            /* Clay Pressed/Inset Shadows (For Inputs) */
+            --clay-shadow-pressed: inset 6px 6px 12px rgba(166, 180, 200, 0.6), inset -6px -6px 12px #FFFFFF;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            /* Soft pastel gradient to complement the 3D clay */
+            background: linear-gradient(-45deg, #FFDEE9, #B5FFFC, #C2E9FB, #EAE5C9);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 15px; 
+            overflow-x: hidden; 
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 100% Clay Container */
+        .app-container { 
+            width: 100%; 
+            max-width: 650px; 
+            background: var(--clay-bg); 
+            border-radius: 40px; 
+            padding: 2.5rem 2rem; 
+            /* Double shadow system for 3D clay look */
+            box-shadow: var(--clay-shadow-out), var(--clay-shadow-in);
+            position: relative; 
+            overflow: hidden; 
+            transition: all 0.4s ease; 
+        }
+        
+        h1 { font-size: 2.2rem; font-weight: 800; color: #1E293B; margin-bottom: 10px; }
+        h2 { font-size: 1.6rem; margin-bottom: 20px; color: #334155; font-weight: 800; }
+        p { color: #64748B; font-size: 1rem; line-height: 1.6; font-weight: 500; }
+        
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 10px; color: #64748B; text-transform: uppercase; letter-spacing: 1.5px; }
+        
+        /* Clay Inset Inputs */
+        .glass-input { 
+            width: 100%; 
+            padding: 18px; 
+            background: var(--clay-bg); 
+            border: none; 
+            border-radius: 20px; 
+            color: #1E293B; 
+            font-size: 1.05rem; 
+            font-weight: 600;
+            outline: none; 
+            transition: 0.3s;
+            box-shadow: var(--clay-shadow-pressed);
+        }
+        .glass-input:focus { 
+            box-shadow: inset 8px 8px 16px rgba(166, 180, 200, 0.7), inset -8px -8px 16px #FFFFFF, 0 0 0 4px rgba(0, 229, 255, 0.3);
+        }
+        .glass-input::placeholder { color: #94A3B8; }
+        .glass-input:read-only { background: #DFE7F0; color: #64748B; cursor: not-allowed; }
+        select.glass-input option { background: #FFFFFF; color: #1E293B; }
+        
+        /* Clay Puffy Button */
+        .btn { 
+            background: var(--primary); 
+            border: none; 
+            color: white; 
+            padding: 18px; 
+            width: 100%; 
+            border-radius: 24px; 
+            font-size: 1.15rem; 
+            font-weight: 800; 
+            cursor: pointer; 
+            margin-top: 25px; 
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            min-height: 55px; 
+            box-shadow: 
+                8px 8px 16px rgba(255, 51, 102, 0.3), 
+                -4px -4px 10px #FFFFFF,
+                inset 4px 4px 8px rgba(255,255,255,0.4),
+                inset -4px -4px 8px rgba(0,0,0,0.1);
+        }
+        .btn:active { 
+            transform: scale(0.95); 
+            box-shadow: 
+                2px 2px 5px rgba(255, 51, 102, 0.4), 
+                inset 6px 6px 12px rgba(0,0,0,0.2),
+                inset -2px -2px 6px rgba(255,255,255,0.2);
+        }
+        .btn:disabled { filter: grayscale(1); cursor: wait; opacity: 0.7; }
+        
+        .btn-outline { 
+            background: var(--clay-bg); 
+            color: #1E293B;
+            box-shadow: var(--clay-shadow-out), var(--clay-shadow-in); 
+            margin-top: 15px; 
+        }
+        
+        .personal-header { text-align: center; margin-bottom: 25px; padding-bottom: 15px; min-height: 50px; display: flex; align-items: center; justify-content: center; }
+        .animate-praise { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        .info-bar { 
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; 
+            background: var(--clay-bg); 
+            padding: 15px 20px; 
+            border-radius: 20px; 
+            box-shadow: var(--clay-shadow-pressed);
+            font-weight: 700;
+            color: #64748B;
+        }
+        .timer-badge { font-family: monospace; font-weight: 800; color: #FF3366; font-size: 1.3rem; }
+        
+        /* [REQUIRED] Question Text is ALWAYS Black */
+        .question-text { 
+            font-size: 1.35rem; 
+            font-weight: 800; 
+            margin-bottom: 25px; 
+            line-height: 1.5; 
+            color: #000000 !important; 
+            padding: 10px 0;
+        }
+        
+        /* [REQUIRED] Options with ALWAYS Blue Text and Clay Styling */
+        .option-btn { 
+            width: 100%; 
+            padding: 18px 20px; 
+            margin-bottom: 18px; 
+            background: var(--clay-bg); 
+            border: none; 
+            border-radius: 24px; 
+            text-align: left; 
+            color: #0000FF !important; 
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            display: flex; 
+            align-items: center; 
+            -webkit-user-select: none; user-select: none;
+            
+            /* Puffy Clay Shadow for Options */
+            box-shadow: 
+                6px 6px 14px rgba(166, 180, 200, 0.6), 
+                -6px -6px 14px #FFFFFF,
+                inset 3px 3px 6px rgba(255,255,255,0.9),
+                inset -3px -3px 6px rgba(166, 180, 200, 0.3);
+        }
+        .option-btn:hover { transform: translateY(-3px); }
+        .option-btn:active { transform: scale(0.96); box-shadow: var(--clay-shadow-pressed); }
+        
+        .option-marker { 
+            width: 40px; height: 40px; 
+            background: var(--clay-bg); 
+            border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            margin-right: 18px; 
+            font-weight: 800; 
+            color: #0000FF !important; 
+            flex-shrink: 0; 
+            /* Pressed marker inside puffy button */
+            box-shadow: var(--clay-shadow-pressed);
+        }
+        
+        /* Correct/Wrong States - Only Background Changes, text remains Blue! */
+        .correct { 
+            background: #00FF88 !important; /* Green Background */
+            box-shadow: 
+                6px 6px 14px rgba(0, 255, 136, 0.4), 
+                -4px -4px 10px #FFFFFF,
+                inset 4px 4px 8px rgba(255,255,255,0.5),
+                inset -4px -4px 8px rgba(0,0,0,0.1);
+            transform: scale(1.02);
+        }
+        .correct .option-marker { background: rgba(255,255,255,0.3); }
+        
+        .wrong { 
+            background: #FF3366 !important; /* Red Background */
+            box-shadow: 
+                6px 6px 14px rgba(255, 51, 102, 0.4), 
+                -4px -4px 10px #FFFFFF,
+                inset 4px 4px 8px rgba(255,255,255,0.4),
+                inset -4px -4px 8px rgba(0,0,0,0.1);
+        }
+        .wrong .option-marker { background: rgba(255,255,255,0.3); }
+        
+        .explanation-box { 
+            margin-top: 25px; padding: 20px; 
+            background: var(--clay-bg); 
+            border-left: 6px solid var(--accent); 
+            border-radius: 20px; 
+            font-size: 1.05rem; 
+            color: #1E293B;
+            font-weight: 600;
+            display: none; 
+            animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: var(--clay-shadow-pressed);
+        }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .score-circle { 
+            width: 200px; height: 200px; 
+            border-radius: 50%; 
+            background: var(--clay-bg);
+            margin: 0 auto 30px auto; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            /* Huge puffy clay ring */
+            box-shadow: 
+                15px 15px 30px rgba(166, 180, 200, 0.7), 
+                -15px -15px 30px #FFFFFF,
+                inset 8px 8px 16px rgba(255,255,255,0.9),
+                inset -8px -8px 16px rgba(166, 180, 200, 0.4); 
+        }
+        .score-val { font-size: 4.5rem; font-weight: 800; color: #FF3366; line-height: 1; }
+        .hidden { display: none !important; }
+        #opts-list { max-height: 55vh; overflow-y: auto; padding-right: 12px; padding-bottom: 10px; padding-top: 5px; margin-left: -5px; padding-left: 5px;}
+        
+        /* Custom Scrollbar */
+        #opts-list::-webkit-scrollbar { width: 8px; }
+        #opts-list::-webkit-scrollbar-track { background: var(--clay-bg); border-radius: 10px; box-shadow: var(--clay-shadow-pressed); }
+        #opts-list::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        
+        #auth-msg { text-align: center; margin-top: 20px; font-weight: 700; color: #FF3366; background: var(--clay-bg); padding: 15px; border-radius: 16px; display: none; box-shadow: var(--clay-shadow-pressed); }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="app">
+    <div id="view-login">
+        <div style="text-align: center; margin-bottom: 35px;">
+            <h1 id="title-display">Madhesh 4th Mock Test 07</h1>
+            <p>New Edition | Civil Engineering</p>
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Full Name</span>
+            <input type="text" id="inp-name" class="glass-input" placeholder="Enter your name">
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Qualification</span>
+            <select id="inp-qual" class="glass-input">
+                <option value="Engineer">Engineer</option>
+                <option value="Sub-Engineer">Sub-Engineer</option>
+                <option value="Asst. Sub-Engineer">Asst. Sub-Engineer</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <span class="label">Unique Code</span>
+            <input type="tel" id="inp-code" class="glass-input" placeholder="Enter 5-digit code">
+        </div>
+
+        <div class="input-group">
+            <span class="label">Password (Auto-Fill)</span>
+            <input type="password" id="inp-pass" class="glass-input" placeholder="Verifying..." readonly>
+        </div>
+
+        <button class="btn" id="btn-verify" onclick="App.verifyAndLogin()">Verify & Login</button>
+        <p id="auth-msg"></p>
+    </div>
+
+    <div id="view-dash" class="hidden">
+        <div style="text-align: center; margin-bottom: 35px;">
+            <h2 id="greet-msg" style="color: #FF3366; font-size: 2.2rem;">Welcome!</h2>
+            <div style="background: var(--clay-bg); padding: 30px; border-radius: 24px; margin-bottom: 25px; box-shadow: var(--clay-shadow-pressed);">
+                <p style="text-transform: uppercase; font-size: 0.9rem; color: #94A3B8; font-weight: 800; letter-spacing: 1px;">Active Session</p>
+                <h3 id="dash-topic-display" style="font-size: 1.8rem; margin: 15px 0; color: #1E293B;"></h3>
+                <p style="font-weight: 700; color: #64748B;">50 Questions • 45 Minutes</p>
+            </div>
+        </div>
+        <button class="btn" id="btn-start" onclick="App.start(false)">Start Exam</button>
+        <p id="submitted-msg" style="color: #00C853; text-align: center; margin-top: 20px; display: none; font-weight: 800;">✅ Score Submitted Successfully</p>
+        <button class="btn btn-outline" id="btn-review" onclick="App.start(true)" style="display: none;">Review Mistakes</button>
+    </div>
+
+    <div id="view-quiz" class="hidden">
+        <div class="personal-header">
+            <div id="praise-txt" style="font-size: 1.5rem; font-weight: 800; color: #1E293B;">Good Luck!</div>
+        </div>
+
+        <div class="info-bar">
+            <span>Q: <span id="q-idx">1</span> / <span id="q-total">50</span></span>
+            <span class="timer-badge" id="timer">45:00</span>
+        </div>
+
+        <div id="q-container">
+            <div class="question-text" id="q-text">Loading...</div>
+            <div id="opts-list"></div>
+            <div class="explanation-box" id="exp-box"></div>
+        </div>
+
+        <button class="btn hidden" id="btn-next" onclick="App.next()">Next Question</button>
+    </div>
+
+    <div id="view-result" class="hidden" style="text-align: center;">
+        <h2 style="font-size: 2.2rem; margin-bottom: 30px;">Quiz Completed!</h2>
+        <div class="score-circle">
+            <span class="score-val" id="res-score">0</span>
+            <span style="font-size: 1rem; font-weight: 800; text-transform: uppercase; color: #64748B; margin-top: 10px;">Correct</span>
+        </div>
+        <div style="margin-bottom: 40px;">
+            <h3 id="res-pct" style="color: #FF3366; font-size: 2rem; font-weight: 800;">0% Accuracy</h3>
+            <p id="sync-status" style="font-size: 1.1rem; font-weight: 700; margin-top: 15px; color: #64748B;">Syncing score...</p>
+        </div>
+        <button class="btn" onclick="App.dash()">Back to Dashboard</button>
+    </div>
+</div>
+
+<script>
+/**
+ * --- UPDATED AUDIO HELPER SYSTEM ---
+ * Uses Free Google Audio API + Browser Synthesis fallback
+ */
+const AudioHelper = {
+    ctx: null,
+    init: function() {
+        if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if(this.ctx.state === 'suspended') this.ctx.resume();
+        
+        // Mobile warm-up
+        if ('speechSynthesis' in window) {
+            let warmupMsg = new SpeechSynthesisUtterance('');
+            warmupMsg.volume = 0; 
+            window.speechSynthesis.speak(warmupMsg);
+        }
+    },
+    playTing: function() {
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.type = 'sine'; 
+        osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1500, this.ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.5);
+    },
+    playFush: function() {
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.type = 'square'; 
+        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.3);
+    },
+    speak: function(text) {
+        // Free Google Translate TTS API (Human Sounding)
+        const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=${encodeURIComponent(text)}`;
+        const audio = new Audio(url);
+        audio.play().catch(() => {
+            // Fallback to robotic browser voice if blocked
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const msg = new SpeechSynthesisUtterance(text);
+                msg.lang = 'en-US';
+                window.speechSynthesis.speak(msg);
+            }
+        });
+    }
+};
+
+/**
+ * ----------------------------------------------------
+ * CONFIGURATION - CHANGE ONLY THIS SECTION FOR NEW APPS
+ * ----------------------------------------------------
+ */
+const CFG = {
+    topic: "Madhesh 4th Mock Test 07", 
+    scoreScript: "https://script.google.com/macros/s/AKfycbwlARXNg2vbAH3-xPgt4Mt_MlPydwuZOtA7dkjyD0LVQlYX2IBDUKULT8rlZVIy034H/exec",
+    authScript: "https://script.google.com/macros/s/AKfycbzMzOG0rG6JUEsDUJymyOGevOjt750FgRD9UNdxeEmDbeHukwRZTvjwd8UyDbD5icR6/exec"
+};
+
+const _tid = CFG.topic.replace(/[^a-zA-Z0-9]/g, "_");
+const KEYS = {
+    user: "v3_civil_eng_global_user",
+    mistakes: `v2_mistakes_${_tid}`,
+    sent: `v2_sent_status_${_tid}`,
+    pending: `v2_pending_${_tid}`
+};
+  const DB = [
+  {
+    "id": 1,
+    "q": "तिलिचो ताल समुन्द्र सतहदेखि कति उचाइमा अवस्थित रहेको छ ?",
+    "o": ["४,९१५ मिटर", "४,९१६ मिटर", "४,९१८ मिटर", "४,९१९ मिटर"],
+    "a": 3,
+    "e": "तिलिचो ताल मनाङ जिल्लामा ४,९१९ मिटरको उचाइमा अवस्थित छ।"
+  },
+  {
+    "id": 2,
+    "q": "कुमारी पूजाको चलन चलाउने राजा को हुन् ?",
+    "o": ["गुणकामदेव", "नरेन्द्रदेव", "मानदेव", "वृषदेव"],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 3,
+    "q": "उधौली र उँभौली कुन जातिको महत्वपूर्ण सांस्कृतिक पर्व हो ?",
+    "o": ["थारु जाति", "राजवंशी जाति", "किराँत जाति", "माझी जाति"],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 4,
+    "q": "विश्वमा योजनाबद्ध विकासको सुरुवात कहिले भएको थियो ?",
+    "o": ["सन् १९२७", "सन् १९२८", "सन् १९२९", "सन् १९३०"],
+    "a": 1,
+    "e": "विश्वमा योजनाबद्ध विकासको सुरुवात सन् १९२८ मा तत्कालीन सोभियत संघ (रुस) बाट भएको हो।"
+  },
+  {
+    "id": 5,
+    "q": "महानगरपालिका हुनको लागि कम्तीमा कति जनसंख्या हुनु पर्दछ ?",
+    "o": ["१ लाख", "३ लाख", "५ लाख", "७ लाख"],
+    "a": 2,
+    "e": "स्थानीय सरकार सञ्चालन ऐन अनुसार महानगरपालिकाका लागि न्यूनतम ५ लाख स्थायी जनसंख्या आवश्यक पर्दछ।"
+  },
+  {
+    "id": 6,
+    "q": "वृत्तको क्षेत्रफल र परिधि निकाल्ने सुत्र कसले पत्ता लगाएका हुन् ?",
+    "o": ["न्युटन", "ग्यालिलियो", "आर्किमिडिज", "युक्लिड"],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 7,
+    "q": "दम कुन अंगमा लाग्ने रोग हो ?",
+    "o": ["फोक्सो", "कलेजो", "मुटु", "आन्द्रा"],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 8,
+    "q": "नेपालको संविधानको धारा ५० मा कति वटा राज्यका निर्देशक सिद्धान्तहरुको व्यवस्था गरिएको छ ?",
+    "o": ["३ वटा", "४ वटा", "५ वटा", "६ वटा"],
+    "a": 1,
+    "e": "नेपालको संविधानको धारा ५० मा ४ वटा निर्देशक सिद्धान्तहरु (राजनीतिक, आर्थिक, सामाजिक र सांस्कृतिक, र अन्तर्राष्ट्रिय सम्बन्ध) रहेका छन्।"
+  },
+  {
+    "id": 9,
+    "q": "नेपालले संयुक्त राष्ट्रसंघको सदस्यता कहिले प्राप्त गरेको हो ?",
+    "o": ["सन् १९५५ डिसेम्बर १४", "सन् १९५६ डिसेम्बर १४", "सन् १९५५ अक्टोबर २४", "सन् १९५० डिसेम्बर १४"],
+    "a": 0,
+    "e": "नेपालले 'प्याकेज डिल' अन्तर्गत १५ अन्य राष्ट्रहरूसँगै १५ डिसेम्बर १९५५ मा सदस्यता पाएको हो।"
+  },
+  {
+    "id": 10,
+    "q": "सार्कमा हाल जम्मा कति वटा सदस्य राष्ट्रहरु रहेका छन् ?",
+    "o": ["७ वटा", "८ वटा", "९ वटा", "१० वटा"],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 11,
+    "q": "मधेश प्रदेशको कुन जिल्लामा जनसंख्या वृद्धिदर सबैभन्दा कम छ?",
+    "o": ["महोत्तरी", "सिरहा", "पर्सा", "सर्लाही"],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 12,
+    "q": "संघको स्वीकृतिमा 'वैदेशिक सहयोग, ऋण र अनुदान' प्राप्त गर्ने र उपयोग गर्ने कार्य कुन मन्त्रालयले गर्दछ?",
+    "o": ["मुख्यमन्त्री कार्यालय", "योजना आयोग", "अर्थ मन्त्रालय", "उद्योग मन्त्रालय"],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 13,
+    "q": "सरुवा भई जाने कर्मचारीले रमाना लिएको कति दिनभित्र बरबुझारथ (Handover) गर्नुपर्छ?",
+    "o": ["७ दिन", "१५ दिन", "२१ दिन", "३५ दिन"],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 14,
+    "q": "सुशासन नियमावली, २०६५ अनुसार 'उच्चस्तरीय निर्देशन समिति' को अध्यक्ष को रहने व्यवस्था छ?",
+    "o": ["मुख्य सचिव", "सामान्य प्रशासन मन्त्री", "प्रधानमन्त्री", "उप-प्रधानमन्त्री"],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 15,
+    "q": "उपभोक्ता समितिले निर्माण कार्य आफैं नगरी कुनै ठेकेदारलाई जिम्मा दिएमा के कारबाही हुन्छ?",
+    "o": ["२०% जरिवाना", "ठेकेदारलाई भुक्तानी", "सम्झौता रद्द गरी भुक्तानी रोकिन्छ", "चेतावनी दिइन्छ"],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 16,
+    "q": "योजना तथा कार्यक्रमको अनुगमन गरी सोको प्रतिवेदन बैठकमा पेश गर्ने कर्तव्य कसको हो?",
+    "o": ["योजना शाखा प्रमुख", "प्रमुख प्रशासकीय अधिकृत", "उपाध्यक्ष वा उपप्रमुख", "जिल्ला समन्वय समिति"],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 17,
+    "q": "प्रत्येक वर्ष 'उत्कृष्ट प्रदेश निजामती सेवा पुरस्कार' कति जना कर्मचारीलाई प्रदान गरिन्छ?",
+    "o": ["१ जना", "३ जना", "५ जना", "१० जना"],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 18,
+    "q": "लिखित परीक्षाको नतिजा प्रकाशन भएको कति दिन पछि उम्मेदवारले आफ्नो प्राप्ताङ्क हेर्न पाउँछन्?",
+    "o": ["३ दिन", "७ दिन", "१५ दिन", "भोलिपल्टै"],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 19,
+    "q": "नवीन सार्वजनिक व्यवस्थापन (NPM) को अवधारणा कहिलेदेखि सुरु भएको हो?",
+    "o": ["सन् १९७० को दशक", "सन् १९८० को दशक", "सन् १९९० को दशक", "सन् १८८७"],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 20,
+    "q": "महत्वपूर्ण अभिलेख (Important Records) कति वर्षसम्म सुरक्षित राख्नु पर्दछ?",
+    "o": ["५ देखि १० वर्ष", "१० देखि २० वर्ष", "२० देखि ३० वर्ष", "५० वर्ष"],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 21,
+    "q": "To draw helix the plan of cylinder and cone must be divided into:",
+    "o": ["3 equal parts", "7 equal parts", "9 equal parts", "12 equal parts"],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 22,
+    "q": "The curve generated by a point moving around a cylinder/cone while advancing axially at a constant ratio is called:",
+    "o": ["Helix", "Cycloid", "Spirals", "Circle"],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 23,
+    "q": "What is the internal angle of a regular pentagon?",
+    "o": ["90°", "120°", "108°", "115°"],
+    "a": 2,
+    "e": "Sum of interior angles = $(5-2) \\times 180 = 540^\\circ$. Internal angle = $540/5 = 108^\\circ$."
+  },
+  {
+    "id": 24,
+    "q": "Which information is required to draw the perspective?",
+    "o": ["Top and Front View", "Orientation wrt PPP", "Location of station point", "Angle of projection"],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 25,
+    "q": "Due to change in price level, a revised estimate is prepared if the sanctioned estimate exceeds:",
+    "o": ["2.0%", "2.5%", "4.0%", "5.0%"],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 26,
+    "q": "Unit of measurement for payment of door and window frames is:",
+    "o": ["Cubic meter", "Meter", "Square meter", "None of these"],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 27,
+    "q": "Form work for concreting is measured in:",
+    "o": ["Running meter", "Square meter", "Cubic meter", "Number"],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 28,
+    "q": "The item of the brick structure measured in sq.m is:",
+    "o": ["Broken glass coping", "Reinforced brick work", "Brick work in arches", "Brick edging"],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 29,
+    "q": "In chain surveying, perpendiculars to the chain line are set out by:",
+    "o": ["A theodolite", "A prismatic compass", "A level", "An optical square"],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 30,
+    "q": "While measuring distance along upgrade with a 20m chain, the forward end is shifted forward by:",
+    "o": ["$20(\\sin\\theta - 1)$", "$20(\\cos\\theta - 1)$", "$20(\\sec\\theta - 1)$", "$20(\\csc\\theta - 1)$"],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 31,
+    "q": "For taking offsets with an optical square on the right-hand side, it is held:",
+    "o": ["By right hand upside down", "By left hand upright", "By right hand upright", "By left hand upside down"],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 32,
+    "q": "Which of the following condition is most ideal for chemical weathering?",
+    "o": ["Cold and dry", "Cold and humid", "Hot and dry", "Hot and humid"],
+    "a": 3,
+    "e": "Chemical reactions occur faster at higher temperatures and in the presence of water (humidity)."
+  },
+  {
+    "id": 33,
+    "q": "Which of the following igneous rock contains silica in excess of 65%?",
+    "o": ["Basalt", "Granite", "Peridotites", "Gabbro"],
+    "a": 1,
+    "e": "Granite is an acidic igneous rock with high silica content ($>65$%)."
+  },
+  {
+    "id": 34,
+    "q": "Heating technique of breaking rocks is suitable if the aim is to get:",
+    "o": ["Aggregates", "Slabs", "Building blocks", "None of these"],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 35,
+    "q": "Coal and petroleum are found in:",
+    "o": ["Igneous rock", "Metamorphic rock", "Sedimentary rocks", "None of these"],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 36,
+    "q": "A wall which is constructed to divide the space within the building into rooms is called:",
+    "o": ["partition wall", "cavity wall", "normal wall", "plain wall"],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 37,
+    "q": "A brick masonry could fail due to:",
+    "o": ["rupture along vertical joint", "shearing along horizontal plane", "crushing due to overloading", "any of the above"],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 38,
+    "q": "Stretcher bond is possible only in:",
+    "o": ["half brick wall", "one brick wall", "one and half brick wall", "wall of any thickness"],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 39,
+    "q": "A low height wall constructed along the edge of the roof is called:",
+    "o": ["gable", "plinths", "string course", "parapet"],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 40,
+    "q": "The overlapping of bricks or stones in masonry is called:",
+    "o": ["frog", "joint", "jamb", "bond"],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 41,
+    "q": "The most reliable source of ground water is from:",
+    "o": ["Streams and rivers", "Storage reservoirs", "Springs", "Ponds and lakes"],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 42,
+    "q": "Which water is suitable for drinking purpose?",
+    "o": ["Pure water", "Potable water", "Polluted water", "Infected water"],
+    "a": 1,
+    "e": "Potable water is water that is safe to drink and used for food preparation."
+  },
+  {
+    "id": 43,
+    "q": "Which is not included in building codes?",
+    "o": ["Mechanical integrity", "Safety", "Providing employment", "Structural integrity"],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 44,
+    "q": "The alkalinity in water is caused by:",
+    "o": ["sodium carbonate", "potassium carbonate", "calcium hydrogen", "all of these"],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 45,
+    "q": "The maximum permissible chlorine content for public supplies should be between:",
+    "o": ["0.1 to 0.2 ppm", "0.3 to 0.4 ppm", "1.2 to 4 ppm", "6.5 to 8 ppm"],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 46,
+    "q": "In Sarda type fall, the length of the crest is kept _________ the bed width of the canal.",
+    "o": ["more than", "equal to", "less than", "all of these"],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 47,
+    "q": "The width and length of meander vary approximately with:",
+    "o": ["discharge", "square of discharge", "square root of discharge", "cube root of discharge"],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 48,
+    "q": "Floating gradients are generally provided:",
+    "o": ["along maximum gradients", "along minimum gradients", "at summit curves", "at valley curves"],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 49,
+    "q": "The road foundation for modern highway construction was developed by:",
+    "o": ["Tresaguet", "Telford", "Macadam", "Telford and Macadam simultaneously"],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 50,
+    "q": "Stainless steel contains:",
+    "o": [
+      "18% of chromium and 8% nickel",
+      "8% of chromium and 18% of nickel",
+      "12% of chromium and 36% of nickel",
+      "36% of chromium and 12% of nickel"
+    ],
+    "a": 0,
+    "e": "The most common grade of stainless steel, often referred to as 18/8 stainless steel, contains approximately 18% chromium and 8% nickel, providing excellent corrosion resistance."
+  }
+];
+
+// --- 10 + 10 DYNAMIC COMPLIMENTS ---
+const PRAISE = {
+    good: [
+        "Awesome, {name}!", "Wow {name}, you are a Genius!", "Fantastic job, {name}!", 
+        "Excellent work, {name}!", "You nailed it, {name}!", "Brilliant answer, {name}!", 
+        "You are on fire, {name}!", "Perfect, {name}!", "Spot on, {name}!", "Great job, {name}!"
+    ],
+    bad: [
+        "Don't give up, {name}!", "You can do this, {name}!", "Nice try {name}, keep going!", 
+        "Learn from this, {name}!", "Almost there, {name}!", "Keep pushing, {name}!", 
+        "Stay focused, {name}!", "You will get the next one, {name}!", "Mistakes help you grow, {name}!", 
+        "Shake it off {name}, try again!"
+    ]
+};
+
+const App = {
+    state: { user: null, quiz: [], curr: 0, score: 0, mistakes: [], timer: null, submitted: false },
+
+    save: (k, v) => { try { localStorage.setItem(k, v) } catch(e) {} },
+    load: (k) => { try { return localStorage.getItem(k) } catch(e) { return null } },
+
+    verifyAndLogin: () => {
+        const n = document.getElementById('inp-name').value.trim();
+        const q = document.getElementById('inp-qual').value;
+        const c = document.getElementById('inp-code').value.trim();
+        const msg = document.getElementById('auth-msg');
+        const btn = document.getElementById('btn-verify');
+
+        if(!n || !c) {
+            msg.innerText = "New Month Subscription started";
+            msg.style.display = 'block'; return;
+        }
+
+        AudioHelper.init(); // Warm up audio
+
+        btn.disabled = true; btn.innerText = "Verifying..."; msg.style.display = 'none';
+
+        fetch(`${CFG.authScript}?code=${c}&name=${n}&qual=${q}`)
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === 'success') {
+                document.getElementById('inp-pass').value = data.password;
+                App.state.user = { name: n, qual: q, code: c };
+                App.save(KEYS.user, JSON.stringify(App.state.user));
+                setTimeout(() => App.dash(), 800);
+            } else {
+                btn.disabled = false; btn.innerText = "Verify & Login";
+                msg.style.display = 'block'; msg.style.color = "#FF3366";
+                msg.innerHTML = data.message.includes("used") ? "Code already used or expired." : "Invalid Code";
+            }
+        })
+        .catch(() => {
+            btn.disabled = false; btn.innerText = "Verify & Login";
+            msg.style.display = 'block'; msg.innerText = "Connection Error";
+        });
+    },
+
+    dash: () => {
+        document.getElementById('title-display').innerText = CFG.topic;
+        document.getElementById('dash-topic-display').innerText = CFG.topic;
+        const stored = App.load(KEYS.user);
+        if(!stored) return;
+        App.state.user = JSON.parse(stored);
+        document.getElementById('greet-msg').innerText = `Namaste, ${App.state.user.name.split(' ')[0]}!`;
+        document.getElementById('view-login').classList.add('hidden');
+        document.getElementById('view-result').classList.add('hidden');
+        document.getElementById('view-dash').classList.remove('hidden');
+        
+        if(App.load(KEYS.sent)) {
+            document.getElementById('btn-start').innerText = "Retake (Practice Mode)";
+            document.getElementById('submitted-msg').style.display = 'block';
+            document.getElementById('submitted-msg').innerText = "✅ Previous Score Submitted";
+        } else {
+            document.getElementById('btn-start').innerText = "Start Exam";
+            document.getElementById('submitted-msg').style.display = 'none';
+        }
+        const m = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        document.getElementById('btn-review').style.display = m.length > 0 ? 'inline-block' : 'none';
+    },
+
+    start: (review) => {
+        AudioHelper.init(); // Warm up audio
+        App.state.curr = 0; App.state.score = 0; App.state.mistakes = []; App.state.submitted = false;
+        const prevM = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        const flatDB = DB.flat ? DB.flat() : DB;
+        let source = review ? flatDB.filter(q => prevM.includes(q.id)) : [...flatDB];
+        if(!source.length) return alert("No questions available.");
+
+        App.state.quiz = source.map(q => {
+            let opts = q.o.map((txt, i) => ({ t: txt, c: i === q.a }));
+            return { ...q, shuffledOpts: opts.sort(() => Math.random() - 0.5) };
+        }).sort(() => Math.random() - 0.5);
+
+        document.getElementById('view-dash').classList.add('hidden');
+        document.getElementById('view-quiz').classList.remove('hidden');
+        document.getElementById('q-total').innerText = App.state.quiz.length;
+        App.timer(45*60);
+        App.render();
+    },
+
+    render: () => {
+        const q = App.state.quiz[App.state.curr];
+        document.getElementById('q-idx').innerText = App.state.curr + 1;
+        document.getElementById('q-text').innerText = q.q;
+        document.getElementById('exp-box').style.display = 'none';
+        document.getElementById('btn-next').classList.add('hidden');
+        const list = document.getElementById('opts-list');
+        list.innerHTML = '';
+        q.shuffledOpts.forEach((opt, i) => {
+            const btn = document.createElement('div');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<div class="option-marker">${String.fromCharCode(65+i)}</div>${opt.t}`;
+            btn.onclick = () => App.check(btn, opt, q);
+            list.appendChild(btn);
+        });
+    },
+
+    check: (btn, opt, q) => {
+        const all = document.querySelectorAll('.option-btn');
+        all.forEach(b => { b.onclick = null; b.style.opacity = '0.7'; b.style.transform = 'scale(0.98)'; b.style.boxShadow = 'var(--clay-shadow-pressed)'; });
+        btn.style.opacity = '1';
+        btn.style.transform = 'scale(1.02)';
+        
+        const praise = document.getElementById('praise-txt');
+        praise.classList.remove('animate-praise');
+        void praise.offsetWidth; praise.classList.add('animate-praise');
+        const userName = App.state.user ? App.state.user.name.split(' ')[0] : 'Student';
+
+        if(opt.c) {
+            btn.classList.add('correct');
+            App.state.score++;
+            let rawTxt = PRAISE.good[Math.floor(Math.random()*PRAISE.good.length)];
+            let finalTxt = rawTxt.replace('{name}', userName);
+            praise.innerText = finalTxt;
+            praise.style.color = "#00C853";
+            AudioHelper.playTing();
+            AudioHelper.speak(finalTxt);
+            let m = JSON.parse(App.load(KEYS.mistakes) || "[]").filter(id => id !== q.id);
+            App.save(KEYS.mistakes, JSON.stringify(m));
+        } else {
+            btn.classList.add('wrong');
+            all.forEach((b, i) => { if(q.shuffledOpts[i].c) b.classList.add('correct'); });
+            App.state.mistakes.push(q.id);
+            let rawTxt = PRAISE.bad[Math.floor(Math.random()*PRAISE.bad.length)];
+            let finalTxt = rawTxt.replace('{name}', userName);
+            praise.innerText = finalTxt;
+            praise.style.color = "#FF3366";
+            AudioHelper.playFush();
+            AudioHelper.speak(finalTxt);
+        }
+
+        if(q.e) {
+            document.getElementById('exp-box').innerHTML = `<strong>Explanation:</strong> ${q.e}`;
+            document.getElementById('exp-box').style.display = 'block';
+        }
+        document.getElementById('btn-next').classList.remove('hidden');
+    },
+
+    next: () => {
+        App.state.curr++;
+        if(App.state.curr < App.state.quiz.length) App.render();
+        else App.finish();
+    },
+
+    timer: (sec) => {
+        if(App.state.timer) clearInterval(App.state.timer);
+        App.state.timer = setInterval(() => {
+            sec--;
+            let m = Math.floor(sec/60), s = sec%60;
+            document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
+            if(sec<=0) App.finish();
+        }, 1000);
+    },
+
+    finish: () => {
+        clearInterval(App.state.timer);
+        document.getElementById('view-quiz').classList.add('hidden');
+        document.getElementById('view-result').classList.remove('hidden');
+        let m = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        m = [...new Set([...m, ...App.state.mistakes])];
+        App.save(KEYS.mistakes, JSON.stringify(m));
+        const pct = Math.round((App.state.score / App.state.quiz.length) * 100);
+        document.getElementById('res-score').innerText = App.state.score;
+        document.getElementById('res-pct').innerText = `${pct}% Accuracy`;
+        App.sync();
+    },
+
+    sync: () => {
+        if(App.state.submitted || App.load(KEYS.sent)) return;
+        App.state.submitted = true;
+        const formData = new FormData();
+        formData.append("name", App.state.user.name);
+        formData.append("qualification", App.state.user.qual);
+        formData.append("examTitle", CFG.topic);
+        formData.append("score", App.state.score);
+        if(navigator.onLine) {
+            fetch(CFG.scoreScript, { method: 'POST', mode: 'no-cors', body: formData })
+            .then(() => {
+                App.save(KEYS.sent, "true");
+                document.getElementById('sync-status').innerText = "✅ Score Saved!";
+                document.getElementById('sync-status').style.color = "#00C853";
+            }).catch(() => App.offline(formData));
+        } else App.offline(formData);
+    },
+
+    offline: (d) => {
+        let p = JSON.parse(App.load(KEYS.pending) || "[]");
+        p.push(Object.fromEntries(d));
+        App.save(KEYS.pending, JSON.stringify(p));
+        document.getElementById('sync-status').innerText = "Saved offline.";
+    }
+};
+
+window.onload = () => { if(App.load(KEYS.user)) App.dash(); };
+</script>
+</body>
+</html>
