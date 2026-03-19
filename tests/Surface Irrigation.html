@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Irrigation Methods - Loksewa Engineering Study Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom scrollbar for the navigation */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border-radius: 0.5rem;
+            background-color: #e5e7eb; /* Light gray base for soil */
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans h-screen flex flex-col overflow-hidden">
+
+    <!-- Header -->
+    <header class="bg-blue-700 text-white shadow-md z-10 shrink-0">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold">Irrigation Methods Animator</h1>
+                <p class="text-blue-200 text-sm">Top-View Visualizations for Loksewa Exams</p>
+            </div>
+            <div class="mt-2 sm:mt-0 bg-blue-800 px-3 py-1 rounded-full text-xs font-semibold tracking-wide shadow-inner">
+                Prof. Engineering Series
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col md:flex-row overflow-hidden max-w-7xl mx-auto w-full">
+        
+        <!-- Sidebar / Top Nav for Methods -->
+        <nav class="md:w-64 bg-white shadow-md flex-shrink-0 flex md:flex-col overflow-x-auto md:overflow-y-auto no-scrollbar p-2 border-r border-gray-200 z-10">
+            <div class="md:text-sm text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 hidden md:block px-3 pt-2">Select Method</div>
+            <div id="nav-buttons" class="flex md:flex-col gap-2 p-1">
+                <!-- Buttons injected by JS -->
+            </div>
+        </nav>
+
+        <!-- Visualization and Notes Area -->
+        <div class="flex-1 flex flex-col overflow-y-auto bg-gray-50 relative">
+            
+            <!-- Canvas Container -->
+            <div class="p-4 md:p-6 shrink-0 flex justify-center items-center bg-gray-100 border-b border-gray-200 shadow-inner" style="min-height: 350px;">
+                <div class="w-full max-w-2xl aspect-video relative rounded-lg shadow-lg border-4 border-white bg-white">
+                    <canvas id="irrigationCanvas"></canvas>
+                    <div class="absolute top-2 left-2 bg-black/60 text-white px-2 py-1 text-xs rounded uppercase tracking-wider">Top View</div>
+                    <button id="replayBtn" class="absolute bottom-2 right-2 bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full shadow-md transition-transform transform hover:scale-105 active:scale-95" title="Replay Animation">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Notes Section -->
+            <div class="p-4 md:p-8 max-w-4xl mx-auto w-full pb-20">
+                <h2 id="note-title" class="text-3xl font-bold text-gray-800 mb-4 border-b-2 border-blue-500 pb-2">Method Title</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                            <h3 class="text-sm font-bold text-blue-600 uppercase mb-1">Short Description</h3>
+                            <p id="note-desc" class="text-gray-700 text-sm leading-relaxed"></p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                            <h3 class="text-sm font-bold text-green-600 uppercase mb-1">Suitability</h3>
+                            <p id="note-suitability" class="text-gray-700 text-sm font-medium"></p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                            <h3 class="text-sm font-bold text-purple-600 uppercase mb-1">Main Feature</h3>
+                            <p id="note-feature" class="text-gray-700 text-sm"></p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="bg-green-50 p-4 rounded-lg shadow-sm border border-green-100">
+                            <h3 class="text-sm font-bold text-green-700 uppercase mb-1 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                Advantages
+                            </h3>
+                            <ul id="note-adv" class="list-disc pl-5 text-sm text-gray-800 space-y-1"></ul>
+                        </div>
+                        <div class="bg-red-50 p-4 rounded-lg shadow-sm border border-red-100">
+                            <h3 class="text-sm font-bold text-red-700 uppercase mb-1 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                Disadvantages
+                            </h3>
+                            <ul id="note-disadv" class="list-disc pl-5 text-sm text-gray-800 space-y-1"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- DATA DEFINITION ---
+        const methodsData = [
+            {
+                id: 'wild',
+                title: 'A. Wild Flooding',
+                desc: 'Water is spread over smooth or flat land without much control or prior land preparation. It flows by gravity following the natural slope of the land.',
+                suitability: 'Pastures, forage crops, and areas where water is abundant and inexpensive.',
+                feature: 'No systematic earthworks (like bunds or ridges) are constructed to guide the water.',
+                adv: [
+                    'Requires minimal land preparation.',
+                    'Very low initial cost and labor.',
+                    'Can be used for irregular topographies.'
+                ],
+                disadv: [
+                    'Extremely low application efficiency (20-30%).',
+                    'Wastage of huge amounts of water.',
+                    'Uneven distribution (some parts over-irrigated, others dry).'
+                ]
+            },
+            {
+                id: 'border',
+                title: 'B. Border Strip Method',
+                desc: 'The land is divided into long, narrow strips (10-20m wide, 100-300m long) separated by low earth ridges (borders). Water is turned into the upper end and flows slowly as a sheet toward the lower end.',
+                suitability: 'Close-growing crops like wheat, barley, and alfalfa. Suitable for soils with moderate infiltration rates.',
+                feature: 'Controlled sheet flow of water advancing down a uniformly sloped strip.',
+                adv: [
+                    'Higher efficiency than wild flooding.',
+                    'Uniform wetting of the soil profile.',
+                    'Easy to operate once constructed.'
+                ],
+                disadv: [
+                    'Requires careful land leveling.',
+                    'Not suitable for very sandy soils (high infiltration) or heavy clay soils.',
+                    'Initial cost of grading and constructing borders.'
+                ]
+            },
+            {
+                id: 'check',
+                title: 'C. Check Basin Method',
+                desc: 'The land is divided into relatively level, square, or rectangular plots surrounded by small banks (bunds/levees). Water is filled into these basins and allowed to infiltrate.',
+                suitability: 'Crops that require standing water, heavily used for Rice (Paddy) in the Terai region.',
+                feature: 'Water is ponded in confined areas, ensuring deep percolation without surface runoff.',
+                adv: [
+                    'Prevents soil erosion entirely.',
+                    'High water application efficiency if basins are leveled.',
+                    'Excellent for leaching salts from the soil.'
+                ],
+                disadv: [
+                    'Interferes with the movement of modern agricultural machinery.',
+                    'Considerable land is wasted by the bunds/levees.',
+                    'Labor intensive to construct and maintain bunds.'
+                ]
+            },
+            {
+                id: 'basin',
+                title: 'D. Basin Method (Trees)',
+                desc: 'A special type of check basin where a circular or square basin is constructed around individual trees or groups of trees. Water is supplied via a main channel connecting to these individual basins.',
+                suitability: 'Specifically designed for Orchards and fruit trees (apples, oranges, mangoes).',
+                feature: 'Water is concentrated only around the root zone of the specific tree, leaving inter-tree spaces dry.',
+                adv: [
+                    'Saves a significant amount of water compared to flooding the whole orchard.',
+                    'Reduces weed growth in the spaces between trees.',
+                    'Protects tree trunks from diseases caused by continuous contact with water.'
+                ],
+                disadv: [
+                    'Can be labor-intensive to shape the basins manually.',
+                    'Not suitable for dense, closely planted crops.'
+                ]
+            },
+            {
+                id: 'furrow',
+                title: 'E. Furrow Method',
+                desc: 'Water is applied in small, shallow channels (furrows) excavated between crop rows. Water infiltrates laterally and downwards to reach the root zone.',
+                suitability: 'Row crops like sugarcane, maize, potato, cotton, and vegetables.',
+                feature: 'Only 20% to 50% of the land surface is wetted, as crops are planted on the dry ridges between furrows.',
+                adv: [
+                    'Significantly reduces evaporation losses.',
+                    'Prevents puddling and crusting of the soil surface.',
+                    'Ideal for crops that cannot withstand standing water at their stems.'
+                ],
+                disadv: [
+                    'Requires skilled labor to regulate water flow in multiple furrows simultaneously.',
+                    'Risk of salt accumulation on the ridges in arid regions.'
+                ]
+            },
+            {
+                id: 'contour',
+                title: 'F. Contour Farming',
+                desc: 'Tillage, planting, and irrigation operations are performed along the natural contours of sloped land rather than up and down the hill.',
+                suitability: 'Hilly and mountainous terrains (like Nepal\'s mid-hills) with significant slopes.',
+                feature: 'Furrows or borders follow constant elevation lines, acting as mini-terraces to slow down water flow.',
+                adv: [
+                    'Dramatically reduces soil erosion on slopes.',
+                    'Increases water infiltration time by slowing runoff.',
+                    'Conserves moisture in rainfed and irrigated areas alike.'
+                ],
+                disadv: [
+                    'Complex to layout and requires topographical surveys.',
+                    'Awkward to operate large machinery due to curved, non-parallel rows.',
+                    'Heavy rainfall can cause contour bunds to break, leading to severe gully erosion.'
+                ]
+            }
+        ];
+
+        // --- APP STATE ---
+        let currentMethodIndex = 0;
+        let animationProgress = 0;
+        let animationId;
+        const canvas = document.getElementById('irrigationCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // --- UI INITIALIZATION ---
+        function initUI() {
+            const navContainer = document.getElementById('nav-buttons');
+            methodsData.forEach((method, index) => {
+                const btn = document.createElement('button');
+                btn.className = `text-left px-4 py-3 md:py-2 md:px-3 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${index === 0 ? 'bg-blue-100 text-blue-700 shadow-sm border border-blue-200' : 'text-gray-600 hover:bg-gray-100'}`;
+                btn.innerText = method.title;
+                btn.onclick = () => selectMethod(index, btn);
+                navContainer.appendChild(btn);
+            });
+            
+            document.getElementById('replayBtn').addEventListener('click', () => {
+                animationProgress = 0;
+            });
+
+            updateNotes(0);
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            requestAnimationFrame(drawLoop);
+        }
+
+        function selectMethod(index, btnElement) {
+            currentMethodIndex = index;
+            animationProgress = 0; // Reset animation
+
+            // Update button styles
+            const buttons = document.getElementById('nav-buttons').children;
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].className = 'text-left px-4 py-3 md:py-2 md:px-3 rounded-md text-sm font-medium transition-colors whitespace-nowrap text-gray-600 hover:bg-gray-100';
+            }
+            btnElement.className = 'text-left px-4 py-3 md:py-2 md:px-3 rounded-md text-sm font-medium transition-colors whitespace-nowrap bg-blue-100 text-blue-700 shadow-sm border border-blue-200';
+
+            updateNotes(index);
+        }
+
+        function updateNotes(index) {
+            const data = methodsData[index];
+            document.getElementById('note-title').innerText = data.title;
+            document.getElementById('note-desc').innerText = data.desc;
+            document.getElementById('note-suitability').innerText = data.suitability;
+            document.getElementById('note-feature').innerText = data.feature;
+            
+            const advList = document.getElementById('note-adv');
+            advList.innerHTML = '';
+            data.adv.forEach(item => {
+                const li = document.createElement('li');
+                li.innerText = item;
+                advList.appendChild(li);
+            });
+
+            const disadvList = document.getElementById('note-disadv');
+            disadvList.innerHTML = '';
+            data.disadv.forEach(item => {
+                const li = document.createElement('li');
+                li.innerText = item;
+                disadvList.appendChild(li);
+            });
+        }
+
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            // High DPI support for crisp canvas
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+            canvas.style.width = `${rect.width}px`;
+            canvas.style.height = `${rect.height}px`;
+        }
+
+        // --- ANIMATION LOGIC ---
+        
+        // Colors
+        const colSoil = '#eab308'; // Yellowish brown
+        const colCrop = '#22c55e'; // Green
+        const colWater = 'rgba(59, 130, 246, 0.7)'; // Translucent Blue
+        const colChannel = '#64748b'; // Slate gray for supply channels
+        
+        function drawSupplyChannel(w, h, isVertical = false) {
+            ctx.fillStyle = colChannel;
+            if (isVertical) {
+                ctx.fillRect(10, 10, 30, h - 20); // Left vertical channel
+                ctx.fillStyle = colWater;
+                ctx.fillRect(12, 12, 26, h - 24);
+            } else {
+                ctx.fillRect(10, 10, w - 20, 30); // Top horizontal channel
+                ctx.fillStyle = colWater;
+                ctx.fillRect(12, 12, w - 24, 26);
+            }
+        }
+
+        function drawLoop() {
+            const w = canvas.width / (window.devicePixelRatio || 1);
+            const h = canvas.height / (window.devicePixelRatio || 1);
+            
+            ctx.clearRect(0, 0, w, h);
+            
+            // Base soil
+            ctx.fillStyle = '#fef3c7'; // Light soil color
+            ctx.fillRect(0, 0, w, h);
+
+            // Increment progress (loops every ~4 seconds at 60fps)
+            animationProgress += 0.003;
+            if (animationProgress > 1.2) animationProgress = 0; // slight pause at end
+
+            const p = Math.min(Math.max(animationProgress, 0), 1); // Clamp 0 to 1
+
+            const methodId = methodsData[currentMethodIndex].id;
+
+            switch(methodId) {
+                case 'wild': drawWildFlooding(w, h, p); break;
+                case 'border': drawBorderStrip(w, h, p); break;
+                case 'check': drawCheckBasin(w, h, p); break;
+                case 'basin': drawBasinMethod(w, h, p); break;
+                case 'furrow': drawFurrowMethod(w, h, p); break;
+                case 'contour': drawContourFarming(w, h, p); break;
+            }
+
+            requestAnimationFrame(drawLoop);
+        }
+
+        // 1. Wild Flooding
+        function drawWildFlooding(w, h, p) {
+            drawSupplyChannel(w, h, true); // Left channel
+            
+            // Random-looking spread of water
+            ctx.fillStyle = 'rgba(59, 130, 246, 0.6)';
+            ctx.beginPath();
+            ctx.moveTo(40, 20);
+            
+            // Generate a blob that grows horizontally based on p
+            let maxW = (w - 50) * p;
+            
+            ctx.lineTo(40 + maxW * 0.8, 20);
+            ctx.quadraticCurveTo(40 + maxW, h*0.3, 40 + maxW * 0.6, h*0.5);
+            ctx.quadraticCurveTo(40 + maxW * 1.1, h*0.7, 40 + maxW * 0.9, h - 20);
+            ctx.lineTo(40, h - 20);
+            ctx.fill();
+
+            // Draw some random vegetation patches indicating pasture
+            ctx.fillStyle = 'rgba(34, 197, 94, 0.4)';
+            for(let i=0; i<10; i++) {
+                ctx.beginPath();
+                ctx.arc(80 + (i*30)%(w-100), 50 + (i*50)%(h-100), 20 + (i*5)%15, 0, Math.PI*2);
+                ctx.fill();
+            }
+        }
+
+        // 2. Border Strip
+        function drawBorderStrip(w, h, p) {
+            drawSupplyChannel(w, h, false); // Top channel
+            
+            const numStrips = 5;
+            const startY = 40;
+            const endY = h - 20;
+            const stripW = (w - 40) / numStrips;
+            const startX = 20;
+
+            for (let i = 0; i < numStrips; i++) {
+                const x = startX + i * stripW;
+                
+                // Draw crop area (greenish)
+                ctx.fillStyle = '#dcfce7';
+                ctx.fillRect(x + 2, startY, stripW - 4, endY - startY);
+                
+                // Draw Ridges (Borders)
+                ctx.fillStyle = '#854d0e';
+                ctx.fillRect(x, startY, 2, endY - startY);
+                if (i === numStrips - 1) ctx.fillRect(x + stripW - 2, startY, 2, endY - startY);
+
+                // Draw Water Flow
+                // Different strips advance slightly differently for realism
+                let stripP = Math.max(0, p - (i * 0.05));
+                let currentLen = (endY - startY) * Math.min(1, stripP * 1.5); // speed up slightly
+
+                if (currentLen > 0) {
+                    ctx.fillStyle = colWater;
+                    ctx.fillRect(x + 2, startY, stripW - 4, currentLen);
+                }
+            }
+        }
+
+        // 3. Check Basin
+        function drawCheckBasin(w, h, p) {
+            const startY = 20;
+            const startX = 20;
+            const basinW = (w - 60) / 4;
+            const basinH = (h - 60) / 3;
+
+            // Draw Central/Side Supply Channels
+            ctx.fillStyle = colChannel;
+            ctx.fillRect(startX, startY, w-40, 15); // Top main
+            ctx.fillStyle = colWater;
+            ctx.fillRect(startX+2, startY+2, w-44, 11);
+
+            // Draw Basins Grid
+            for (let row = 0; row < 3; row++) {
+                for (let col = 0; col < 4; col++) {
+                    const bx = startX + col * (basinW + 5);
+                    const by = startY + 20 + row * (basinH + 5);
+
+                    // Bunds
+                    ctx.fillStyle = '#a16207';
+                    ctx.fillRect(bx, by, basinW, basinH);
+                    
+                    // Soil Inside
+                    ctx.fillStyle = '#fef08a';
+                    ctx.fillRect(bx + 3, by + 3, basinW - 6, basinH - 6);
+
+                    // Sequence fill calculation (fill top row first, etc)
+                    const basinIndex = row * 4 + col;
+                    const totalBasins = 12;
+                    const fillThreshold = basinIndex / totalBasins;
+                    
+                    if (p > fillThreshold) {
+                        const fillAlpha = Math.min(1, (p - fillThreshold) * 5); // quick fill
+                        ctx.fillStyle = `rgba(59, 130, 246, ${fillAlpha * 0.8})`;
+                        ctx.fillRect(bx + 3, by + 3, basinW - 6, basinH - 6);
+                    }
+                }
+            }
+        }
+
+        // 4. Basin Method (Trees)
+        function drawBasinMethod(w, h, p) {
+            drawSupplyChannel(w, h, true); // Left Channel
+
+            const treeRows = 2;
+            const treeCols = 4;
+            const startX = 80;
+            const startY = 50;
+            const spacingX = (w - 120) / (treeCols - 1);
+            const spacingY = (h - 100) / (treeRows - 1);
+
+            for (let r = 0; r < treeRows; r++) {
+                // Lateral channel to the row
+                const cy = startY + r * spacingY;
+                ctx.fillStyle = colChannel;
+                ctx.fillRect(40, cy - 5, w - 80, 10);
+                
+                // Water in lateral channel
+                let lateralP = p * 1.5; 
+                let latWidth = Math.min(w - 80, (w - 80) * lateralP);
+                ctx.fillStyle = colWater;
+                ctx.fillRect(40, cy - 3, latWidth, 6);
+
+                for (let c = 0; c < treeCols; c++) {
+                    const tx = startX + c * spacingX;
+                    
+                    // Ring Basin Bund
+                    ctx.beginPath();
+                    ctx.arc(tx, cy, 25, 0, Math.PI*2);
+                    ctx.strokeStyle = '#a16207';
+                    ctx.lineWidth = 4;
+                    ctx.stroke();
+
+                    // Soil in ring
+                    ctx.beginPath();
+                    ctx.arc(tx, cy, 23, 0, Math.PI*2);
+                    ctx.fillStyle = '#fef08a';
+                    ctx.fill();
+
+                    // Water filling ring
+                    // Only fill if lateral channel has reached this tree
+                    const treeReachP = (tx - 40) / (w - 80);
+                    if (lateralP > treeReachP) {
+                        let fillAlpha = Math.min(1, (lateralP - treeReachP) * 5);
+                        ctx.beginPath();
+                        ctx.arc(tx, cy, 23, 0, Math.PI*2);
+                        ctx.fillStyle = `rgba(59, 130, 246, ${fillAlpha * 0.8})`;
+                        ctx.fill();
+                    }
+
+                    // Tree Canopy
+                    ctx.beginPath();
+                    ctx.arc(tx, cy, 12, 0, Math.PI*2);
+                    ctx.fillStyle = '#15803d'; // Dark green tree
+                    ctx.fill();
+                    
+                    // Small connection ditch
+                    ctx.fillStyle = '#a16207';
+                    ctx.fillRect(tx - 35, cy - 3, 10, 6);
+                    if (lateralP > treeReachP) {
+                        ctx.fillStyle = colWater;
+                        ctx.fillRect(tx - 35, cy - 2, 10, 4);
+                    }
+                }
+            }
+        }
+
+        // 5. Furrow Method
+        function drawFurrowMethod(w, h, p) {
+            drawSupplyChannel(w, h, false); // Top channel
+
+            const startY = 40;
+            const endY = h - 20;
+            const furrowCount = 10;
+            const fWidth = (w - 40) / furrowCount;
+            const startX = 20;
+
+            for (let i = 0; i < furrowCount; i++) {
+                const x = startX + i * fWidth;
+                
+                // Ridge (Elevated soil with crops)
+                ctx.fillStyle = '#a16207'; // Brown ridge
+                ctx.fillRect(x, startY, fWidth * 0.6, endY - startY);
+                
+                // Crops on ridge
+                ctx.fillStyle = '#22c55e';
+                for(let cY = startY + 10; cY < endY; cY += 20) {
+                    ctx.beginPath();
+                    ctx.arc(x + (fWidth * 0.3), cY, 5, 0, Math.PI*2);
+                    ctx.fill();
+                }
+
+                // Furrow (Trench for water)
+                const furX = x + fWidth * 0.6;
+                const furW = fWidth * 0.4;
+                ctx.fillStyle = '#eab308'; // Base soil of furrow
+                ctx.fillRect(furX, startY, furW, endY - startY);
+
+                // Water advancing in furrow
+                let currentLen = (endY - startY) * Math.min(1, p * 1.2); 
+                if (currentLen > 0) {
+                    ctx.fillStyle = colWater;
+                    ctx.fillRect(furX, startY, furW, currentLen);
+                    
+                    // Lateral wetting pattern (seeping into ridge)
+                    const wetP = Math.min(1, (currentLen / (endY - startY)) * p);
+                    ctx.fillStyle = 'rgba(59, 130, 246, 0.2)';
+                    ctx.fillRect(x + fWidth * 0.4, startY, fWidth * 0.2, currentLen);
+                }
+            }
+        }
+
+        // 6. Contour Farming
+        function drawContourFarming(w, h, p) {
+            drawSupplyChannel(w, h, true); // Left Channel simulating hillside source
+            
+            ctx.lineWidth = 15;
+            const startX = 40;
+            
+            // Draw 4 contour curves
+            for (let i = 0; i < 4; i++) {
+                const yOffset = i * (h / 5) + 40;
+                
+                // Path points for contour
+                const points = [
+                    {x: startX, y: yOffset},
+                    {x: startX + w*0.3, y: yOffset - 30},
+                    {x: startX + w*0.6, y: yOffset + 20},
+                    {x: w - 20, y: yOffset - 10}
+                ];
+
+                // Draw Ridge
+                ctx.beginPath();
+                ctx.moveTo(points[0].x, points[0].y);
+                ctx.bezierCurveTo(points[1].x, points[1].y, points[2].x, points[2].y, points[3].x, points[3].y);
+                ctx.strokeStyle = '#a16207';
+                ctx.stroke();
+
+                // Draw Crops
+                ctx.beginPath();
+                ctx.moveTo(points[0].x, points[0].y - 5);
+                ctx.bezierCurveTo(points[1].x, points[1].y - 5, points[2].x, points[2].y - 5, points[3].x, points[3].y - 5);
+                ctx.strokeStyle = '#22c55e';
+                ctx.setLineDash([10, 15]);
+                ctx.lineWidth = 8;
+                ctx.stroke();
+                ctx.setLineDash([]); // Reset dash
+                ctx.lineWidth = 15; // Reset width
+
+                // Draw Water Flowing along furrow/contour
+                // To animate water along a bezier, we approximate by drawing a partial curve based on 'p'
+                // For simplicity in canvas, we'll use a clipping trick or approximate line segments
+                
+                // Using a linear approximation to draw partial water
+                let drawP = Math.min(1, p * 1.2 - (i*0.1)); // staggered start
+                if (drawP > 0) {
+                    ctx.beginPath();
+                    ctx.moveTo(points[0].x, points[0].y + 8); // Water slightly below ridge
+                    
+                    // Simple approximation of the bezier progress
+                    let curX = points[0].x + (points[3].x - points[0].x) * drawP;
+                    
+                    // Draw a curve up to curX (simplified for animation visual)
+                    // We use an intermediate control point based on P
+                    let cp1x = points[0].x + (points[1].x - points[0].x) * drawP;
+                    let cp1y = points[0].y + (points[1].y - points[0].y) * drawP;
+                    let cp2x = points[0].x + (points[2].x - points[0].x) * drawP;
+                    let cp2y = points[0].y + (points[2].y - points[0].y) * drawP;
+                    
+                    // Actually, for a precise partial bezier, it's complex. Let's do a trick: draw full water curve, but clip it with a growing rectangle.
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.rect(startX, 0, (w - startX) * drawP, h);
+                    ctx.clip();
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(points[0].x, points[0].y + 8);
+                    ctx.bezierCurveTo(points[1].x, points[1].y + 8, points[2].x, points[2].y + 8, points[3].x, points[3].y + 8);
+                    ctx.strokeStyle = colWater;
+                    ctx.lineWidth = 6;
+                    ctx.stroke();
+                    
+                    ctx.restore();
+                }
+            }
+        }
+
+        // Initialize App
+        window.onload = initUI;
+
+    </script>
+</body>
+</html>
+
