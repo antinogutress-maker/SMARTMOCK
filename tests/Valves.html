@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loksewa Master Guide: Animated Valves</title>
+    <style>
+        :root {
+            --primary: #0984e3;
+            --secondary: #2d3436;
+            --bg-color: #f5f6fa;
+            --card-bg: #ffffff;
+            --pipe-color: #b2bec3;
+            --water-color: #74b9ff;
+            --valve-body: #636e72;
+            --silt-color: #b08d6a;
+            --danger-color: #d63031;
+            --safe-color: #00b894;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--secondary);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            max-width: 800px;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 2.2em;
+        }
+
+        .header p {
+            color: #636e72;
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            width: 100%;
+            max-width: 850px;
+        }
+
+        .valve-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            border-left: 5px solid var(--primary);
+        }
+
+        .valve-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .animation-container {
+            flex: 0 0 160px;
+            height: 160px;
+            background-color: #dfe6e9;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 30px;
+            overflow: hidden;
+            border: 2px solid #b2bec3;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .details {
+            flex: 1;
+        }
+
+        .title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--secondary);
+            margin: 0 0 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .badge {
+            font-size: 0.5em;
+            background-color: var(--primary);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: normal;
+        }
+
+        .info-group {
+            margin-bottom: 10px;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 0.85em;
+            text-transform: uppercase;
+        }
+
+        .info-text {
+            margin: 2px 0 0 0;
+            font-size: 1.05em;
+            line-height: 1.5;
+        }
+
+        /* --- SVG Animations --- */
+        @keyframes flow {
+            from { stroke-dashoffset: 40; }
+            to { stroke-dashoffset: 0; }
+        }
+
+        @keyframes reverseFlow {
+            from { stroke-dashoffset: 0; }
+            to { stroke-dashoffset: 40; }
+        }
+
+        /* Gate Valve Keyframes */
+        @keyframes gateDrop {
+            0%, 20% { transform: translateY(0); } /* Open */
+            40%, 70% { transform: translateY(35px); } /* Closed */
+            90%, 100% { transform: translateY(0); } /* Open */
+        }
+        @keyframes gateWaterBlock {
+            0%, 25% { opacity: 1; stroke-dasharray: 10 10; } /* Flowing */
+            35%, 75% { opacity: 0; stroke-dasharray: 0; } /* Blocked */
+            85%, 100% { opacity: 1; stroke-dasharray: 10 10; } /* Flowing */
+        }
+
+        /* Globe Valve Keyframes */
+        @keyframes globeThrottle {
+            0%, 20% { transform: translateY(0); } /* Open */
+            40%, 70% { transform: translateY(18px); } /* Throttled (partially closed) */
+            90%, 100% { transform: translateY(0); } /* Open */
+        }
+        @keyframes throttleFlow {
+            0%, 25% { stroke-width: 15; stroke-dasharray: 15 15; } /* Full flow */
+            40%, 75% { stroke-width: 5; stroke-dasharray: 5 15; } /* Throttled flow */
+            90%, 100% { stroke-width: 15; stroke-dasharray: 15 15; } /* Full flow */
+        }
+
+        /* Air Valve Keyframes */
+        @keyframes bubbleRise {
+            0% { transform: translateY(0); opacity: 0; }
+            20% { transform: translateY(-10px); opacity: 1; }
+            80% { transform: translateY(-40px); opacity: 1; }
+            100% { transform: translateY(-50px); opacity: 0; }
+        }
+        @keyframes airRelease {
+            0%, 70% { transform: translateY(0); } /* Closed */
+            80%, 90% { transform: translateY(-5px); } /* Pop open */
+            100% { transform: translateY(0); }
+        }
+
+        /* Wash-out Valve Keyframes */
+        @keyframes siltAccumulate {
+            0% { transform: scaleY(0.2); opacity: 1; }
+            40% { transform: scaleY(1); opacity: 1; }
+            50%, 100% { transform: scaleY(0); opacity: 0; }
+        }
+        @keyframes scourOpen {
+            0%, 45% { transform: translateX(0); } /* Closed */
+            50%, 80% { transform: translateX(15px); } /* Open */
+            85%, 100% { transform: translateX(0); } /* Closed */
+        }
+        @keyframes scourFlush {
+            0%, 45% { opacity: 0; stroke-dashoffset: 40; }
+            50%, 80% { opacity: 1; stroke-dashoffset: 0; }
+            85%, 100% { opacity: 0; stroke-dashoffset: 40; }
+        }
+
+        /* Check Valve Keyframes */
+        @keyframes checkFlowDir {
+            0%, 45% { stroke-dashoffset: 40; opacity: 1; stroke: var(--water-color); } /* Forward */
+            50%, 95% { stroke-dashoffset: -40; opacity: 0.3; stroke: var(--danger-color); } /* Reverse attempt */
+        }
+        @keyframes flapSwing {
+            0%, 40% { transform: rotate(-45deg); } /* Open for forward flow */
+            45%, 100% { transform: rotate(0deg); } /* Slam shut for reverse */
+        }
+
+        /* Float Valve Keyframes */
+        @keyframes tankFill {
+            0%, 10% { height: 20px; y: 150; }
+            40%, 70% { height: 70px; y: 100; }
+            90%, 100% { height: 20px; y: 150; }
+        }
+        @keyframes floatRise {
+            0%, 10% { transform: translateY(50px) rotate(0deg); }
+            40%, 70% { transform: translateY(0px) rotate(-15deg); }
+            90%, 100% { transform: translateY(50px) rotate(0deg); }
+        }
+        @keyframes inletStop {
+            0%, 30% { opacity: 1; }
+            40%, 80% { opacity: 0; }
+            90%, 100% { opacity: 1; }
+        }
+
+        /* PRV Keyframes */
+        @keyframes prvRegulate {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(0.8); }
+        }
+
+        @media (max-width: 768px) {
+            .valve-card {
+                flex-direction: column;
+                text-align: center;
+                padding: 20px;
+            }
+            .animation-container {
+                margin-right: 0;
+                margin-bottom: 20px;
+                width: 100%;
+                max-width: 250px;
+            }
+            .title {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Animated Valves Guide</h1>
+        <p>Master the internal mechanics, functions, and locations of water supply valves for your Loksewa exams. Watch how they interact with the flow.</p>
+    </div>
+
+    <div class="container">
+
+        <!-- Gate Valve -->
+        <div class="valve-card">
+            <div class="animation-container">
+                <svg viewBox="0 0 200 200" width="100%" height="100%">
+                    <!-- Pipe -->
+                    <rect x="0" y="80" width="200" height="40" fill="var(--pipe-color)" />
+                    <!-- Water flow behind gate -->
+                    <line x1="0" y1="100" x2="200" y2="100" stroke="var(--water-color)" stroke-width="15" class="flow-line" style="animation: gateWaterBlock 6s infinite;" />
+                    <!-- Valve Body Housing -->
+                    <rect x="70" y="30" width="60" height="60" fill="var(--valve-body)" />
+                    <!-- Moving Gate -->
+                    <rect x="85" y="40" width="30" height="45" fill="#2d3436" style="animation: gateDrop 6s infinite;" />
+                    <!-- Gate Handle/Stem -->
+                    <line x1="100" y1="40" x2="100" y2="20" stroke="#2d3436" stroke-width="6" style="animation: gateDrop 6s infinite;" />
+                    <line x1="80" y1="20" x2="120" y2="20" stroke="#2d3436" stroke-width="8" stroke-linecap="round" style="animation: gateDrop 6s infinite;" />
+                </svg>
+            </div>
+            <div class="details">
+                <div class="title">Gate Valve <span class="badge">Sluice Valve</span></div>
+                <div class="info-group">
+                    <div class="info-label">Primary Function</div>
+                    <p class="info-text">To completely shut off or start the flow for repairs. <em>(Notice how the gate drops to block the entire pipe section.)</em></p>
+                </div>
+                <div class="info-group">
+                    <div class="info-label">Ideal Location</div>
+                    <p class="info-text">At the start of main lines and at branch junctions.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Globe Valve -->
+        <div class="valve-card">
+            <div class="animation-container">
+                <svg viewBox="0 0 200 200" width="100%" height="100%">
+                    <!-- Pipe -->
+                    <rect x="0" y="80" width="200" height="40" fill="var(--pipe-color)" />
+                    <!-- Internal Baffle (Z shape) -->
+                    <path d="M 80,80 L 100,100 L 120,80 M 80,120 L 100,100 L 120,120" stroke="var(--valve-body)" stroke-width="10" fill="none" />
+                    <!-- Throttled Water flow -->
+                    <path d="M 0,100 L 80,100 L 100,85 L 120,100 L 200,100" fill="none" stroke="var(--water-color)" class="flow-line" style="animation: throttleFlow 6s infinite;" />
+                    <!-- Valve Plug -->
+                    <circle cx="100" cy="70" r="15" fill="#2d3436" style="animation: globeThrottle 6s infinite;" />
+                    <line x1="100" y1="70" x2="100" y2="30" stroke="#2d3436" stroke-width="6" style="animation: globeThrottle 6s infinite;" />
+                    <!-- Valve Top -->
+                    <rect x="80" y="30" width="40" height="10" fill="var(--valve-body)" />
+                </svg>
+            </div>
+            <div class="details">
+                <div class="title">Globe Valve</div>
+                <div class="info-group">
+                    <div class="info-label">Primary Function</div>
+                    <p class="info-text">To "throttle" or regulate the flow rate. <em>(The plug partially closes, squeezing the water path and slowing the flow.)</em></p>
+                </div>
+                <div class="info-group">
+                    <div class="info-label">Ideal Location</div>
+                    <p class="info-text">Used where precise flow control is needed (e.g., public tap stands).</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Air Release Valve -->
+        <div class="valve-card">
+            <div class="animation-container">
+                <svg viewBox="0 0 200 200" width="100%" height="100%">
+                    <!-- Summit Pipe Profile -->
+                    <path d="M 0,130 Q 100,70 200,130" fill="none" stroke="var(--pipe-color)" stroke-width="40" />
+                    <path d="M 0,130 Q 100,70 200,130" fill="none" stroke="var(--water-color)" stroke-width="15" class="flow-line" />
+                    <!-- Valve Chamber -->
+                    <rect x="85" y="20" width="30" height="45" rx="5" fill="var(--valve-body)" />
+                    <line x1="100" y1="65" x2="100" y2="85" stroke="var(--valve-body)" stroke-width="15" />
+                    <!-- Internal Float/Plug -->
+                    <circle cx="100" cy="35" r="8" fill="#fdcb6e" style="animation: airRelease 3s infinite;" />
+                    <rect x="95" y="15" width="10" height="5" fill="#2d3436" />
+                    <!-- Air Bubbles Rising -->
+                    <g style="animation: bubbleRise 3s infinite;">
+                        <circle cx="95" cy="110" r="3" fill="#fff" />
+                        <circle cx="105" cy="100" r="4" fill="#fff" />
+                        <circle cx="100" cy="90" r="2.5" fill="#fff" />
+                    </g>
+                    <g style="animation: bubbleRise 3s infinite 1s;">
+                        <circle cx="102" cy="110" r="2" fill="#fff" />
+                        <circle cx="98" cy="95" r="5" fill="#fff" />
+                    </g>
+                </svg>
+            </div>
+            <div class="details">
+                <div class="title">Air Release Valve</div>
+                <div class="info-group">
+                    <div class="info-label">Primary Function</div>
+                    <p class="info-text">To release trapped air pockets that cause "air locks." <em>(Air bubbles gather at the peak, pushing the float down to vent air to the atmosphere.)</em></p>
+                </div>
+                <div class="info-group">
+                    <div class="info-label">Ideal Location</div>
+                    <p class="info-text">At all <strong>summits (highest points)</strong> of the pipeline profile.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wash-out (Scour) Valve -->
+        <div class="valve-card">
+            <div class="animation-container">
+                <svg viewBox="0 0 200 200" width="100%" height="100%">
+                    <!-- Depression Pipe Profile -->
+                    <path d="M 0,70 Q 100,130 200,70" fill="none" stroke="var(--pipe-color)" stroke-width="40" />
+                    <path d="M 0,70 Q 100,130 200,70" fill="none" stroke="var(--water-color)" stroke-width="15" class="flow-line" />
+                    <!-- Scour Branch -->
+                    <rect x="90" y="140" width="20" height="50" fill="var(--pipe-color)" />
+                    <!-- Silt Accumulation -->
+                    <path d="M 80,120 Q 100,140 120,120 Z" fill="var(--silt-color)" style="transform-origin: bottom; animation: siltAccumulate 6s infinite;" />
+                    <!-- Valve Gate -->
+                    <rect x="85" y="150" width="30" height="10" fill="var(--valve-body)" style="animation: scourOpen 6s infinite;" />
+                    <!-- Flushing Water & Silt -->
+                    <line x1="100" y1="160" x2="100" y2="200" stroke="var(--silt-color)" stroke-width="10" stroke-dasharray="10 10" style="animation: scourFlush 6s infinite;" />
+                </svg>
+            </div>
+            <div class="details">
+                <div class="title">Wash-out Valve <span class="badge">Scour Valve</span></div>
+                <div class="info-group">
+                    <div class="info-label">Primary Function</div>
+                    <p class="info-text">To drain the pipe and flush out accumulated silt/sediment. <em>(The valve opens periodically to blow out the brown silt that settles at the bottom.)</em></p>
+                </div>
+                <div class="info-group">
+                    <div class="info-label">Ideal Location</div>
+                    <p class="info-text">At all <strong>depressions (lowest points)</strong> of the pipeline profile.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Check Valve -->
+        <div class="valve-card">
+            <div class="animation-container">
+                <svg viewBox="0 0 200 200" width="100%" height="100%">
+                    <!-- Pipe -->
+                    <rect x="0" y="70" width="200" height="60" fill="var(--pipe-color)" />
+                    <!-- Hinge and internal block -->
+                    <rect x="90" y="60" width="20" height="20" fill="var(--valve-body)" />
+                    <rect x="90" y="120" width="20" height="20" fill="var(--valve-body)" />
+                    <!-- Swinging Flap -->
+                    <line x1="100" y1="70" x2="100" y2="125" stroke="#2d3436" stroke-width="8" stroke-linecap="round" style="transform-origin: 100px 70px; animation: flapSwing 4s infinite;" />
+                    <!-- Flow Indicator (Forward vs Reverse) -->
+                    <line x1="20" y1="100" x2="180" y2="100" stroke-width="15" stroke-dasharray="20 20" style="animation: checkFlowDir 4s infinite linear;" />
+                </svg>
+            </div>
+            <div class="details">
+                <div class="title">Check Valve <span class="badge">Non-Return</span></div>
+                <div class="info-group">
+                    <div class="info-label">Primary Function</div>
+                    <p class="info-text">To allow water to flow in only one direction. <em>(When water tries to flow backwards, the flap slams shut to block it.)</em></p>
+                </div>
+                <div class="info-group">
+                    <div class="info-label">Ideal Location</div>
+                    <p class="info-text">On the delivery side of pumps to prevent water from emptying back into the source.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Float Valve -->
+        <div class="valve-card">
+            <div class="animation-container">
+                <svg viewBox="0 0 200 200" width="100%" height="100%">
+                    <!-- Tank Outline -->
+                    <rect x="40" y="70" width="120" height="110" fill="none" stroke="var(--valve-body)" stroke-width="10" />
+                    <!-- Water Level Filling -->
+                    <rect x="45" y="150" width="110" height="20" fill="var(--water-color)" style="animation: tankFill 8s infinite ease-in-out;" />
+                    <!-- Inlet Pipe -->
+                    <rect x="0" y="40" width="80" height="20" fill="var(--pipe-color)" />
+                    <!-- Inlet Flow (Stops when full) -->
+                    <rect x="60" y="60" width="15" height="100" fill="var(--water-color)" style="animation: inletStop 8s infinite;" />
+                    <!-- Floating mechanism grouping -->
+                    <g style="transform-origin: 75px 50px; animation: floatRise 8s infinite ease-in-out;">
+                        <!-- Lever -->
+                        <line x1="75" y1="50" x2="140" y2="50" stroke="#2d3436" stroke-width="5" />
+                        <!-- Float Ball -->
+                        <circle cx="140" cy="50" r="20" fill="#fdcb6e" stroke="#e1b12c" stroke-width="2" />
+                        <!-- Stopper Plug -->
+                        <rect x="65" y="45" width="10" height="15" fill="#d63031" />
+                    </g>
+                    <circle cx="75" cy="50" r="4" fill="#2d3436" /> <!-- Hinge pin -->
+                </svg>
+            </div>
+            <div class="details">
+                <div class="title">Float Valve <span class="badge">Ball Valve</span></div>
+                <div class="info-group">
+                    <div class="info-label">Primary Function</div>
+                    <p class="info-text">To automatically shut off flow when a tank is full. <em>(As water rises, it lifts the ball, causing the lever to push a stopper into the inlet pipe.)</em></p>
+                </div>
+                <div class="info-group">
+                    <div class="info-label">Ideal Location</div>
+                    <p class="info-text">Inside <strong>Reservoirs (RVT)</strong> and <strong>Break Pressure Tanks (BPT)</strong>.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pressure Reducing Valve -->
+        <div class="valve-card">
+            <div class="animation-container">
+                <svg viewBox="0 0 200 200" width="100%" height="100%">
+                    <!-- Pipes -->
+                    <rect x="0" y="80" width="200" height="40" fill="var(--pipe-color)" />
+                    <!-- Valve Body -->
+                    <polygon points="70,70 130,70 100,130" fill="var(--valve-body)" />
+                    <!-- Dome/Spring Housing -->
+                    <path d="M 80,70 A 20,20 0 0,1 120,70 Z" fill="#e17055" style="transform-origin: bottom; animation: prvRegulate 2s infinite alternate;" />
+                    <!-- High Pressure Flow (Left) -->
+                    <line x1="0" y1="100" x2="90" y2="100" stroke="#d63031" stroke-width="18" stroke-dasharray="10 5" class="flow-line" style="animation-duration: 0.5s;" />
+                    <!-- Low Pressure Flow (Right) -->
+                    <line x1="110" y1="100" x2="200" y2="100" stroke="var(--safe-color)" stroke-width="6" stroke-dasharray="15 15" class="flow-line" style="animation-duration: 2s;" />
+                </svg>
+            </div>
+            <div class="details">
+                <div class="title">Pressure Reducing Valve</div>
+                <div class="info-group">
+                    <div class="info-label">Primary Function</div>
+                    <p class="info-text">To automatically reduce high upstream pressure. <em>(The turbulent, high-pressure red flow enters the valve, compresses the internal spring, and exits as a calm, low-pressure green flow.)</em></p>
+                </div>
+                <div class="info-group">
+                    <div class="info-label">Ideal Location</div>
+                    <p class="info-text">Where pipe pressure exceeds the safe limit of the pipe (acts as a mechanical BPT).</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
+
