@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pipeline HGL & TEL Calculator</title>
+    
+    <!-- MathJax Configuration -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <!-- Load MathJax -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --border: #e2e8f0;
+            
+            /* Gemini Dark Mode Colors */
+            --gemini-bg: #131314;
+            --gemini-surface: #1e1f20;
+            --gemini-text: #e3e3e3;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        h1 { text-align: center; color: #0f172a; margin-bottom: 30px;}
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .input-group { display: flex; flex-direction: column; }
+        label { font-weight: 600; font-size: 0.875rem; margin-bottom: 8px; color: #64748b; }
+        input { padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; }
+        
+        button {
+            width: 100%; padding: 14px; background-color: var(--primary);
+            color: white; border: none; border-radius: 8px; font-size: 1.1rem;
+            font-weight: bold; cursor: pointer; transition: 0.2s;
+        }
+        button:hover { background-color: var(--primary-hover); }
+
+        /* --- SVG Animation Styles --- */
+        .svg-container {
+            display: none; background: #ffffff; border-radius: 12px;
+            padding: 20px; border: 1px solid var(--border); margin-bottom: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        svg { width: 100%; height: auto; }
+        .tank-top { fill: rgba(56, 189, 248, 0.1); stroke: #0284c7; stroke-width: 2; }
+        .tank-water-surface { fill: rgba(56, 189, 248, 0.4); stroke: #0284c7; stroke-width: 1; }
+        .pipe-outer { fill: none; stroke: #94a3b8; stroke-width: 24; stroke-linecap: round; }
+        .pipe-inner { fill: none; stroke: #cbd5e1; stroke-width: 20; stroke-linecap: round; }
+        .water-flow {
+            fill: none; stroke: #38bdf8; stroke-width: 14; stroke-dasharray: 20 15;
+            stroke-linecap: round; animation: flowAnimation 1s linear infinite;
+        }
+        @keyframes flowAnimation { from { stroke-dashoffset: 35; } to { stroke-dashoffset: 0; } }
+        .draw-line { stroke-dasharray: 1200; stroke-dashoffset: 1200; animation: drawPath 2.5s forwards ease-in-out; }
+        .draw-line-delayed { stroke-dasharray: 1200; stroke-dashoffset: 1200; animation: drawPath 2.5s forwards ease-in-out 2.5s; }
+        @keyframes drawPath { to { stroke-dashoffset: 0; } }
+
+        /* --- Dark Mode Solution Styling (Perfect Match to Screenshot) --- */
+        #solution-container {
+            display: none;
+            background-color: var(--gemini-bg);
+            color: var(--gemini-text);
+            border-radius: 20px;
+            padding: 30px 40px;
+            margin-top: 20px;
+            font-size: 1.05rem;
+        }
+
+        #solution-container h3 {
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-top: 35px;
+            margin-bottom: 15px;
+        }
+        
+        #solution-container h3:first-child { margin-top: 0; }
+
+        #solution-container ul {
+            list-style-type: none; /* Removing default bullets to match Gemini style closely */
+            padding-left: 0;
+            margin: 0;
+        }
+
+        #solution-container li {
+            margin-bottom: 20px;
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        #solution-container li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--gemini-text);
+        }
+
+        #solution-container p { margin-bottom: 15px; line-height: 1.6; }
+
+        /* The Formula Box */
+        .math-box {
+            background-color: var(--gemini-surface);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin: 15px 0 25px 0;
+            display: block; /* Full width block */
+            overflow-x: auto; /* Scroll if formula is too long */
+            color: #ffffff;
+            font-size: 1.1rem;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>Pipeline HGL & TEL Calculator</h1>
+
+    <div class="card">
+        <div class="input-grid">
+            <div class="input-group">
+                <label>Length of pipe (km)</label>
+                <input type="number" id="length" value="4" step="0.1">
+            </div>
+            <div class="input-group">
+                <label>Diameter of pipe (mm)</label>
+                <input type="number" id="diameter" value="200">
+            </div>
+            <div class="input-group">
+                <label>Discharge (LPS)</label>
+                <input type="number" id="discharge" value="48">
+            </div>
+            <div class="input-group">
+                <label>Roughness Coefficient (f)</label>
+                <input type="number" id="roughness" value="0.015" step="0.001">
+            </div>
+        </div>
+        <button onclick="calculateAndRender()">Calculate & Draw Solution</button>
+    </div>
+
+    <!-- SVG Animation Container -->
+    <div class="svg-container" id="svgContainer">
+        <svg viewBox="0 0 900 450" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="waterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#7dd3fc" />
+                    <stop offset="100%" stop-color="#0284c7" />
+                </linearGradient>
+            </defs>
+            <!-- Reservoirs & Pipe Base -->
+            <ellipse cx="120" cy="100" rx="50" ry="15" class="tank-top" />
+            <path d="M 70 100 L 70 300 A 50 15 0 0 0 170 300 L 170 100 Z" fill="url(#waterGrad)" opacity="0.8"/>
+            <ellipse cx="120" cy="100" rx="50" ry="15" class="tank-water-surface" />
+            <path d="M 70 100 L 70 300 A 50 15 0 0 0 170 300 L 170 100" fill="none" stroke="#0284c7" stroke-width="2"/>
+            <text x="80" y="70" font-weight="bold" fill="#0f172a">Reservoir 1</text>
+            
+            <ellipse cx="780" cy="280" rx="50" ry="15" class="tank-top" />
+            <path d="M 730 280 L 730 400 A 50 15 0 0 0 830 400 L 830 280 Z" fill="url(#waterGrad)" opacity="0.8"/>
+            <ellipse cx="780" cy="280" rx="50" ry="15" class="tank-water-surface" />
+            <path d="M 730 280 L 730 400 A 50 15 0 0 0 830 400 L 830 280" fill="none" stroke="#0284c7" stroke-width="2"/>
+            <text x="740" y="250" font-weight="bold" fill="#0f172a">Reservoir 2</text>
+
+            <path d="M 170 280 L 730 350" class="pipe-outer" />
+            <path d="M 170 280 L 730 350" class="pipe-inner" />
+            <path d="M 170 280 L 730 350" class="water-flow" />
+
+            <!-- Dynamic Lines will go here -->
+            <g id="dynamicElements"></g>
+        </svg>
+    </div>
+
+    <!-- Dark Mode Solution Output -->
+    <div id="solution-container"></div>
+
+    <script>
+        function calculateAndRender() {
+            // 1. Fetch values
+            const L_km = parseFloat(document.getElementById('length').value);
+            const D_mm = parseFloat(document.getElementById('diameter').value);
+            const Q_lps = parseFloat(document.getElementById('discharge').value);
+            const f = parseFloat(document.getElementById('roughness').value);
+            const g = 9.81;
+
+            const L = L_km * 1000;
+            const D = D_mm / 1000;
+            const Q = Q_lps / 1000;
+
+            // 2. Compute
+            const A = (Math.PI * Math.pow(D, 2)) / 4;
+            const V = Q / A;
+            
+            // To match screenshot exactly, we use the rounded velocity (1.528) for subsequent calcs
+            const V_rounded = parseFloat(V.toFixed(3));
+            
+            const hv = Math.pow(V_rounded, 2) / (2 * g);
+            const hi = 0.5 * hv;
+            const hf = (f * L * Math.pow(V_rounded, 2)) / (2 * g * D);
+            const ho = 1.0 * hv;
+            
+            const deltaH = hi + hf + ho;
+
+            // 3. Render LaTeX Styled Solution
+            const solDiv = document.getElementById('solution-container');
+            solDiv.style.display = 'block';
+            
+            // Note: In Javascript template literals (`), backslashes must be double-escaped (\\) for MathJax to read them.
+            solDiv.innerHTML = `
+                <p>To draw the HGL accurately, we must calculate the velocity head and the head losses in the pipeline system.</p>
+                
+                <h3>Given Data:</h3>
+                <ul>
+                    <li>Length of pipe ($L$) = ${L_km} km = ${L} m</li>
+                    <li>Diameter of pipe ($D$) = ${D_mm} mm = ${D} m</li>
+                    <li>Discharge ($Q$) = ${Q_lps} LPS = ${Q} m³/s</li>
+                    <li>Roughness Coefficient = ${f} <em>(Note: In pipe flow connecting reservoirs, this typically refers to Darcy's friction factor, $f$. We will proceed with $f = ${f}$.)</em></li>
+                    <li>Acceleration due to gravity ($g$) = 9.81 m/s²</li>
+                </ul>
+
+                <h3>Step 1: Calculate the Area and Flow Velocity</h3>
+                <ul>
+                    <li>Cross-sectional Area ($A$):
+                        <div class="math-box">
+                            $$A = \\frac{\\pi \\cdot D^2}{4} = \\frac{\\pi \\cdot (${D})^2}{4} = ${A.toFixed(4)} \\text{ m}^2$$
+                        </div>
+                    </li>
+                    <li>Velocity ($V$):
+                        <div class="math-box">
+                            $$V = \\frac{Q}{A} = \\frac{${Q}}{${A.toFixed(4)}} = ${V.toFixed(3)} \\text{ m/s}$$
+                        </div>
+                    </li>
+                </ul>
+
+                <h3>Step 2: Calculate Velocity Head</h3>
+                <ul>
+                    <li>Velocity Head ($h_v$):
+                        <div class="math-box">
+                            $$h_v = \\frac{V^2}{2g} = \\frac{${V.toFixed(3)}^2}{2 \\times 9.81} = ${hv.toFixed(3)} \\text{ m}$$
+                        </div>
+                    </li>
+                </ul>
+
+                <h3>Step 3: Calculate Head Losses</h3>
+                <ul>
+                    <li><strong>Major Loss (Friction)</strong> using Darcy-Weisbach equation:
+                        <div class="math-box">
+                            $$h_f = \\frac{f \\cdot L \\cdot V^2}{2gD} = \\frac{${f} \\times ${L} \\times (${V.toFixed(3)})^2}{2 \\times 9.81 \\times ${D}} = ${hf.toFixed(2)} \\text{ m}$$
+                        </div>
+                    </li>
+                    <li><strong>Minor Losses:</strong>
+                        <ul style="padding-left: 20px; margin-top: 15px;">
+                            <li>Entry Loss ($h_i$) at the first reservoir:
+                                <div class="math-box">
+                                    $$h_i = 0.5 \\frac{V^2}{2g} = 0.5 \\times ${hv.toFixed(3)} = ${hi.toFixed(3)} \\text{ m}$$
+                                </div>
+                            </li>
+                            <li>Exit Loss ($h_o$) at the second reservoir:
+                                <div class="math-box">
+                                    $$h_o = 1.0 \\frac{V^2}{2g} = ${ho.toFixed(3)} \\text{ m}$$
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h3>Step 4: Total Head Difference Between Reservoirs</h3>
+                <p>The total head difference ($\\Delta H$) between the water levels of the two reservoirs is the sum of all losses:</p>
+                <div class="math-box">
+                    $$\\Delta H = h_i + h_f + h_o = ${hi.toFixed(3)} + ${hf.toFixed(2)} + ${ho.toFixed(3)} = ${deltaH.toFixed(3)} \\text{ m}$$
+                </div>
+                <p><em>(You should state in your exam: "The water level in Reservoir 1 is approximately ${deltaH.toFixed(2)} m higher than Reservoir 2.")</em></p>
+            `;
+
+            // Trigger MathJax to process the new HTML content
+            if (window.MathJax) {
+                MathJax.typesetPromise([solDiv]).catch(function (err) {
+                    console.error('MathJax error:', err.message);
+                });
+            }
+
+            // 4. Render SVG Dynamic Lines
+            document.getElementById('svgContainer').style.display = 'block';
+            const dynamicGrp = document.getElementById('dynamicElements');
+            
+            const entryDrop = 15; 
+            const exitDrop = 25; 
+            const vhVisual = 20;
+
+            const telPath = `
+                <path d="M 120 100 L 170 100 L 170 ${100 + entryDrop} L 730 ${280 - exitDrop} L 730 280 L 780 280" 
+                      fill="none" stroke="#ef4444" stroke-width="3" class="draw-line" />
+                <circle cx="170" cy="${100 + entryDrop}" r="5" fill="#ef4444" class="draw-line" />
+                <circle cx="730" cy="${280 - exitDrop}" r="5" fill="#ef4444" class="draw-line" />
+                <text x="350" y="150" fill="#ef4444" font-weight="bold" font-size="16" class="draw-line">TEL (Total Energy Line)</text>
+            `;
+
+            const hglPath = `
+                <path d="M 170 ${100 + entryDrop + vhVisual} L 730 280" 
+                      fill="none" stroke="#10b981" stroke-width="3" stroke-dasharray="8,6" class="draw-line-delayed" />
+                <text x="350" y="210" fill="#10b981" font-weight="bold" font-size="16" class="draw-line-delayed">HGL (Hydraulic Grade Line)</text>
+                
+                <!-- Velocity Head gap indicator -->
+                <line x1="450" y1="${(100 + entryDrop + 280 - exitDrop)/2}" x2="450" y2="${(100 + entryDrop + vhVisual + 280)/2}" stroke="#64748b" stroke-width="2" class="draw-line-delayed"/>
+                <text x="460" y="${(100 + entryDrop + 280)/2 + 5}" fill="#64748b" font-weight="bold" class="draw-line-delayed">v²/2g</text>
+            `;
+
+            dynamicGrp.innerHTML = telPath + hglPath;
+        }
+    </script>
+</body>
+</html>
+
