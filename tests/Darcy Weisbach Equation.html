@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Darcy-Weisbach Derivation App</title>
+    
+    <!-- MathJax Configuration -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --bg-color: #0f172a;
+            --gemini-bg: #131314;
+            --gemini-surface: #1e1f20;
+            --gemini-text: #e3e3e3;
+            
+            /* Diagram Colors */
+            --color-p1: #4ade80; /* Green for driving force */
+            --color-p2: #f87171; /* Red for opposing pressure */
+            --color-tau: #facc15; /* Yellow for friction */
+            --color-flow: #38bdf8; /* Blue for water */
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--gemini-bg);
+            color: var(--gemini-text);
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        h1 { text-align: center; color: #ffffff; margin-bottom: 5px; font-size: 2.2rem;}
+        .subtitle { text-align: center; color: #94a3b8; margin-bottom: 40px; font-weight: 500; font-size: 1.1rem; }
+
+        .card {
+            background: var(--gemini-surface);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 24px;
+            border: 1px solid #334155;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+        }
+
+        h2 { color: var(--primary); font-size: 1.4rem; border-bottom: 1px solid #334155; padding-bottom: 10px; margin-top: 0; }
+
+        ul { padding-left: 20px; }
+        li { margin-bottom: 10px; }
+        
+        /* Interactive Math Boxes */
+        .math-box {
+            background-color: #282a2d;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            display: block;
+            overflow-x: auto;
+            border-left: 4px solid #475569;
+            transition: all 0.3s ease;
+        }
+
+        .math-box:hover {
+            background-color: #323539;
+        }
+
+        /* Highlight classes for interactivity */
+        .hl-p1 { color: var(--color-p1); font-weight: bold; cursor: pointer; border-bottom: 1px dashed var(--color-p1); }
+        .hl-p2 { color: var(--color-p2); font-weight: bold; cursor: pointer; border-bottom: 1px dashed var(--color-p2); }
+        .hl-tau { color: var(--color-tau); font-weight: bold; cursor: pointer; border-bottom: 1px dashed var(--color-tau); }
+
+        /* SVG Diagram Styles */
+        .svg-container {
+            width: 100%;
+            background: #0f172a;
+            border-radius: 12px;
+            padding: 20px 0;
+            margin: 20px 0;
+            border: 1px solid #334155;
+            text-align: center;
+        }
+        svg { width: 100%; max-width: 800px; height: auto; }
+        
+        .pipe-wall { stroke: #64748b; stroke-width: 6; stroke-linecap: round; }
+        .control-volume { fill: rgba(56, 189, 248, 0.05); stroke: #38bdf8; stroke-dasharray: 8,6; stroke-width: 2; }
+        
+        .force-arrow { stroke-width: 4; transition: all 0.3s ease; }
+        .force-text { font-family: 'Segoe UI', sans-serif; font-weight: bold; font-size: 18px; transition: all 0.3s ease; }
+        
+        /* Interactive Animation Classes */
+        .active-p1 { stroke-width: 8; filter: drop-shadow(0 0 8px var(--color-p1)); }
+        .active-text-p1 { font-size: 24px; filter: drop-shadow(0 0 8px var(--color-p1)); }
+        
+        .active-p2 { stroke-width: 8; filter: drop-shadow(0 0 8px var(--color-p2)); }
+        .active-text-p2 { font-size: 24px; filter: drop-shadow(0 0 8px var(--color-p2)); }
+        
+        .active-tau { stroke-width: 6; filter: drop-shadow(0 0 8px var(--color-tau)); }
+        .active-text-tau { font-size: 24px; filter: drop-shadow(0 0 8px var(--color-tau)); }
+
+        .note {
+            background: rgba(250, 204, 21, 0.1);
+            border-left: 4px solid var(--color-tau);
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 20px;
+            font-size: 0.95rem;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>Darcy-Weisbach Equation</h1>
+    <div class="subtitle">Interactive Derivation for Pipe Friction Head Loss</div>
+
+    <div class="card">
+        <h2>1. Fundamental Assumptions</h2>
+        <ul>
+            <li>The pipe is running completely full of fluid.</li>
+            <li>The flow is <strong>steady</strong> and <strong>uniform</strong> (velocity and cross-sectional area are constant along the length).</li>
+            <li>The pipe is strictly horizontal (elevation head $Z_1 = Z_2$).</li>
+            <li>The fluid is incompressible (constant density, $\rho$).</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>2. Free Body Diagram (FBD)</h2>
+        <p>Hover over or click the highlighted text below the diagram to see the forces in action.</p>
+        
+        <div class="svg-container">
+            <svg viewBox="0 0 800 350" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <!-- Arrowheads -->
+                    <marker id="arrow-p1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--color-p1)" />
+                    </marker>
+                    <marker id="arrow-p2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--color-p2)" />
+                    </marker>
+                    <marker id="arrow-tau" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--color-tau)" />
+                    </marker>
+                    <marker id="arrow-dim" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4" orient="auto">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8" />
+                    </marker>
+                    <marker id="arrow-dim-rev" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8" />
+                    </marker>
+                </defs>
+
+                <!-- Pipe Walls -->
+                <line x1="100" y1="80" x2="700" y2="80" class="pipe-wall" />
+                <line x1="100" y1="240" x2="700" y2="240" class="pipe-wall" />
+
+                <!-- Control Volume (Fluid Cylinder) -->
+                <rect x="200" y="83" width="400" height="154" class="control-volume" />
+                <text x="400" y="165" fill="#38bdf8" font-size="20" font-weight="bold" opacity="0.4" text-anchor="middle">Uniform Flow (V)</text>
+
+                <!-- P1 Force (Driving) -->
+                <line x1="120" y1="160" x2="190" y2="160" stroke="var(--color-p1)" class="force-arrow p1-el" marker-end="url(#arrow-p1)" />
+                <text x="120" y="145" fill="var(--color-p1)" class="force-text p1-el">P₁A</text>
+
+                <!-- P2 Force (Opposing) -->
+                <line x1="680" y1="160" x2="610" y2="160" stroke="var(--color-p2)" class="force-arrow p2-el" marker-end="url(#arrow-p2)" />
+                <text x="635" y="145" fill="var(--color-p2)" class="force-text p2-el">P₂A</text>
+
+                <!-- Shear Forces (Tau) on Top Wall -->
+                <line x1="500" y1="80" x2="450" y2="80" stroke="var(--color-tau)" class="force-arrow tau-el" marker-end="url(#arrow-tau)" />
+                <line x1="400" y1="80" x2="350" y2="80" stroke="var(--color-tau)" class="force-arrow tau-el" marker-end="url(#arrow-tau)" />
+                <line x1="300" y1="80" x2="250" y2="80" stroke="var(--color-tau)" class="force-arrow tau-el" marker-end="url(#arrow-tau)" />
+                
+                <!-- Shear Forces (Tau) on Bottom Wall -->
+                <line x1="500" y1="240" x2="450" y2="240" stroke="var(--color-tau)" class="force-arrow tau-el" marker-end="url(#arrow-tau)" />
+                <line x1="400" y1="240" x2="350" y2="240" stroke="var(--color-tau)" class="force-arrow tau-el" marker-end="url(#arrow-tau)" />
+                <line x1="300" y1="240" x2="250" y2="240" stroke="var(--color-tau)" class="force-arrow tau-el" marker-end="url(#arrow-tau)" />
+                
+                <text x="365" y="60" fill="var(--color-tau)" class="force-text tau-el">τ₀ × (π D L)</text>
+                <text x="365" y="275" fill="var(--color-tau)" class="force-text tau-el">τ₀ × (π D L)</text>
+
+                <!-- Dimensions -->
+                <line x1="200" y1="310" x2="600" y2="310" stroke="#94a3b8" stroke-width="2" marker-start="url(#arrow-dim-rev)" marker-end="url(#arrow-dim)" />
+                <line x1="200" y1="250" x2="200" y2="320" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,4" />
+                <line x1="600" y1="250" x2="600" y2="320" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,4" />
+                <text x="380" y="300" fill="#94a3b8" font-size="16">Length (L)</text>
+                
+                <!-- Diameter Dimension -->
+                <line x1="650" y1="83" x2="650" y2="237" stroke="#94a3b8" stroke-width="2" marker-start="url(#arrow-dim-rev)" marker-end="url(#arrow-dim)" />
+                <text x="660" y="165" fill="#94a3b8" font-size="16">Dia (D)</text>
+            </svg>
+        </div>
+
+        <p style="text-align: center; margin-top: 10px;">
+            <span class="hl-p1" onmouseover="triggerAnim('p1', true)" onmouseout="triggerAnim('p1', false)">Driving Pressure (P₁A)</span> &nbsp; | &nbsp; 
+            <span class="hl-p2" onmouseover="triggerAnim('p2', true)" onmouseout="triggerAnim('p2', false)">Opposing Pressure (P₂A)</span> &nbsp; | &nbsp; 
+            <span class="hl-tau" onmouseover="triggerAnim('tau', true)" onmouseout="triggerAnim('tau', false)">Frictional Shear (τ₀)</span>
+        </p>
+    </div>
+
+    <div class="card">
+        <h2>3. Step-by-Step Mathematical Derivation</h2>
+        
+        <p><strong>Step A: Balancing the Forces</strong><br>
+        Since the flow is uniform (no acceleration), the net force acting on the fluid cylinder is zero. The driving pressure force is balanced by the opposing pressure and the resisting frictional shear force on the wetted perimeter.</p>
+        
+        <div class="math-box">
+            $$P_1 \cdot A - P_2 \cdot A - \tau_0 \cdot (\text{Wetted Area}) = 0$$
+            $$(P_1 - P_2) \cdot A = \tau_0 \cdot (\pi \cdot D \cdot L)$$
+        </div>
+        
+        <p>Substituting the cross-sectional area $A = \frac{\pi \cdot D^2}{4}$:</p>
+        <div class="math-box">
+            $$(P_1 - P_2) \cdot \frac{\pi \cdot D^2}{4} = \tau_0 \cdot \pi \cdot D \cdot L$$
+            $$P_1 - P_2 = \frac{4 \cdot \tau_0 \cdot L}{D}$$
+        </div>
+
+        <p><strong>Step B: Converting Pressure Difference to Head Loss</strong><br>
+        The drop in pressure is responsible for the frictional head loss ($h_f$). Dividing the pressure difference by the specific weight of the fluid ($\gamma = \rho g$):</p>
+        <div class="math-box" style="border-left-color: #38bdf8;">
+            $$h_f = \frac{P_1 - P_2}{\rho \cdot g}$$
+            $$h_f = \frac{4 \cdot \tau_0 \cdot L}{\rho \cdot g \cdot D}$$
+        </div>
+
+        <p><strong>Step C: Introducing the Coefficient of Friction</strong><br>
+        Froude experimentally deduced that frictional shear stress ($\tau_0$) is proportional to the square of the velocity ($V^2$). It is expressed as $\tau_0 = f' \cdot \frac{\rho \cdot V^2}{2}$, where $f'$ is the <em>coefficient of friction</em>.</p>
+        
+        <div class="math-box">
+            $$h_f = \frac{4 \cdot \left(f' \cdot \frac{\rho \cdot V^2}{2}\right) \cdot L}{\rho \cdot g \cdot D}$$
+            $$h_f = \frac{4 \cdot f' \cdot L \cdot V^2}{2 \cdot g \cdot D}$$
+        </div>
+
+        <p><strong>Step D: The Final Darcy-Weisbach Form</strong><br>
+        To simplify, modern fluid mechanics replaces the term $4f'$ with a single variable $f$, which is known as the <strong>Darcy Friction Factor</strong> ($f = 4f'$).</p>
+
+        <div class="math-box" style="border-left-color: #4ade80; background-color: rgba(74, 222, 128, 0.05);">
+            $$h_f = \frac{f \cdot L \cdot V^2}{2 \cdot g \cdot D}$$
+        </div>
+
+        <div class="note">
+            <strong>Professor's Golden Rule for Exams:</strong><br>
+            Always verify if the question gives you the "Friction Factor" ($f$) or the "Coefficient of Friction" ($f'$). If the question provides the Coefficient of Friction (e.g., $f' = 0.005$), you <strong>must</strong> multiply it by 4 before using the standard equation ($f = 4 \times 0.005 = 0.02$).
+        </div>
+
+    </div>
+
+    <script>
+        // Interactive Animation Logic
+        function triggerAnim(elementPrefix, isActive) {
+            const elements = document.querySelectorAll(`.${elementPrefix}-el`);
+            
+            elements.forEach(el => {
+                if (isActive) {
+                    if (el.tagName.toLowerCase() === 'text') {
+                        el.classList.add(`active-text-${elementPrefix}`);
+                    } else {
+                        el.classList.add(`active-${elementPrefix}`);
+                    }
+                } else {
+                    if (el.tagName.toLowerCase() === 'text') {
+                        el.classList.remove(`active-text-${elementPrefix}`);
+                    } else {
+                        el.classList.remove(`active-${elementPrefix}`);
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+
+
