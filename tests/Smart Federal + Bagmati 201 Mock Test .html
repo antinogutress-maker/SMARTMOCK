@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Federal + Bagmati Mock test 202</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* [100% CLAYMORPHISM PALETTE & SHADOWS] */
+        :root { 
+            --primary: #FF3366; 
+            --secondary: #FF9933; 
+            --accent: #00E5FF; 
+            
+            /* Clay Base Color */
+            --clay-bg: #E8F0F8; 
+            
+            /* Clay Outer Shadows */
+            --clay-shadow-out: 12px 12px 24px rgba(166, 180, 200, 0.7), -12px -12px 24px #FFFFFF;
+            
+            /* Clay Inner Shadows (Puffy Effect) */
+            --clay-shadow-in: inset 6px 6px 12px rgba(255, 255, 255, 0.9), inset -6px -6px 12px rgba(166, 180, 200, 0.4);
+            
+            /* Clay Pressed/Inset Shadows (For Inputs) */
+            --clay-shadow-pressed: inset 6px 6px 12px rgba(166, 180, 200, 0.6), inset -6px -6px 12px #FFFFFF;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            /* Soft pastel gradient to complement the 3D clay */
+            background: linear-gradient(-45deg, #FFDEE9, #B5FFFC, #C2E9FB, #EAE5C9);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 15px; 
+            overflow-x: hidden; 
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 100% Clay Container */
+        .app-container { 
+            width: 100%; 
+            max-width: 650px; 
+            background: var(--clay-bg); 
+            border-radius: 40px; 
+            padding: 2.5rem 2rem; 
+            /* Double shadow system for 3D clay look */
+            box-shadow: var(--clay-shadow-out), var(--clay-shadow-in);
+            position: relative; 
+            overflow: hidden; 
+            transition: all 0.4s ease; 
+        }
+        
+        h1 { font-size: 2.2rem; font-weight: 800; color: #1E293B; margin-bottom: 10px; }
+        h2 { font-size: 1.6rem; margin-bottom: 20px; color: #334155; font-weight: 800; }
+        p { color: #64748B; font-size: 1rem; line-height: 1.6; font-weight: 500; }
+        
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 10px; color: #64748B; text-transform: uppercase; letter-spacing: 1.5px; }
+        
+        /* Clay Inset Inputs */
+        .glass-input { 
+            width: 100%; 
+            padding: 18px; 
+            background: var(--clay-bg); 
+            border: none; 
+            border-radius: 20px; 
+            color: #1E293B; 
+            font-size: 1.05rem; 
+            font-weight: 600;
+            outline: none; 
+            transition: 0.3s;
+            box-shadow: var(--clay-shadow-pressed);
+        }
+        .glass-input:focus { 
+            box-shadow: inset 8px 8px 16px rgba(166, 180, 200, 0.7), inset -8px -8px 16px #FFFFFF, 0 0 0 4px rgba(0, 229, 255, 0.3);
+        }
+        .glass-input::placeholder { color: #94A3B8; }
+        .glass-input:read-only { background: #DFE7F0; color: #64748B; cursor: not-allowed; }
+        select.glass-input option { background: #FFFFFF; color: #1E293B; }
+        
+        /* Clay Puffy Button */
+        .btn { 
+            background: var(--primary); 
+            border: none; 
+            color: white; 
+            padding: 18px; 
+            width: 100%; 
+            border-radius: 24px; 
+            font-size: 1.15rem; 
+            font-weight: 800; 
+            cursor: pointer; 
+            margin-top: 25px; 
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            min-height: 55px; 
+            box-shadow: 
+                8px 8px 16px rgba(255, 51, 102, 0.3), 
+                -4px -4px 10px #FFFFFF,
+                inset 4px 4px 8px rgba(255,255,255,0.4),
+                inset -4px -4px 8px rgba(0,0,0,0.1);
+        }
+        .btn:active { 
+            transform: scale(0.95); 
+            box-shadow: 
+                2px 2px 5px rgba(255, 51, 102, 0.4), 
+                inset 6px 6px 12px rgba(0,0,0,0.2),
+                inset -2px -2px 6px rgba(255,255,255,0.2);
+        }
+        .btn:disabled { filter: grayscale(1); cursor: wait; opacity: 0.7; }
+        
+        .btn-outline { 
+            background: var(--clay-bg); 
+            color: #1E293B;
+            box-shadow: var(--clay-shadow-out), var(--clay-shadow-in); 
+            margin-top: 15px; 
+        }
+        
+        .personal-header { text-align: center; margin-bottom: 25px; padding-bottom: 15px; min-height: 50px; display: flex; align-items: center; justify-content: center; }
+        .animate-praise { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        .info-bar { 
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; 
+            background: var(--clay-bg); 
+            padding: 15px 20px; 
+            border-radius: 20px; 
+            box-shadow: var(--clay-shadow-pressed);
+            font-weight: 700;
+            color: #64748B;
+        }
+        .timer-badge { font-family: monospace; font-weight: 800; color: #FF3366; font-size: 1.3rem; }
+        
+        /* [REQUIRED] Question Text is ALWAYS Black */
+        .question-text { 
+            font-size: 1.35rem; 
+            font-weight: 800; 
+            margin-bottom: 25px; 
+            line-height: 1.5; 
+            color: #000000 !important; 
+            padding: 10px 0;
+        }
+        
+        /* [REQUIRED] Options with ALWAYS Blue Text and Clay Styling */
+        .option-btn { 
+            width: 100%; 
+            padding: 18px 20px; 
+            margin-bottom: 18px; 
+            background: var(--clay-bg); 
+            border: none; 
+            border-radius: 24px; 
+            text-align: left; 
+            color: #0000FF !important; 
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            display: flex; 
+            align-items: center; 
+            -webkit-user-select: none; user-select: none;
+            
+            /* Puffy Clay Shadow for Options */
+            box-shadow: 
+                6px 6px 14px rgba(166, 180, 200, 0.6), 
+                -6px -6px 14px #FFFFFF,
+                inset 3px 3px 6px rgba(255,255,255,0.9),
+                inset -3px -3px 6px rgba(166, 180, 200, 0.3);
+        }
+        .option-btn:hover { transform: translateY(-3px); }
+        .option-btn:active { transform: scale(0.96); box-shadow: var(--clay-shadow-pressed); }
+        
+        .option-marker { 
+            width: 40px; height: 40px; 
+            background: var(--clay-bg); 
+            border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            margin-right: 18px; 
+            font-weight: 800; 
+            color: #0000FF !important; 
+            flex-shrink: 0; 
+            /* Pressed marker inside puffy button */
+            box-shadow: var(--clay-shadow-pressed);
+        }
+        
+        /* Correct/Wrong States - Only Background Changes, text remains Blue! */
+        .correct { 
+            background: #00FF88 !important; /* Green Background */
+            box-shadow: 
+                6px 6px 14px rgba(0, 255, 136, 0.4), 
+                -4px -4px 10px #FFFFFF,
+                inset 4px 4px 8px rgba(255,255,255,0.5),
+                inset -4px -4px 8px rgba(0,0,0,0.1);
+            transform: scale(1.02);
+        }
+        .correct .option-marker { background: rgba(255,255,255,0.3); }
+        
+        .wrong { 
+            background: #FF3366 !important; /* Red Background */
+            box-shadow: 
+                6px 6px 14px rgba(255, 51, 102, 0.4), 
+                -4px -4px 10px #FFFFFF,
+                inset 4px 4px 8px rgba(255,255,255,0.4),
+                inset -4px -4px 8px rgba(0,0,0,0.1);
+        }
+        .wrong .option-marker { background: rgba(255,255,255,0.3); }
+        
+        .explanation-box { 
+            margin-top: 25px; padding: 20px; 
+            background: var(--clay-bg); 
+            border-left: 6px solid var(--accent); 
+            border-radius: 20px; 
+            font-size: 1.05rem; 
+            color: #1E293B;
+            font-weight: 600;
+            display: none; 
+            animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: var(--clay-shadow-pressed);
+        }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .score-circle { 
+            width: 200px; height: 200px; 
+            border-radius: 50%; 
+            background: var(--clay-bg);
+            margin: 0 auto 30px auto; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            /* Huge puffy clay ring */
+            box-shadow: 
+                15px 15px 30px rgba(166, 180, 200, 0.7), 
+                -15px -15px 30px #FFFFFF,
+                inset 8px 8px 16px rgba(255,255,255,0.9),
+                inset -8px -8px 16px rgba(166, 180, 200, 0.4); 
+        }
+        .score-val { font-size: 4.5rem; font-weight: 800; color: #FF3366; line-height: 1; }
+        .hidden { display: none !important; }
+        #opts-list { max-height: 55vh; overflow-y: auto; padding-right: 12px; padding-bottom: 10px; padding-top: 5px; margin-left: -5px; padding-left: 5px;}
+        
+        /* Custom Scrollbar */
+        #opts-list::-webkit-scrollbar { width: 8px; }
+        #opts-list::-webkit-scrollbar-track { background: var(--clay-bg); border-radius: 10px; box-shadow: var(--clay-shadow-pressed); }
+        #opts-list::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        
+        #auth-msg { text-align: center; margin-top: 20px; font-weight: 700; color: #FF3366; background: var(--clay-bg); padding: 15px; border-radius: 16px; display: none; box-shadow: var(--clay-shadow-pressed); }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="app">
+    <div id="view-login">
+        <div style="text-align: center; margin-bottom: 35px;">
+            <h1 id="title-display">Federal + Bagmati Mock test 202</h1>
+            <p>New Edition | Civil Engineering</p>
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Full Name</span>
+            <input type="text" id="inp-name" class="glass-input" placeholder="Enter your name">
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Qualification</span>
+            <select id="inp-qual" class="glass-input">
+                <option value="Engineer">Engineer</option>
+                <option value="Sub-Engineer">Sub-Engineer</option>
+                <option value="Asst. Sub-Engineer">Asst. Sub-Engineer</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <span class="label">Unique Code</span>
+            <input type="tel" id="inp-code" class="glass-input" placeholder="Enter 5-digit code">
+        </div>
+
+        <div class="input-group">
+            <span class="label">Password (Auto-Fill)</span>
+            <input type="password" id="inp-pass" class="glass-input" placeholder="Verifying..." readonly>
+        </div>
+
+        <button class="btn" id="btn-verify" onclick="App.verifyAndLogin()">Verify & Login</button>
+        <p id="auth-msg"></p>
+    </div>
+
+    <div id="view-dash" class="hidden">
+        <div style="text-align: center; margin-bottom: 35px;">
+            <h2 id="greet-msg" style="color: #FF3366; font-size: 2.2rem;">Welcome!</h2>
+            <div style="background: var(--clay-bg); padding: 30px; border-radius: 24px; margin-bottom: 25px; box-shadow: var(--clay-shadow-pressed);">
+                <p style="text-transform: uppercase; font-size: 0.9rem; color: #94A3B8; font-weight: 800; letter-spacing: 1px;">Active Session</p>
+                <h3 id="dash-topic-display" style="font-size: 1.8rem; margin: 15px 0; color: #1E293B;"></h3>
+                <p style="font-weight: 700; color: #64748B;">50 Questions • 45 Minutes</p>
+            </div>
+        </div>
+        <button class="btn" id="btn-start" onclick="App.start(false)">Start Exam</button>
+        <p id="submitted-msg" style="color: #00C853; text-align: center; margin-top: 20px; display: none; font-weight: 800;">✅ Score Submitted Successfully</p>
+        <button class="btn btn-outline" id="btn-review" onclick="App.start(true)" style="display: none;">Review Mistakes</button>
+    </div>
+
+    <div id="view-quiz" class="hidden">
+        <div class="personal-header">
+            <div id="praise-txt" style="font-size: 1.5rem; font-weight: 800; color: #1E293B;">Good Luck!</div>
+        </div>
+
+        <div class="info-bar">
+            <span>Q: <span id="q-idx">1</span> / <span id="q-total">50</span></span>
+            <span class="timer-badge" id="timer">45:00</span>
+        </div>
+
+        <div id="q-container">
+            <div class="question-text" id="q-text">Loading...</div>
+            <div id="opts-list"></div>
+            <div class="explanation-box" id="exp-box"></div>
+        </div>
+
+        <button class="btn hidden" id="btn-next" onclick="App.next()">Next Question</button>
+    </div>
+
+    <div id="view-result" class="hidden" style="text-align: center;">
+        <h2 style="font-size: 2.2rem; margin-bottom: 30px;">Quiz Completed!</h2>
+        <div class="score-circle">
+            <span class="score-val" id="res-score">0</span>
+            <span style="font-size: 1rem; font-weight: 800; text-transform: uppercase; color: #64748B; margin-top: 10px;">Correct</span>
+        </div>
+        <div style="margin-bottom: 40px;">
+            <h3 id="res-pct" style="color: #FF3366; font-size: 2rem; font-weight: 800;">0% Accuracy</h3>
+            <p id="sync-status" style="font-size: 1.1rem; font-weight: 700; margin-top: 15px; color: #64748B;">Syncing score...</p>
+        </div>
+        <button class="btn" onclick="App.dash()">Back to Dashboard</button>
+    </div>
+</div>
+
+<script>
+/**
+ * --- UPDATED AUDIO HELPER SYSTEM ---
+ * Uses Free Google Audio API + Browser Synthesis fallback
+ */
+const AudioHelper = {
+    ctx: null,
+    init: function() {
+        if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if(this.ctx.state === 'suspended') this.ctx.resume();
+        
+        // Mobile warm-up
+        if ('speechSynthesis' in window) {
+            let warmupMsg = new SpeechSynthesisUtterance('');
+            warmupMsg.volume = 0; 
+            window.speechSynthesis.speak(warmupMsg);
+        }
+    },
+    playTing: function() {
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.type = 'sine'; 
+        osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1500, this.ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.5);
+    },
+    playFush: function() {
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.type = 'square'; 
+        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.3);
+    },
+    speak: function(text) {
+        // Free Google Translate TTS API (Human Sounding)
+        const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=${encodeURIComponent(text)}`;
+        const audio = new Audio(url);
+        audio.play().catch(() => {
+            // Fallback to robotic browser voice if blocked
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const msg = new SpeechSynthesisUtterance(text);
+                msg.lang = 'en-US';
+                window.speechSynthesis.speak(msg);
+            }
+        });
+    }
+};
+
+/**
+ * ----------------------------------------------------
+ * CONFIGURATION - CHANGE ONLY THIS SECTION FOR NEW APPS
+ * ----------------------------------------------------
+ */
+const CFG = {
+    topic: "Federal + Bagmati Mock test 202", 
+    scoreScript: "https://script.google.com/macros/s/AKfycbwlARXNg2vbAH3-xPgt4Mt_MlPydwuZOtA7dkjyD0LVQlYX2IBDUKULT8rlZVIy034H/exec",
+    authScript: "https://script.google.com/macros/s/AKfycbzMzOG0rG6JUEsDUJymyOGevOjt750FgRD9UNdxeEmDbeHukwRZTvjwd8UyDbD5icR6/exec"
+};
+
+const _tid = CFG.topic.replace(/[^a-zA-Z0-9]/g, "_");
+const KEYS = {
+    user: "v3_civil_eng_global_user",
+    mistakes: `v2_mistakes_${_tid}`,
+    sent: `v2_sent_status_${_tid}`,
+    pending: `v2_pending_${_tid}`
+};
+  const DB = [
+  
+  {
+    "id": 1,
+    "q": "Which of the following scales is the largest?",
+    "o": [
+      "1 cm = 50 m",
+      "1:1000",
+      "RF 1/5000",
+      "1 cm = 10 km"
+    ],
+    "answer": 1
+  },
+  {
+    "id": 2,
+    "q": "The process of turning the telescope about its vertical axis in a horizontal plane is known as:",
+    "o": [
+      "Transiting",
+      "Reversing",
+      "Swinging",
+      "Plunging"
+    ],
+    "answer": 2
+  },
+  {
+    "id": 3,
+    "q": "In a three-point problem, the 'Great Circle' is the circle passing through:",
+    "o": [
+      "The three known points",
+      "The instrument station and two known points",
+      "The instrument station only",
+      "The North and South poles"
+    ],
+    "answer": 0
+  },
+  {
+    "id": 4,
+    "q": "The line joining points of equal elevation is called:",
+    "o": [
+      "Isogonic line",
+      "Horizontal line",
+      "Contour line",
+      "Level line"
+    ],
+    "answer": 2
+  },
+  {
+    "id": 5,
+    "q": "The specific gravity of Ordinary Portland Cement (OPC) is generally:",
+    "o": [
+      "2.50",
+      "3.15",
+      "4.20",
+      "1.55"
+    ],
+    "answer": 1
+  },
+  {
+    "id": 6,
+    "q": "Excess of silica in brick earth results in:",
+    "o": [
+      "Cracking and warping",
+      "Loss of cohesion and makes bricks brittle",
+      "Improving impermeability",
+      "Giving red color"
+    ],
+    "answer": 1
+  },
+  {
+    "id": 7,
+    "q": "A material that can undergo large plastic deformation before fracture is said to be:",
+    "o": [
+      "Brittle",
+      "Elastic",
+      "Ductile",
+      "Malleable"
+    ],
+    "answer": 2
+  },
+  {
+    "id": 8,
+    "q": "For a beam of constant section, the bending moment is maximum where:",
+    "o": [
+      "Shear force is zero or changes sign",
+      "Shear force is maximum",
+      "Deflection is zero",
+      "Slope is maximum"
+    ],
+    "answer": 2
+  },
+  {
+    "id": 9,
+    "q": "The pressure measured with the help of a piezometer tube is:",
+    "o": [
+      "Atmospheric pressure",
+      "Gauge pressure",
+      "Absolute pressure",
+      "Vacuum pressure"
+    ],
+    "answer": 1
+  },
+  {
+    "id": 10,
+    "q": "According to Bernoulli's theorem, the total energy of an ideal fluid flow consists of:",
+    "o": [
+      "Potential energy and Kinetic energy only",
+      "Pressure energy and Kinetic energy only",
+      "Pressure, Kinetic, and Potential energy",
+      "Internal energy and Flow energy"
+    ],
+    "answer": 2
+  },
+  {
+    "id": 11,
+    "q": "The maximum dry density (MDD) of a soil is obtained at:",
+    "o": [
+      "Zero water content",
+      "Optimum Moisture Content (OMC)",
+      "Full saturation",
+      "Plastic limit"
+    ],
+    "answer": 1
+  },
+  {
+    "id": 12,
+    "q": "The ratio of the volume of voids to the total volume of soil is called:",
+    "o": [
+      "Void ratio",
+      "Porosity",
+      "Degree of saturation",
+      "Water content"
+    ],
+    "answer": 1
+  },
+  {
+    "id": 13,
+    "q": "In the Limit State Method, the partial safety factor for concrete is taken as:",
+    "o": [
+      "1.15",
+      "1.50",
+      "1.00",
+      "1.80"
+    ],
+    "answer": 1
+  },
+  {
+    "id": 14,
+    "q": "The minimum number of longitudinal bars provided in a circular column is:",
+    "o": [
+      "4",
+      "6",
+      "8",
+      "12"
+    ],
+    "answer": 1
+  },
+  {
+    "id": 15,
+    "q": "The process of filling the hollow spaces of walls with grout or mortar is called:",
+    "o": [
+      "Pointing",
+      "Grouting",
+      "Plastering",
+      "Rendering"
+    ],
+    "answer": 1
+  },
+  {
+    "id": 16,
+    "q": "A 'Queen Post' truss differs from a 'King Post' truss by having:",
+    "o": [
+      "One vertical member",
+      "Two vertical members",
+      "No vertical members",
+      "Only inclined members"
+    ],
+    "answer": 1
+  },
+  {
+    "id": 17,
+    "q": "नेपालमा निजामती कर्मचारीका आचरण पालनामा निम्न मध्ये कुन समस्या विद्यमान छन् ?",
+    "o": [
+      "प्रशासन राजनीतिक हस्तक्षेप",
+      "नेतृत्व वर्गको इच्छाशक्तिको कमी",
+      "दण्डहिनता",
+      "माथिका सबै"
+    ],
+    "answer": 3
+  },
+  {
+    "id": 18,
+    "q": "नेपालका निजामती कर्मचारीले कुन-कुन पेशागत आचरण अनिवार्य रुपमा पालन गर्नुपर्दछ ?",
+    "o": [
+      "कानुनको जानकारी",
+      "आर्थिक अनुशासन",
+      "सदाचारिता",
+      "माथिका सबै"
+    ],
+    "answer": 3
+  },
+  {
+    "id": 19,
+    "q": "प्रदेश सेवा अन्तर्गत तलका मध्ये कुन पर्दछन् ?",
+    "o": [
+      "प्रदेश निजामती सेवा",
+      "प्रदेश संगठित संस्थाको सेवा",
+      "प्रदेश संसद सेवा",
+      "माथिका सबै"
+    ],
+    "answer": 3
+  },
+  {
+    "id": 20,
+    "q": "स्थानिय सेवा अन्तर्गत कार्यसम्पादन हुने कार्य कुन कुन हुन् ?",
+    "o": [
+      "स्थानीय तहका आयोजना व्यवस्थापन",
+      "आधारभूत शिक्षा, स्वास्थ्य, सरसफाई कार्यदेखि भौतिक निर्माण कार्य गर्ने/गराउने ।",
+      "स्थानीय भाषा संस्कृतिको सुरक्षा",
+      "माथिका सबै"
+    ],
+    "answer": 3
+  },
+  {
+    "id": 21,
+    "q": "स्थानीय तहको सेवा व्यवस्थापन सम्बद्ध निम्न मध्ये कुन कुन कानुनहरु पर्दछन् ?",
+    "o": [
+      "स्थानीय सरकार सञ्चालन ऐन २०७४",
+      "कर्मचारी समायोजन ऐन २०७५",
+      "दुवै सहि",
+      "दुवै गलत"
+    ],
+    "answer": 2
+  },
+  {
+    "id": 22,
+    "q": "सार्वजनिक सेवा अन्तर्गत निम्न मध्ये कुन कुन पर्दैनन् ?",
+    "o": [
+      "परम्परागत सेवा",
+      "नियमनकारी सेवा",
+      "पूर्वाधार सेवा",
+      "कुनै पनि हैन"
+    ],
+    "answer": 3
+  },
+  {
+    "id": 23,
+    "q": "सार्वजनिक सेवाको आधुनिक सेवाको अवधारणा कहिले बाट भएको हो ?",
+    "o": [
+      "सन् १९८० को दशक पूर्व",
+      "सन् १९८० को दशकपश्चात",
+      "वि.स. २०४७",
+      "वि.स. २०१५"
+    ],
+    "answer": 1
+  },
+  {
+    "id": 24,
+    "q": "सार्वजनिक वडापत्र भनेको के हो ?",
+    "o": [
+      "जनताले जारी गरेको आदेशपत्र",
+      "राजनीतिक दलको घोषणापत्र",
+      "सेवाग्राहीलाई सुसूचित गर्ने सूचना",
+      "नागरिक समाजको दस्तावेज"
+    ],
+    "answer": 2
+  },
+  {
+    "id": 25,
+    "q": "नेपालमा प्रशासनिक प्रमुखको रुपमा सचिव पदको सृजना कहिले भयो ?",
+    "o": [
+      "वि.स. २००७",
+      "वि.स. २०१५",
+      "वि.स. २०३६",
+      "वि.स. २०३९"
+    ],
+    "answer": 0
+  },
+  {
+    "id": 26,
+    "q": "निजामती सेवा नियमावली, २०५० अनुसार सामान्य प्रशासन मन्त्रालयले निजामती कर्मचारीको सरुवा प्रत्येक वर्षको कुन अवधिभित्र गरिसक्नु पर्छ?",
+    "o": [
+      "श्रावण १ गतेदेखि श्रावण मसान्तभित्र",
+      "भदौ १ गतेदेखि भदौ मसान्तभित्र",
+      "असोज १ गतेदेखि असोज १५ गतेभित्र",
+      "असोज १६ गतेदेखि असोज मसान्तभित्र"
+    ],
+    "answer": 1
+  },
+  {
+    "id": 27,
+    "q": "In Montague type fall ...............",
+    "o": [
+      "a straight glacis is used",
+      "a parabolic glacis is used",
+      "a cycloidal giacis is used",
+      "no glacis is used"
+    ],
+    "answer": 1
+  },
+  {
+    "id": 28,
+    "q": "The vertical component of the hydrostatic force on an inclined surface is obtained as ...............",
+    "o": [
+      "half of the horizontal component",
+      "zero",
+      "equal to horizontal component",
+      "as the weight of water resting on the inclined surface"
+    ],
+    "answer": 3
+  },
+  {
+    "id": 29,
+    "q": "The void spaces in the filtering materials act like a .............",
+    "o": [
+      "drain",
+      "inlet",
+      "tiny settling basins",
+      "outlet"
+    ],
+    "answer": 2
+  },
+  {
+    "id": 30,
+    "q": "The area of the opening in screens should be such that the velocity of flow through them does not exceed .............",
+    "o": [
+      "0.75 to 1 m/s",
+      "1.5 to 3 m/s",
+      "3 to 5 m/s",
+      "5 to 6 m/s"
+    ],
+    "answer": 0
+  },
+  {
+    "id": 31,
+    "q": "The measurement is made in square metre in case of ............",
+    "o": [
+      "cement concrete in foundation",
+      "R.C.C. structure",
+      "hollow concrete block wall",
+      "none of these"
+    ],
+    "answer": 3
+  },
+  {
+    "id": 32,
+    "q": "The amount required to be deposited by a contractor while submitting a tender is known as ............",
+    "o": [
+      "fixed deposit",
+      "caution deposit",
+      "security deposit",
+      "earnest money deposit"
+    ],
+    "answer": 3
+  },
+  {
+    "id": 33,
+    "q": "Traffic signs and devices should be placed within a cone of .............",
+    "o": [
+      "3°",
+      "10°",
+      "15°",
+      "20°"
+    ],
+    "answer": 1
+  },
+  {
+    "id": 34,
+    "q": "In the premix method of Bitumen road construction aggregate is also heated .............",
+    "o": [
+      "for easy workability",
+      "for easy spreading",
+      "to get a homogeneous mix",
+      "to economics the quantity of Bitumen"
+    ],
+    "answer": 2
+  },
+  {
+    "id": 35,
+    "q": "Bid bond is ............ % of quoted amount.",
+    "o": [
+      "2.5",
+      "5",
+      "10",
+      "15"
+    ],
+    "answer": 0
+  },
+  {
+    "id": 36,
+    "q": "The barchart technique is commonly used because it ............",
+    "o": [
+      "is simple to draw and easy to understand",
+      "indicates progress clearly",
+      "is useful for cost and quality control",
+      "all the above"
+    ],
+    "answer": 0
+  },
+  {
+    "id": 37,
+    "q": "The colour of wind direction indicator is ...",
+    "o": [
+      "white and black",
+      "red and white",
+      "orange and white",
+      "all of the above"
+    ],
+    "answer": 3
+  },
+  {
+    "id": 38,
+    "q": "Pick up the correct statement from the following ...",
+    "o": [
+      "air screw converts the energy given by the engine into speed",
+      "the propellers which are driven by turbine engines, are technically called turbo-props",
+      "the aircrafts which obtain the thrust directly from turbine engine, are called turbo-jets",
+      "all of the above"
+    ],
+    "answer": 3
+  },
+  {
+    "id": 39,
+    "q": "For a supersonic flow, velocity increases ............",
+    "o": [
+      "with the decrease of area of flow",
+      "with the increase of area of flow",
+      "when area of flow is constant",
+      "none of the above"
+    ],
+    "answer": 1
+  },
+  {
+    "id": 40,
+    "q": "Laminar sub-layer exists in ............",
+    "o": [
+      "laminar boundary layer region",
+      "turbulent boundary layer region",
+      "transition zone",
+      "none of the above"
+    ],
+    "answer": 1
+  },
+  {
+    "id": 41,
+    "q": "Notch is a device used for measuring ............",
+    "o": [
+      "rate of flow through pipes",
+      "rate of flow through a small channel",
+      "velocity through a pipe",
+      "velocity through a small channel"
+    ],
+    "answer": 1
+  },
+  {
+    "id": 42,
+    "q": "नेपालका नदीनालाबाट आर्थिक एवम् प्राविधिक दृष्टिले कति हजार मेगावाट विद्युत उत्पादन गर्न सकिने अनुमान गरिएको छ ?",
+    "o": [
+      "४२००० मे.वा.",
+      "८३००० मे.वा.",
+      "८५००० मे.वा.",
+      "४३००० मे.वा."
+    ],
+    "answer": 3
+  },
+  {
+    "id": 43,
+    "q": "चौविसे राज्यमा पर्ने राज्य कुन होइन् ?",
+    "o": [
+      "भीरकोट",
+      "विमकोट",
+      "पाल्पा",
+      "मुस्ताङ"
+    ],
+    "answer": 1
+  },
+  {
+    "id": 44,
+    "q": "गाईजात्रा कहिले पर्दछ ?",
+    "o": [
+      "भाद्र शुक्ल तृतीया",
+      "भाद्र कृष्ण प्रतिपदा",
+      "भाद्र कृष्ण अष्टमी",
+      "भाद्रशुक्ल पूर्णिमा"
+    ],
+    "answer": 1
+  },
+  {
+    "id": 45,
+    "q": "नेपालमा कहिलेदेखि धान दिवस मनाउन सुरुवात गरिएको हो ?",
+    "o": [
+      "वि.सं. २०६०",
+      "वि.सं. २०६१",
+      "वि.सं. २०६२",
+      "वि.सं. २०६३"
+    ],
+    "answer": 1
+  },
+  {
+    "id": 46,
+    "q": "एजेण्डा २१ लागू भएको जिल्ला दिएका मध्ये कुन होइन ?",
+    "o": [
+      "दाङ",
+      "चितवन",
+      "कैलाली",
+      "सुर्खेत"
+    ],
+    "answer": 1
+  },
+  {
+    "id": 47,
+    "q": "सबैभन्दा गह्रौ धातु कुन हो ?",
+    "o": [
+      "मर्करी",
+      "ओस्मियम",
+      "लिथियम",
+      "फलाम"
+    ],
+    "answer": 1
+  },
+  {
+    "id": 48,
+    "q": "प्रकाश सघन माध्यमबाट विरल माध्यममा जाँदा आवर्तित कोण ९०° हुँदाको अवस्थाको आपतित कोणलाई के भनिन्छ ?",
+    "o": [
+      "चरम कोण",
+      "आपतित कोण",
+      "परावर्तित कोण",
+      "दिक्पात कोण"
+    ],
+    "answer": 1
+  },
+  {
+    "id": 49,
+    "q": "संविधानको भाग ५ मा के सम्बन्धी व्यवस्था छ ?",
+    "o": [
+      "राज्यको संरचना र राज्य शक्तिको बाँडफाँड",
+      "नागरिकता",
+      "मौलिक हक र कर्तव्य",
+      "कार्यपालिका"
+    ],
+    "answer": 0
+  },
+  {
+    "id": 50,
+    "q": "पदमा बहाल रहँदाकै अवस्थामा विमान दुर्घटनामा परी मृत्यु हुने संयुक्त राष्ट्रसंघका महासचिव को हुन् ?",
+    "o": [
+      "कुर्त वाइल्ड हाइम",
+      "ड्याग ह्यामरसोल्ड",
+      "डा. बुत्रोस बुत्रोस घाली",
+      "वान कि मुन"
+    ],
+    "answer": 1
+  }
+];
+
+// --- 10 + 10 DYNAMIC COMPLIMENTS ---
+const PRAISE = {
+    good: [
+        "Awesome, {name}!", "Wow {name}, you are a Genius!", "Fantastic job, {name}!", 
+        "Excellent work, {name}!", "You nailed it, {name}!", "Brilliant answer, {name}!", 
+        "You are on fire, {name}!", "Perfect, {name}!", "Spot on, {name}!", "Great job, {name}!"
+    ],
+    bad: [
+        "Don't give up, {name}!", "You can do this, {name}!", "Nice try {name}, keep going!", 
+        "Learn from this, {name}!", "Almost there, {name}!", "Keep pushing, {name}!", 
+        "Stay focused, {name}!", "You will get the next one, {name}!", "Mistakes help you grow, {name}!", 
+        "Shake it off {name}, try again!"
+    ]
+};
+
+const App = {
+    state: { user: null, quiz: [], curr: 0, score: 0, mistakes: [], timer: null, submitted: false },
+
+    save: (k, v) => { try { localStorage.setItem(k, v) } catch(e) {} },
+    load: (k) => { try { return localStorage.getItem(k) } catch(e) { return null } },
+
+    verifyAndLogin: () => {
+        const n = document.getElementById('inp-name').value.trim();
+        const q = document.getElementById('inp-qual').value;
+        const c = document.getElementById('inp-code').value.trim();
+        const msg = document.getElementById('auth-msg');
+        const btn = document.getElementById('btn-verify');
+
+        if(!n || !c) {
+            msg.innerText = "New Month Subscription started";
+            msg.style.display = 'block'; return;
+        }
+
+        AudioHelper.init(); // Warm up audio
+
+        btn.disabled = true; btn.innerText = "Verifying..."; msg.style.display = 'none';
+
+        fetch(`${CFG.authScript}?code=${c}&name=${n}&qual=${q}`)
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === 'success') {
+                document.getElementById('inp-pass').value = data.password;
+                App.state.user = { name: n, qual: q, code: c };
+                App.save(KEYS.user, JSON.stringify(App.state.user));
+                setTimeout(() => App.dash(), 800);
+            } else {
+                btn.disabled = false; btn.innerText = "Verify & Login";
+                msg.style.display = 'block'; msg.style.color = "#FF3366";
+                msg.innerHTML = data.message.includes("used") ? "Code already used or expired." : "Invalid Code";
+            }
+        })
+        .catch(() => {
+            btn.disabled = false; btn.innerText = "Verify & Login";
+            msg.style.display = 'block'; msg.innerText = "Connection Error";
+        });
+    },
+
+    dash: () => {
+        document.getElementById('title-display').innerText = CFG.topic;
+        document.getElementById('dash-topic-display').innerText = CFG.topic;
+        const stored = App.load(KEYS.user);
+        if(!stored) return;
+        App.state.user = JSON.parse(stored);
+        document.getElementById('greet-msg').innerText = `Namaste, ${App.state.user.name.split(' ')[0]}!`;
+        document.getElementById('view-login').classList.add('hidden');
+        document.getElementById('view-result').classList.add('hidden');
+        document.getElementById('view-dash').classList.remove('hidden');
+        
+        if(App.load(KEYS.sent)) {
+            document.getElementById('btn-start').innerText = "Retake (Practice Mode)";
+            document.getElementById('submitted-msg').style.display = 'block';
+            document.getElementById('submitted-msg').innerText = "✅ Previous Score Submitted";
+        } else {
+            document.getElementById('btn-start').innerText = "Start Exam";
+            document.getElementById('submitted-msg').style.display = 'none';
+        }
+        const m = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        document.getElementById('btn-review').style.display = m.length > 0 ? 'inline-block' : 'none';
+    },
+
+    start: (review) => {
+        AudioHelper.init(); // Warm up audio
+        App.state.curr = 0; App.state.score = 0; App.state.mistakes = []; App.state.submitted = false;
+        const prevM = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        const flatDB = DB.flat ? DB.flat() : DB;
+        let source = review ? flatDB.filter(q => prevM.includes(q.id)) : [...flatDB];
+        if(!source.length) return alert("No questions available.");
+
+        App.state.quiz = source.map(q => {
+            let opts = q.o.map((txt, i) => ({ t: txt, c: i === q.a }));
+            return { ...q, shuffledOpts: opts.sort(() => Math.random() - 0.5) };
+        }).sort(() => Math.random() - 0.5);
+
+        document.getElementById('view-dash').classList.add('hidden');
+        document.getElementById('view-quiz').classList.remove('hidden');
+        document.getElementById('q-total').innerText = App.state.quiz.length;
+        App.timer(45*60);
+        App.render();
+    },
+
+    render: () => {
+        const q = App.state.quiz[App.state.curr];
+        document.getElementById('q-idx').innerText = App.state.curr + 1;
+        document.getElementById('q-text').innerText = q.q;
+        document.getElementById('exp-box').style.display = 'none';
+        document.getElementById('btn-next').classList.add('hidden');
+        const list = document.getElementById('opts-list');
+        list.innerHTML = '';
+        q.shuffledOpts.forEach((opt, i) => {
+            const btn = document.createElement('div');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<div class="option-marker">${String.fromCharCode(65+i)}</div>${opt.t}`;
+            btn.onclick = () => App.check(btn, opt, q);
+            list.appendChild(btn);
+        });
+    },
+
+    check: (btn, opt, q) => {
+        const all = document.querySelectorAll('.option-btn');
+        all.forEach(b => { b.onclick = null; b.style.opacity = '0.7'; b.style.transform = 'scale(0.98)'; b.style.boxShadow = 'var(--clay-shadow-pressed)'; });
+        btn.style.opacity = '1';
+        btn.style.transform = 'scale(1.02)';
+        
+        const praise = document.getElementById('praise-txt');
+        praise.classList.remove('animate-praise');
+        void praise.offsetWidth; praise.classList.add('animate-praise');
+        const userName = App.state.user ? App.state.user.name.split(' ')[0] : 'Student';
+
+        if(opt.c) {
+            btn.classList.add('correct');
+            App.state.score++;
+            let rawTxt = PRAISE.good[Math.floor(Math.random()*PRAISE.good.length)];
+            let finalTxt = rawTxt.replace('{name}', userName);
+            praise.innerText = finalTxt;
+            praise.style.color = "#00C853";
+            AudioHelper.playTing();
+            AudioHelper.speak(finalTxt);
+            let m = JSON.parse(App.load(KEYS.mistakes) || "[]").filter(id => id !== q.id);
+            App.save(KEYS.mistakes, JSON.stringify(m));
+        } else {
+            btn.classList.add('wrong');
+            all.forEach((b, i) => { if(q.shuffledOpts[i].c) b.classList.add('correct'); });
+            App.state.mistakes.push(q.id);
+            let rawTxt = PRAISE.bad[Math.floor(Math.random()*PRAISE.bad.length)];
+            let finalTxt = rawTxt.replace('{name}', userName);
+            praise.innerText = finalTxt;
+            praise.style.color = "#FF3366";
+            AudioHelper.playFush();
+            AudioHelper.speak(finalTxt);
+        }
+
+        if(q.e) {
+            document.getElementById('exp-box').innerHTML = `<strong>Explanation:</strong> ${q.e}`;
+            document.getElementById('exp-box').style.display = 'block';
+        }
+        document.getElementById('btn-next').classList.remove('hidden');
+    },
+
+    next: () => {
+        App.state.curr++;
+        if(App.state.curr < App.state.quiz.length) App.render();
+        else App.finish();
+    },
+
+    timer: (sec) => {
+        if(App.state.timer) clearInterval(App.state.timer);
+        App.state.timer = setInterval(() => {
+            sec--;
+            let m = Math.floor(sec/60), s = sec%60;
+            document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
+            if(sec<=0) App.finish();
+        }, 1000);
+    },
+
+    finish: () => {
+        clearInterval(App.state.timer);
+        document.getElementById('view-quiz').classList.add('hidden');
+        document.getElementById('view-result').classList.remove('hidden');
+        let m = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        m = [...new Set([...m, ...App.state.mistakes])];
+        App.save(KEYS.mistakes, JSON.stringify(m));
+        const pct = Math.round((App.state.score / App.state.quiz.length) * 100);
+        document.getElementById('res-score').innerText = App.state.score;
+        document.getElementById('res-pct').innerText = `${pct}% Accuracy`;
+        App.sync();
+    },
+
+    sync: () => {
+        if(App.state.submitted || App.load(KEYS.sent)) return;
+        App.state.submitted = true;
+        const formData = new FormData();
+        formData.append("name", App.state.user.name);
+        formData.append("qualification", App.state.user.qual);
+        formData.append("examTitle", CFG.topic);
+        formData.append("score", App.state.score);
+        if(navigator.onLine) {
+            fetch(CFG.scoreScript, { method: 'POST', mode: 'no-cors', body: formData })
+            .then(() => {
+                App.save(KEYS.sent, "true");
+                document.getElementById('sync-status').innerText = "✅ Score Saved!";
+                document.getElementById('sync-status').style.color = "#00C853";
+            }).catch(() => App.offline(formData));
+        } else App.offline(formData);
+    },
+
+    offline: (d) => {
+        let p = JSON.parse(App.load(KEYS.pending) || "[]");
+        p.push(Object.fromEntries(d));
+        App.save(KEYS.pending, JSON.stringify(p));
+        document.getElementById('sync-status').innerText = "Saved offline.";
+    }
+};
+
+window.onload = () => { if(App.load(KEYS.user)) App.dash(); };
+</script>
+</body>
+</html>
