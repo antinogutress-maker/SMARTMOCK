@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Koshi 4th Smart Mock Test 01</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* [100% CLAYMORPHISM PALETTE & SHADOWS] */
+        :root { 
+            --primary: #FF3366; 
+            --secondary: #FF9933; 
+            --accent: #00E5FF; 
+            
+            /* Clay Base Color */
+            --clay-bg: #E8F0F8; 
+            
+            /* Clay Outer Shadows */
+            --clay-shadow-out: 12px 12px 24px rgba(166, 180, 200, 0.7), -12px -12px 24px #FFFFFF;
+            
+            /* Clay Inner Shadows (Puffy Effect) */
+            --clay-shadow-in: inset 6px 6px 12px rgba(255, 255, 255, 0.9), inset -6px -6px 12px rgba(166, 180, 200, 0.4);
+            
+            /* Clay Pressed/Inset Shadows (For Inputs) */
+            --clay-shadow-pressed: inset 6px 6px 12px rgba(166, 180, 200, 0.6), inset -6px -6px 12px #FFFFFF;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            /* Soft pastel gradient to complement the 3D clay */
+            background: linear-gradient(-45deg, #FFDEE9, #B5FFFC, #C2E9FB, #EAE5C9);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 15px; 
+            overflow-x: hidden; 
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 100% Clay Container */
+        .app-container { 
+            width: 100%; 
+            max-width: 650px; 
+            background: var(--clay-bg); 
+            border-radius: 40px; 
+            padding: 2.5rem 2rem; 
+            /* Double shadow system for 3D clay look */
+            box-shadow: var(--clay-shadow-out), var(--clay-shadow-in);
+            position: relative; 
+            overflow: hidden; 
+            transition: all 0.4s ease; 
+        }
+        
+        h1 { font-size: 2.2rem; font-weight: 800; color: #1E293B; margin-bottom: 10px; }
+        h2 { font-size: 1.6rem; margin-bottom: 20px; color: #334155; font-weight: 800; }
+        p { color: #64748B; font-size: 1rem; line-height: 1.6; font-weight: 500; }
+        
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 10px; color: #64748B; text-transform: uppercase; letter-spacing: 1.5px; }
+        
+        /* Clay Inset Inputs */
+        .glass-input { 
+            width: 100%; 
+            padding: 18px; 
+            background: var(--clay-bg); 
+            border: none; 
+            border-radius: 20px; 
+            color: #1E293B; 
+            font-size: 1.05rem; 
+            font-weight: 600;
+            outline: none; 
+            transition: 0.3s;
+            box-shadow: var(--clay-shadow-pressed);
+        }
+        .glass-input:focus { 
+            box-shadow: inset 8px 8px 16px rgba(166, 180, 200, 0.7), inset -8px -8px 16px #FFFFFF, 0 0 0 4px rgba(0, 229, 255, 0.3);
+        }
+        .glass-input::placeholder { color: #94A3B8; }
+        .glass-input:read-only { background: #DFE7F0; color: #64748B; cursor: not-allowed; }
+        select.glass-input option { background: #FFFFFF; color: #1E293B; }
+        
+        /* Clay Puffy Button */
+        .btn { 
+            background: var(--primary); 
+            border: none; 
+            color: white; 
+            padding: 18px; 
+            width: 100%; 
+            border-radius: 24px; 
+            font-size: 1.15rem; 
+            font-weight: 800; 
+            cursor: pointer; 
+            margin-top: 25px; 
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            min-height: 55px; 
+            box-shadow: 
+                8px 8px 16px rgba(255, 51, 102, 0.3), 
+                -4px -4px 10px #FFFFFF,
+                inset 4px 4px 8px rgba(255,255,255,0.4),
+                inset -4px -4px 8px rgba(0,0,0,0.1);
+        }
+        .btn:active { 
+            transform: scale(0.95); 
+            box-shadow: 
+                2px 2px 5px rgba(255, 51, 102, 0.4), 
+                inset 6px 6px 12px rgba(0,0,0,0.2),
+                inset -2px -2px 6px rgba(255,255,255,0.2);
+        }
+        .btn:disabled { filter: grayscale(1); cursor: wait; opacity: 0.7; }
+        
+        .btn-outline { 
+            background: var(--clay-bg); 
+            color: #1E293B;
+            box-shadow: var(--clay-shadow-out), var(--clay-shadow-in); 
+            margin-top: 15px; 
+        }
+        
+        .personal-header { text-align: center; margin-bottom: 25px; padding-bottom: 15px; min-height: 50px; display: flex; align-items: center; justify-content: center; }
+        .animate-praise { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        .info-bar { 
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; 
+            background: var(--clay-bg); 
+            padding: 15px 20px; 
+            border-radius: 20px; 
+            box-shadow: var(--clay-shadow-pressed);
+            font-weight: 700;
+            color: #64748B;
+        }
+        .timer-badge { font-family: monospace; font-weight: 800; color: #FF3366; font-size: 1.3rem; }
+        
+        /* [REQUIRED] Question Text is ALWAYS Black */
+        .question-text { 
+            font-size: 1.35rem; 
+            font-weight: 800; 
+            margin-bottom: 25px; 
+            line-height: 1.5; 
+            color: #000000 !important; 
+            padding: 10px 0;
+        }
+        
+        /* [REQUIRED] Options with ALWAYS Blue Text and Clay Styling */
+        .option-btn { 
+            width: 100%; 
+            padding: 18px 20px; 
+            margin-bottom: 18px; 
+            background: var(--clay-bg); 
+            border: none; 
+            border-radius: 24px; 
+            text-align: left; 
+            color: #0000FF !important; 
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            display: flex; 
+            align-items: center; 
+            -webkit-user-select: none; user-select: none;
+            
+            /* Puffy Clay Shadow for Options */
+            box-shadow: 
+                6px 6px 14px rgba(166, 180, 200, 0.6), 
+                -6px -6px 14px #FFFFFF,
+                inset 3px 3px 6px rgba(255,255,255,0.9),
+                inset -3px -3px 6px rgba(166, 180, 200, 0.3);
+        }
+        .option-btn:hover { transform: translateY(-3px); }
+        .option-btn:active { transform: scale(0.96); box-shadow: var(--clay-shadow-pressed); }
+        
+        .option-marker { 
+            width: 40px; height: 40px; 
+            background: var(--clay-bg); 
+            border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            margin-right: 18px; 
+            font-weight: 800; 
+            color: #0000FF !important; 
+            flex-shrink: 0; 
+            /* Pressed marker inside puffy button */
+            box-shadow: var(--clay-shadow-pressed);
+        }
+        
+        /* Correct/Wrong States - Only Background Changes, text remains Blue! */
+        .correct { 
+            background: #00FF88 !important; /* Green Background */
+            box-shadow: 
+                6px 6px 14px rgba(0, 255, 136, 0.4), 
+                -4px -4px 10px #FFFFFF,
+                inset 4px 4px 8px rgba(255,255,255,0.5),
+                inset -4px -4px 8px rgba(0,0,0,0.1);
+            transform: scale(1.02);
+        }
+        .correct .option-marker { background: rgba(255,255,255,0.3); }
+        
+        .wrong { 
+            background: #FF3366 !important; /* Red Background */
+            box-shadow: 
+                6px 6px 14px rgba(255, 51, 102, 0.4), 
+                -4px -4px 10px #FFFFFF,
+                inset 4px 4px 8px rgba(255,255,255,0.4),
+                inset -4px -4px 8px rgba(0,0,0,0.1);
+        }
+        .wrong .option-marker { background: rgba(255,255,255,0.3); }
+        
+        .explanation-box { 
+            margin-top: 25px; padding: 20px; 
+            background: var(--clay-bg); 
+            border-left: 6px solid var(--accent); 
+            border-radius: 20px; 
+            font-size: 1.05rem; 
+            color: #1E293B;
+            font-weight: 600;
+            display: none; 
+            animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: var(--clay-shadow-pressed);
+        }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .score-circle { 
+            width: 200px; height: 200px; 
+            border-radius: 50%; 
+            background: var(--clay-bg);
+            margin: 0 auto 30px auto; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            /* Huge puffy clay ring */
+            box-shadow: 
+                15px 15px 30px rgba(166, 180, 200, 0.7), 
+                -15px -15px 30px #FFFFFF,
+                inset 8px 8px 16px rgba(255,255,255,0.9),
+                inset -8px -8px 16px rgba(166, 180, 200, 0.4); 
+        }
+        .score-val { font-size: 4.5rem; font-weight: 800; color: #FF3366; line-height: 1; }
+        .hidden { display: none !important; }
+        #opts-list { max-height: 55vh; overflow-y: auto; padding-right: 12px; padding-bottom: 10px; padding-top: 5px; margin-left: -5px; padding-left: 5px;}
+        
+        /* Custom Scrollbar */
+        #opts-list::-webkit-scrollbar { width: 8px; }
+        #opts-list::-webkit-scrollbar-track { background: var(--clay-bg); border-radius: 10px; box-shadow: var(--clay-shadow-pressed); }
+        #opts-list::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        
+        #auth-msg { text-align: center; margin-top: 20px; font-weight: 700; color: #FF3366; background: var(--clay-bg); padding: 15px; border-radius: 16px; display: none; box-shadow: var(--clay-shadow-pressed); }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="app">
+    <div id="view-login">
+        <div style="text-align: center; margin-bottom: 35px;">
+            <h1 id="title-display">Koshi 4th Smart Mock Test 01</h1>
+            <p>New Edition | Civil Engineering</p>
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Full Name</span>
+            <input type="text" id="inp-name" class="glass-input" placeholder="Enter your name">
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Qualification</span>
+            <select id="inp-qual" class="glass-input">
+                <option value="Engineer">Engineer</option>
+                <option value="Sub-Engineer">Sub-Engineer</option>
+                <option value="Asst. Sub-Engineer">Asst. Sub-Engineer</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <span class="label">Unique Code</span>
+            <input type="tel" id="inp-code" class="glass-input" placeholder="Enter 5-digit code">
+        </div>
+
+        <div class="input-group">
+            <span class="label">Password (Auto-Fill)</span>
+            <input type="password" id="inp-pass" class="glass-input" placeholder="Verifying..." readonly>
+        </div>
+
+        <button class="btn" id="btn-verify" onclick="App.verifyAndLogin()">Verify & Login</button>
+        <p id="auth-msg"></p>
+    </div>
+
+    <div id="view-dash" class="hidden">
+        <div style="text-align: center; margin-bottom: 35px;">
+            <h2 id="greet-msg" style="color: #FF3366; font-size: 2.2rem;">Welcome!</h2>
+            <div style="background: var(--clay-bg); padding: 30px; border-radius: 24px; margin-bottom: 25px; box-shadow: var(--clay-shadow-pressed);">
+                <p style="text-transform: uppercase; font-size: 0.9rem; color: #94A3B8; font-weight: 800; letter-spacing: 1px;">Active Session</p>
+                <h3 id="dash-topic-display" style="font-size: 1.8rem; margin: 15px 0; color: #1E293B;"></h3>
+                <p style="font-weight: 700; color: #64748B;">50 Questions • 45 Minutes</p>
+            </div>
+        </div>
+        <button class="btn" id="btn-start" onclick="App.start(false)">Start Exam</button>
+        <p id="submitted-msg" style="color: #00C853; text-align: center; margin-top: 20px; display: none; font-weight: 800;">✅ Score Submitted Successfully</p>
+        <button class="btn btn-outline" id="btn-review" onclick="App.start(true)" style="display: none;">Review Mistakes</button>
+    </div>
+
+    <div id="view-quiz" class="hidden">
+        <div class="personal-header">
+            <div id="praise-txt" style="font-size: 1.5rem; font-weight: 800; color: #1E293B;">Good Luck!</div>
+        </div>
+
+        <div class="info-bar">
+            <span>Q: <span id="q-idx">1</span> / <span id="q-total">50</span></span>
+            <span class="timer-badge" id="timer">45:00</span>
+        </div>
+
+        <div id="q-container">
+            <div class="question-text" id="q-text">Loading...</div>
+            <div id="opts-list"></div>
+            <div class="explanation-box" id="exp-box"></div>
+        </div>
+
+        <button class="btn hidden" id="btn-next" onclick="App.next()">Next Question</button>
+    </div>
+
+    <div id="view-result" class="hidden" style="text-align: center;">
+        <h2 style="font-size: 2.2rem; margin-bottom: 30px;">Quiz Completed!</h2>
+        <div class="score-circle">
+            <span class="score-val" id="res-score">0</span>
+            <span style="font-size: 1rem; font-weight: 800; text-transform: uppercase; color: #64748B; margin-top: 10px;">Correct</span>
+        </div>
+        <div style="margin-bottom: 40px;">
+            <h3 id="res-pct" style="color: #FF3366; font-size: 2rem; font-weight: 800;">0% Accuracy</h3>
+            <p id="sync-status" style="font-size: 1.1rem; font-weight: 700; margin-top: 15px; color: #64748B;">Syncing score...</p>
+        </div>
+        <button class="btn" onclick="App.dash()">Back to Dashboard</button>
+    </div>
+</div>
+
+<script>
+/**
+ * --- UPDATED AUDIO HELPER SYSTEM ---
+ * Uses Free Google Audio API + Browser Synthesis fallback
+ */
+const AudioHelper = {
+    ctx: null,
+    init: function() {
+        if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if(this.ctx.state === 'suspended') this.ctx.resume();
+        
+        // Mobile warm-up
+        if ('speechSynthesis' in window) {
+            let warmupMsg = new SpeechSynthesisUtterance('');
+            warmupMsg.volume = 0; 
+            window.speechSynthesis.speak(warmupMsg);
+        }
+    },
+    playTing: function() {
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.type = 'sine'; 
+        osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1500, this.ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.5);
+    },
+    playFush: function() {
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.type = 'square'; 
+        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.3);
+    },
+    speak: function(text) {
+        // Free Google Translate TTS API (Human Sounding)
+        const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=${encodeURIComponent(text)}`;
+        const audio = new Audio(url);
+        audio.play().catch(() => {
+            // Fallback to robotic browser voice if blocked
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const msg = new SpeechSynthesisUtterance(text);
+                msg.lang = 'en-US';
+                window.speechSynthesis.speak(msg);
+            }
+        });
+    }
+};
+
+/**
+ * ----------------------------------------------------
+ * CONFIGURATION - CHANGE ONLY THIS SECTION FOR NEW APPS
+ * ----------------------------------------------------
+ */
+const CFG = {
+    topic: "Koshi 4th Smart Mock Test 01", 
+    scoreScript: "https://script.google.com/macros/s/AKfycbwlARXNg2vbAH3-xPgt4Mt_MlPydwuZOtA7dkjyD0LVQlYX2IBDUKULT8rlZVIy034H/exec",
+    authScript: "https://script.google.com/macros/s/AKfycbzMzOG0rG6JUEsDUJymyOGevOjt750FgRD9UNdxeEmDbeHukwRZTvjwd8UyDbD5icR6/exec"
+};
+
+const _tid = CFG.topic.replace(/[^a-zA-Z0-9]/g, "_");
+const KEYS = {
+    user: "Nepalis",
+    mistakes: `v2_mistakes_${_tid}`,
+    sent: `v2_sent_status_${_tid}`,
+    pending: `v2_pending_${_tid}`
+};
+  const DB = [
+  
+  {
+    "id": 1,
+    "q": "In good quality brick earth, which specific constituent is primarily responsible for imparting plasticity so the clay can be easily molded?",
+    "o": ["Silica", "Alumina", "Lime", "Iron oxide"],
+    "a": 1,
+    "e": "Alumina (present at 20-30%) gives the clay its essential plasticity. Without sufficient alumina, the earth cannot be molded into the precise rectangular shape of a brick."
+  },
+  {
+    "id": 2,
+    "q": "Which laboratory apparatus is universally used to determine the standard consistency and initial setting time of cement paste?",
+    "o": ["Le Chatelier apparatus", "Slump cone", "Vicat apparatus", "Pycnometer"],
+    "a": 2,
+    "e": "The Vicat apparatus utilizes specific needles and plungers to precisely measure the penetration resistance of cement paste, establishing its consistency and setting times according to IS codes."
+  },
+  {
+    "id": 3,
+    "q": "In the composition of standard oil paints, which material most commonly serves as the \"vehicle\" or binder?",
+    "o": ["Turpentine", "White lead", "Linseed oil", "Litharge"],
+    "a": 2,
+    "e": "Linseed oil acts as the primary drying oil (vehicle). It holds the solid pigment particles in suspension and oxidizes upon exposure to air to form a tough, durable paint film."
+  },
+  {
+    "id": 4,
+    "q": "The central, older, and darker portion of a tree trunk, which provides structural rigidity but no longer conducts sap, is technically called:",
+    "o": ["Sapwood", "Heartwood", "Cambium layer", "Pith"],
+    "a": 1,
+    "e": "Heartwood is the dead, inner wood. It is highly valued for structural timber because it is physically stronger, more durable, and vastly more resistant to insect attack than the outer sapwood."
+  },
+  {
+    "id": 5,
+    "q": "For structural concrete work, the maximum permissible silt content in fine aggregate (sand) should strictly not exceed what percentage by volume?",
+    "o": ["2%", "8%", "15%", "25%"],
+    "a": 1,
+    "e": "Standard civil engineering specifications restrict the maximum silt and clay content in sand to 8% by volume. Excess silt coats the sand particles, preventing the cement paste from bonding properly."
+  },
+  {
+    "id": 6,
+    "q": "For mass concreting works like gravity dams or thick foundations, what is the standard recommended slump value?",
+    "o": ["10 mm to 25 mm", "25 mm to 50 mm", "75 mm to 100 mm", "150 mm to 200 mm"],
+    "a": 1,
+    "e": "Mass concrete requires very low workability (low slump) and a minimal water-cement ratio to severely restrict the heat of hydration, which prevents thermal cracking in large pours."
+  },
+  {
+    "id": 7,
+    "q": "In brick masonry, a standard brick cut longitudinally in half along its entire length is technically known as a:",
+    "o": ["King closer", "Queen closer", "Half bat", "Bevelled closer"],
+    "a": 1,
+    "e": "A queen closer is created by splitting a brick lengthwise into two equal halves. It is standardly used near the corners (quoins) of walls to ensure the vertical joints do not align."
+  },
+  {
+    "id": 8,
+    "q": "In staircase terminology, what is the strict horizontal distance between the faces of two successive risers called?",
+    "o": ["Tread", "Pitch", "Going", "Flight"],
+    "a": 2,
+    "e": "While the \"tread\" is the physical board you step on, the \"going\" is the exact horizontal distance between two risers. The going determines the actual steepness and horizontal footprint of the staircase."
+  },
+  {
+    "id": 9,
+    "q": "In earthquake-resistant detailing for RCC columns, what is the mandated standard angle for bending the hooks of lateral ties (stirrups)?",
+    "o": ["90 degrees", "135 degrees", "180 degrees", "45 degrees"],
+    "a": 1,
+    "e": "Seismic codes strictly mandate 135-degree hooks for all lateral ties. This ensures the hook remains securely anchored inside the concrete core, even if the outer concrete cover breaks away during a severe earthquake."
+  },
+  {
+    "id": 10,
+    "q": "Which curing method is considered the most practical, standard, and effective for vertical RCC elements like columns?",
+    "o": ["Ponding with water", "Wrapping with wet gunny bags", "Covering with dry sand", "Steam curing"],
+    "a": 1,
+    "e": "Because vertical surfaces cannot hold ponded water, securely wrapping the columns in gunny bags (jute sacks) and spraying them to keep them constantly wet is the standard and most reliable site practice."
+  },
+  {
+    "id": 11,
+    "q": "In building drainage systems, a pipe that exclusively carries liquid wastewater from washbasins and baths (but zero human excreta) is classified as a:",
+    "o": ["Soil pipe", "Waste pipe", "Vent pipe", "Rainwater pipe"],
+    "a": 1,
+    "e": "In plumbing terminology, a \"waste pipe\" carries only greywater (sullage) from sinks and showers. A \"soil pipe\" is exclusively designated for carrying foul blackwater from water closets (toilets)."
+  },
+  {
+    "id": 12,
+    "q": "For public health safety, what is the standard recommended level of residual chlorine required in domestic drinking water at the consumer's tap?",
+    "o": ["0.2 ppm", "2.0 ppm", "5.0 ppm", "10.0 ppm"],
+    "a": 0,
+    "e": "Standard environmental health guidelines strictly mandate a residual chlorine level of 0.2 parts per million (ppm). This ensures the water remains actively protected against bacterial contamination while traveling through the distribution pipes."
+  },
+  {
+    "id": 13,
+    "q": "Which modern safety device is specifically installed in distribution boards to detect minute earth leakages and instantly prevent fatal electric shocks?",
+    "o": ["Miniature Circuit Breaker (MCB)", "High Rupturing Capacity (HRC) fuse", "Residual Current Circuit Breaker (RCCB)", "Step-down transformer"],
+    "a": 2,
+    "e": "While MCBs protect wiring from overloads, an RCCB (or ELCB) specifically monitors the circuit for any residual leakage current escaping to the earth. It trips in milliseconds to save a person from electrocution."
+  },
+  {
+    "id": 14,
+    "q": "According to standard indoor lighting codes, what is the generally recommended illumination level for a visually demanding workspace like a reading room or drafting office?",
+    "o": ["50 Lux", "100 Lux", "300 to 500 Lux", "1000 to 1500 Lux"],
+    "a": 2,
+    "e": "Illumination engineering standards recommend an illuminance of 300 to 500 Lux for general office work, reading, and precise writing tasks to ensure maximum visual clarity and prevent eye fatigue."
+  },
+  {
+    "id": 15,
+    "q": "स्थानीय सरकारी सेवा ऐन अनुसार आचरण सम्बन्धी व्यवस्था अन्तर्गत 'बिदा स्वीकृत नगराई लगातार कति दिनसम्म आफ्नो कार्यालयमा अनुपस्थित रहेमा' भविष्यमा सरकारी सेवाको निमित्त अयोग्य ठहरिने गरी सेवाबाट बर्खास्त गरिनेछ?",
+    "o": ["६० दिनसम्म", "९० दिनसम्म", "१२० दिनसम्म", "४५ दिनसम्म"],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 16,
+    "q": "प्रदेश लोकसेवा आयोगका सदस्यको पारिश्रमिक र अन्य सुविधा सम्बन्धी व्यवस्था कुन परिच्छेदमा छ?",
+    "o": ["परिच्छेद २", "परिच्छेद ३", "परिच्छेद ४", "परिच्छेद ५"],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 17,
+    "q": "कोशी प्रदेश लोकसेवा आयोग ऐन, २०७६ मा कति वटा अनुसूचीहरु रहेका छन्?",
+    "o": ["२ वटा", "३ वटा", "४ वटा", "५ वटा"],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 18,
+    "q": "प्रदेश लोकसेवा आयोगको अध्यक्ष र सदस्यको नियुक्तिका लागि सिफारिस गर्न कस्को अध्यक्षतामा समिति रहनेछ?",
+    "o": ["प्रदेश प्रमुख", "मुख्यमन्त्री", "प्रदेश सभामुख", "प्रमुख सचिव"],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 19,
+    "q": "प्रदेश लोकसेवा आयोगको अध्यक्ष र सदस्य पदमा नियुक्तिका लागि कति वर्ष उमेर पुरा भएको हुनुपर्दछ?",
+    "o": ["३५ वर्ष", "४० वर्ष", "४५ वर्ष", "५० वर्ष"],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 20,
+    "q": "आवधिक योजनाको अन्त्यसम्ममा मातृ मृत्युदर (प्रति एक लाख जीवित जन्ममा) कतिमा झार्ने लक्ष्य राखिएको छ?",
+    "o": ["१४३ जना", "९० जना", "७० जना", "५० जना"],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 21,
+    "q": "आवधिक योजनाको अन्त्यसम्ममा साक्षरता दर कति प्रतिशत पुर्‍याउने लक्ष्य राखिएको छ?",
+    "o": ["७९.७%", "८१.२%", "९०.०%", "९५.०%"],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 22,
+    "q": "आवधिक योजनाको अन्त्यसम्ममा विद्युत उत्पादन कति मेगावाट पुर्‍याउने लक्ष्य रहेको छ?",
+    "o": ["५४६ मेगावाट", "१००० मेगावाट", "१५५० मेगावाट", "२२०० मेगावाट"],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 23,
+    "q": "सोह्रौँ योजना अनुसार कुन सालसम्म दिगो विकासको लक्ष्य हासिल गरी सोसँगै मध्यम आय भएको मुलुकमा पुग्ने लक्ष्य लिइएको छ?",
+    "o": ["२०८५", "२०८६", "२०८७", "२०८८"],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 24,
+    "q": "१६ औं योजनाले योजना अवधिको अन्तिम वर्ष सम्म भ्रष्टाचार न्यूनीकरण अनुभूति सूचकाङ्क कति पुर्याउने लक्ष्य राखेको छ?",
+    "o": ["४३", "६५", "५२", "३५"],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 25,
+    "q": "What is the shape of the septic tank?",
+    "o": ["Square", "Rectangle", "Circular", "Oval"],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 26,
+    "q": "There is possibility of contamination of ground water storage tank, from",
+    "o": ["Rainfall water", "Seepage of surface water", "Dust from surrounding environment", "All of the above"],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 27,
+    "q": "Disinfection of drinking water is done to remove",
+    "o": ["Turbidity", "Odour", "Colour", "Bacteria"],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 28,
+    "q": "The vent shaft is provided with wire gauge cover of 1.5mm mesh properly to prevent",
+    "o": ["Entry of mosquito", "Entry of vermin", "Entry of insects", "All of the above"],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 29,
+    "q": "The pipe which is connected in water storage tank to enable out flow of water from already full tank is called",
+    "o": ["Outlet pipe", "Over flow pipe", "Full pipe", "None of these"],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 30,
+    "q": "Natural fertility is generally found in ...............",
+    "o": ["black soils", "alluvium soils", "red soils", "sandy soils"],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 31,
+    "q": "The difference in levels between the top of capillary zone and the water table is ...............",
+    "o": ["zero", "negative", "positive", "difficult to tell"],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 32,
+    "q": "Raising of outer edge of a road with respect to inner edge, is known .............",
+    "o": ["super elevation", "cant", "banking", "all of the above"],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 33,
+    "q": "The best compromise between the increase of the length of a highway and reduction in its load carrying capacity, is the ruling gradient .............",
+    "o": ["1 in 10", "1 in 15", "1 in 20", "1 in 25"],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 34,
+    "q": "Pressure filters are best suited for .............",
+    "o": ["swimming pools", "railway stations", "individual industries", "all of these"],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 35,
+    "q": "The slow sand filters should be cleaned if the loss of head becomes more than .............",
+    "o": ["0.75 m", "1.2 m", "2.2 m", "3.5 m"],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 36,
+    "q": "गाउँपालिकाको न्यूनतम वडा संख्या कति हो?",
+    "o": ["५ वटा", "६ वटा", "७ वटा", "८ वटा"],
+    "a": 0,
+    "e": "उत्तर: ५ वटा - दफा ५"
+  },
+  {
+    "id": 37,
+    "q": "सभाको बैठक वर्षमा कति पटक बस्नुपर्छ?",
+    "o": ["कम्तीमा ३ पटक", "कम्तिमा ४ पटक", "कम्तिमा २ पटक", "कम्तिमा १ पटक"],
+    "a": 2,
+    "e": "उत्तर: c कम्तीमा २ पटक - दफा १९"
+  },
+  {
+    "id": 38,
+    "q": "स्थानीय तहको संगठन तथा व्यवस्थापन सर्वेक्षण (O&M Survey) कसले स्वीकृत गर्छ?",
+    "o": ["लोकसेवा आयोग", "संघीय मामिला मन्त्रालय", "स्थानीय तहको सभा", "प्रदेश सरकार"],
+    "a": 2,
+    "e": "दफा ८३ (१) अनुसार कार्यपालिकाको प्रस्तावमा सभाले ओ. एण्ड. एम. (O&M) स्वीकृत गर्छ।"
+  },
+  {
+    "id": 39,
+    "q": "स्थानीय सरकार सञ्चालन ऐन, २०७४ कुन निकायले बनाएको हो?",
+    "o": ["संविधान सभा", "व्यवस्थापिका–संसद्", "प्रतिनिधिसभा", "राष्ट्रिय सभा"],
+    "a": 1,
+    "e": "संविधानको धारा २९६ को उपधारा (१) बमोजिम तत्कालीन व्यवस्थापिका–संसद्ले यो ऐन बनाएको हो।"
+  },
+  {
+    "id": 40,
+    "q": "Mechanical lines are a type of",
+    "o": ["mechanic drawing", "line of drawn with free hand", "line drawn with drawing equipment", "none of these"],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 41,
+    "q": "Horizontal lines are drawn",
+    "o": ["left to right", "right to left", "top to bottom", "both (A) and (B)"],
+    "a": 3,
+    "e": "Note: In drafting practice, horizontal lines are technically drawn left to right, but common usage in some textbooks lists both directions."
+  },
+  {
+    "id": 42,
+    "q": "To measure fraction, we use",
+    "o": ["diagonal scale", "T-square", "set square", "planimeter"],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 43,
+    "q": "In working drawings, these show all necessary information, not given directly on the drawing with its dimensions and notes",
+    "o": ["Document strips", "Portable documents", "Formatting forms", "Title and record strips"],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 44,
+    "q": "For woodwork measurement shall be worked out to nearest",
+    "o": ["0.001 cum", "0.01 cum", "0.1 cum", "1 cum"],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 45,
+    "q": "Contractors' overhead is taken as",
+    "o": ["3% of the project cost", "5% of project cost", "10% of project cost", "15% of project cost"],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 46,
+    "q": "The expected out turn of brick work in cement mortar in foundation and plinth per mason per day, is",
+    "o": ["1.00 m³", "1.25 m³", "1.50 m³", "1.75 m³"],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 47,
+    "q": "In case of steel rolling shutters, for the estimation of painted area, the plain area is multiplied by",
+    "o": ["0.75", "1.25", "1.10", "1.50"],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 48,
+    "q": "Levelling deals with measurements in a",
+    "o": ["Horizontal plane", "Inclined plane", "Vertical plane", "Both vertical and horizontal plane"],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 49,
+    "q": "Which type of levelling is done on the phenomenon, the difference in elevation between two points is proportional to the difference in atmospheric pressure at these points?",
+    "o": ["Trigonometric levelling", "Spirit levelling", "Barometric levelling", "Profile levelling"],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 50,
+    "q": "Which of the following line is the tangential to the level line at a point?",
+    "o": ["Datum line", "Vertical line", "Horizontal line", "Plumb line"],
+    "a": 2,
+    "e": ""
+  }
+];
+
+// --- 10 + 10 DYNAMIC COMPLIMENTS ---
+const PRAISE = {
+    good: [
+        "Awesome, {name}!", "Wow {name}, you are a Genius!", "Fantastic job, {name}!", 
+        "Excellent work, {name}!", "You nailed it, {name}!", "Brilliant answer, {name}!", 
+        "You are on fire, {name}!", "Perfect, {name}!", "Spot on, {name}!", "Great job, {name}!"
+    ],
+    bad: [
+        "Don't give up, {name}!", "You can do this, {name}!", "Nice try {name}, keep going!", 
+        "Learn from this, {name}!", "Almost there, {name}!", "Keep pushing, {name}!", 
+        "Stay focused, {name}!", "You will get the next one, {name}!", "Mistakes help you grow, {name}!", 
+        "Shake it off {name}, try again!"
+    ]
+};
+
+const App = {
+    state: { user: null, quiz: [], curr: 0, score: 0, mistakes: [], timer: null, submitted: false },
+
+    save: (k, v) => { try { localStorage.setItem(k, v) } catch(e) {} },
+    load: (k) => { try { return localStorage.getItem(k) } catch(e) { return null } },
+
+    verifyAndLogin: () => {
+        const n = document.getElementById('inp-name').value.trim();
+        const q = document.getElementById('inp-qual').value;
+        const c = document.getElementById('inp-code').value.trim();
+        const msg = document.getElementById('auth-msg');
+        const btn = document.getElementById('btn-verify');
+
+        if(!n || !c) {
+            msg.innerText = "Code Changed, Contact admin  and Renew Subscription";
+            msg.style.display = 'block'; return;
+        }
+
+        AudioHelper.init(); // Warm up audio
+
+        btn.disabled = true; btn.innerText = "Verifying..."; msg.style.display = 'none';
+
+        fetch(`${CFG.authScript}?code=${c}&name=${n}&qual=${q}`)
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === 'success') {
+                document.getElementById('inp-pass').value = data.password;
+                App.state.user = { name: n, qual: q, code: c };
+                App.save(KEYS.user, JSON.stringify(App.state.user));
+                setTimeout(() => App.dash(), 800);
+            } else {
+                btn.disabled = false; btn.innerText = "Verify & Login";
+                msg.style.display = 'block'; msg.style.color = "#FF3366";
+                msg.innerHTML = data.message.includes("used") ? "Code already used or expired." : "Invalid Code";
+            }
+        })
+        .catch(() => {
+            btn.disabled = false; btn.innerText = "Verify & Login";
+            msg.style.display = 'block'; msg.innerText = "Connection Error";
+        });
+    },
+
+    dash: () => {
+        document.getElementById('title-display').innerText = CFG.topic;
+        document.getElementById('dash-topic-display').innerText = CFG.topic;
+        const stored = App.load(KEYS.user);
+        if(!stored) return;
+        App.state.user = JSON.parse(stored);
+        document.getElementById('greet-msg').innerText = `Namaste, ${App.state.user.name.split(' ')[0]}!`;
+        document.getElementById('view-login').classList.add('hidden');
+        document.getElementById('view-result').classList.add('hidden');
+        document.getElementById('view-dash').classList.remove('hidden');
+        
+        if(App.load(KEYS.sent)) {
+            document.getElementById('btn-start').innerText = "Retake (Practice Mode)";
+            document.getElementById('submitted-msg').style.display = 'block';
+            document.getElementById('submitted-msg').innerText = "✅ Previous Score Submitted";
+        } else {
+            document.getElementById('btn-start').innerText = "Start Exam";
+            document.getElementById('submitted-msg').style.display = 'none';
+        }
+        const m = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        document.getElementById('btn-review').style.display = m.length > 0 ? 'inline-block' : 'none';
+    },
+
+    start: (review) => {
+        AudioHelper.init(); // Warm up audio
+        App.state.curr = 0; App.state.score = 0; App.state.mistakes = []; App.state.submitted = false;
+        const prevM = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        const flatDB = DB.flat ? DB.flat() : DB;
+        let source = review ? flatDB.filter(q => prevM.includes(q.id)) : [...flatDB];
+        if(!source.length) return alert("No questions available.");
+
+        App.state.quiz = source.map(q => {
+            let opts = q.o.map((txt, i) => ({ t: txt, c: i === q.a }));
+            return { ...q, shuffledOpts: opts.sort(() => Math.random() - 0.5) };
+        }).sort(() => Math.random() - 0.5);
+
+        document.getElementById('view-dash').classList.add('hidden');
+        document.getElementById('view-quiz').classList.remove('hidden');
+        document.getElementById('q-total').innerText = App.state.quiz.length;
+        App.timer(45*60);
+        App.render();
+    },
+
+    render: () => {
+        const q = App.state.quiz[App.state.curr];
+        document.getElementById('q-idx').innerText = App.state.curr + 1;
+        document.getElementById('q-text').innerText = q.q;
+        document.getElementById('exp-box').style.display = 'none';
+        document.getElementById('btn-next').classList.add('hidden');
+        const list = document.getElementById('opts-list');
+        list.innerHTML = '';
+        q.shuffledOpts.forEach((opt, i) => {
+            const btn = document.createElement('div');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<div class="option-marker">${String.fromCharCode(65+i)}</div>${opt.t}`;
+            btn.onclick = () => App.check(btn, opt, q);
+            list.appendChild(btn);
+        });
+    },
+
+    check: (btn, opt, q) => {
+        const all = document.querySelectorAll('.option-btn');
+        all.forEach(b => { b.onclick = null; b.style.opacity = '0.7'; b.style.transform = 'scale(0.98)'; b.style.boxShadow = 'var(--clay-shadow-pressed)'; });
+        btn.style.opacity = '1';
+        btn.style.transform = 'scale(1.02)';
+        
+        const praise = document.getElementById('praise-txt');
+        praise.classList.remove('animate-praise');
+        void praise.offsetWidth; praise.classList.add('animate-praise');
+        const userName = App.state.user ? App.state.user.name.split(' ')[0] : 'Student';
+
+        if(opt.c) {
+            btn.classList.add('correct');
+            App.state.score++;
+            let rawTxt = PRAISE.good[Math.floor(Math.random()*PRAISE.good.length)];
+            let finalTxt = rawTxt.replace('{name}', userName);
+            praise.innerText = finalTxt;
+            praise.style.color = "#00C853";
+            AudioHelper.playTing();
+            AudioHelper.speak(finalTxt);
+            let m = JSON.parse(App.load(KEYS.mistakes) || "[]").filter(id => id !== q.id);
+            App.save(KEYS.mistakes, JSON.stringify(m));
+        } else {
+            btn.classList.add('wrong');
+            all.forEach((b, i) => { if(q.shuffledOpts[i].c) b.classList.add('correct'); });
+            App.state.mistakes.push(q.id);
+            let rawTxt = PRAISE.bad[Math.floor(Math.random()*PRAISE.bad.length)];
+            let finalTxt = rawTxt.replace('{name}', userName);
+            praise.innerText = finalTxt;
+            praise.style.color = "#FF3366";
+            AudioHelper.playFush();
+            AudioHelper.speak(finalTxt);
+        }
+
+        if(q.e) {
+            document.getElementById('exp-box').innerHTML = `<strong>Explanation:</strong> ${q.e}`;
+            document.getElementById('exp-box').style.display = 'block';
+        }
+        document.getElementById('btn-next').classList.remove('hidden');
+    },
+
+    next: () => {
+        App.state.curr++;
+        if(App.state.curr < App.state.quiz.length) App.render();
+        else App.finish();
+    },
+
+    timer: (sec) => {
+        if(App.state.timer) clearInterval(App.state.timer);
+        App.state.timer = setInterval(() => {
+            sec--;
+            let m = Math.floor(sec/60), s = sec%60;
+            document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
+            if(sec<=0) App.finish();
+        }, 1000);
+    },
+
+    finish: () => {
+        clearInterval(App.state.timer);
+        document.getElementById('view-quiz').classList.add('hidden');
+        document.getElementById('view-result').classList.remove('hidden');
+        let m = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        m = [...new Set([...m, ...App.state.mistakes])];
+        App.save(KEYS.mistakes, JSON.stringify(m));
+        const pct = Math.round((App.state.score / App.state.quiz.length) * 100);
+        document.getElementById('res-score').innerText = App.state.score;
+        document.getElementById('res-pct').innerText = `${pct}% Accuracy`;
+        App.sync();
+    },
+
+    sync: () => {
+        if(App.state.submitted || App.load(KEYS.sent)) return;
+        App.state.submitted = true;
+        const formData = new FormData();
+        formData.append("name", App.state.user.name);
+        formData.append("qualification", App.state.user.qual);
+        formData.append("examTitle", CFG.topic);
+        formData.append("score", App.state.score);
+        if(navigator.onLine) {
+            fetch(CFG.scoreScript, { method: 'POST', mode: 'no-cors', body: formData })
+            .then(() => {
+                App.save(KEYS.sent, "true");
+                document.getElementById('sync-status').innerText = "✅ Score Saved!";
+                document.getElementById('sync-status').style.color = "#00C853";
+            }).catch(() => App.offline(formData));
+        } else App.offline(formData);
+    },
+
+    offline: (d) => {
+        let p = JSON.parse(App.load(KEYS.pending) || "[]");
+        p.push(Object.fromEntries(d));
+        App.save(KEYS.pending, JSON.stringify(p));
+        document.getElementById('sync-status').innerText = "Saved offline.";
+    }
+};
+
+window.onload = () => { if(App.load(KEYS.user)) App.dash(); };
+</script>
+</body>
+</html>
