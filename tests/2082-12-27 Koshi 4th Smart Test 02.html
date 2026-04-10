@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Koshi 4th Smart Mock Test 02</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* [100% CLAYMORPHISM PALETTE & SHADOWS] */
+        :root { 
+            --primary: #FF3366; 
+            --secondary: #FF9933; 
+            --accent: #00E5FF; 
+            
+            /* Clay Base Color */
+            --clay-bg: #E8F0F8; 
+            
+            /* Clay Outer Shadows */
+            --clay-shadow-out: 12px 12px 24px rgba(166, 180, 200, 0.7), -12px -12px 24px #FFFFFF;
+            
+            /* Clay Inner Shadows (Puffy Effect) */
+            --clay-shadow-in: inset 6px 6px 12px rgba(255, 255, 255, 0.9), inset -6px -6px 12px rgba(166, 180, 200, 0.4);
+            
+            /* Clay Pressed/Inset Shadows (For Inputs) */
+            --clay-shadow-pressed: inset 6px 6px 12px rgba(166, 180, 200, 0.6), inset -6px -6px 12px #FFFFFF;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            /* Soft pastel gradient to complement the 3D clay */
+            background: linear-gradient(-45deg, #FFDEE9, #B5FFFC, #C2E9FB, #EAE5C9);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 15px; 
+            overflow-x: hidden; 
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 100% Clay Container */
+        .app-container { 
+            width: 100%; 
+            max-width: 650px; 
+            background: var(--clay-bg); 
+            border-radius: 40px; 
+            padding: 2.5rem 2rem; 
+            /* Double shadow system for 3D clay look */
+            box-shadow: var(--clay-shadow-out), var(--clay-shadow-in);
+            position: relative; 
+            overflow: hidden; 
+            transition: all 0.4s ease; 
+        }
+        
+        h1 { font-size: 2.2rem; font-weight: 800; color: #1E293B; margin-bottom: 10px; }
+        h2 { font-size: 1.6rem; margin-bottom: 20px; color: #334155; font-weight: 800; }
+        p { color: #64748B; font-size: 1rem; line-height: 1.6; font-weight: 500; }
+        
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 10px; color: #64748B; text-transform: uppercase; letter-spacing: 1.5px; }
+        
+        /* Clay Inset Inputs */
+        .glass-input { 
+            width: 100%; 
+            padding: 18px; 
+            background: var(--clay-bg); 
+            border: none; 
+            border-radius: 20px; 
+            color: #1E293B; 
+            font-size: 1.05rem; 
+            font-weight: 600;
+            outline: none; 
+            transition: 0.3s;
+            box-shadow: var(--clay-shadow-pressed);
+        }
+        .glass-input:focus { 
+            box-shadow: inset 8px 8px 16px rgba(166, 180, 200, 0.7), inset -8px -8px 16px #FFFFFF, 0 0 0 4px rgba(0, 229, 255, 0.3);
+        }
+        .glass-input::placeholder { color: #94A3B8; }
+        .glass-input:read-only { background: #DFE7F0; color: #64748B; cursor: not-allowed; }
+        select.glass-input option { background: #FFFFFF; color: #1E293B; }
+        
+        /* Clay Puffy Button */
+        .btn { 
+            background: var(--primary); 
+            border: none; 
+            color: white; 
+            padding: 18px; 
+            width: 100%; 
+            border-radius: 24px; 
+            font-size: 1.15rem; 
+            font-weight: 800; 
+            cursor: pointer; 
+            margin-top: 25px; 
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            min-height: 55px; 
+            box-shadow: 
+                8px 8px 16px rgba(255, 51, 102, 0.3), 
+                -4px -4px 10px #FFFFFF,
+                inset 4px 4px 8px rgba(255,255,255,0.4),
+                inset -4px -4px 8px rgba(0,0,0,0.1);
+        }
+        .btn:active { 
+            transform: scale(0.95); 
+            box-shadow: 
+                2px 2px 5px rgba(255, 51, 102, 0.4), 
+                inset 6px 6px 12px rgba(0,0,0,0.2),
+                inset -2px -2px 6px rgba(255,255,255,0.2);
+        }
+        .btn:disabled { filter: grayscale(1); cursor: wait; opacity: 0.7; }
+        
+        .btn-outline { 
+            background: var(--clay-bg); 
+            color: #1E293B;
+            box-shadow: var(--clay-shadow-out), var(--clay-shadow-in); 
+            margin-top: 15px; 
+        }
+        
+        .personal-header { text-align: center; margin-bottom: 25px; padding-bottom: 15px; min-height: 50px; display: flex; align-items: center; justify-content: center; }
+        .animate-praise { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        .info-bar { 
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; 
+            background: var(--clay-bg); 
+            padding: 15px 20px; 
+            border-radius: 20px; 
+            box-shadow: var(--clay-shadow-pressed);
+            font-weight: 700;
+            color: #64748B;
+        }
+        .timer-badge { font-family: monospace; font-weight: 800; color: #FF3366; font-size: 1.3rem; }
+        
+        /* [REQUIRED] Question Text is ALWAYS Black */
+        .question-text { 
+            font-size: 1.35rem; 
+            font-weight: 800; 
+            margin-bottom: 25px; 
+            line-height: 1.5; 
+            color: #000000 !important; 
+            padding: 10px 0;
+        }
+        
+        /* [REQUIRED] Options with ALWAYS Blue Text and Clay Styling */
+        .option-btn { 
+            width: 100%; 
+            padding: 18px 20px; 
+            margin-bottom: 18px; 
+            background: var(--clay-bg); 
+            border: none; 
+            border-radius: 24px; 
+            text-align: left; 
+            color: #0000FF !important; 
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            display: flex; 
+            align-items: center; 
+            -webkit-user-select: none; user-select: none;
+            
+            /* Puffy Clay Shadow for Options */
+            box-shadow: 
+                6px 6px 14px rgba(166, 180, 200, 0.6), 
+                -6px -6px 14px #FFFFFF,
+                inset 3px 3px 6px rgba(255,255,255,0.9),
+                inset -3px -3px 6px rgba(166, 180, 200, 0.3);
+        }
+        .option-btn:hover { transform: translateY(-3px); }
+        .option-btn:active { transform: scale(0.96); box-shadow: var(--clay-shadow-pressed); }
+        
+        .option-marker { 
+            width: 40px; height: 40px; 
+            background: var(--clay-bg); 
+            border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            margin-right: 18px; 
+            font-weight: 800; 
+            color: #0000FF !important; 
+            flex-shrink: 0; 
+            /* Pressed marker inside puffy button */
+            box-shadow: var(--clay-shadow-pressed);
+        }
+        
+        /* Correct/Wrong States - Only Background Changes, text remains Blue! */
+        .correct { 
+            background: #00FF88 !important; /* Green Background */
+            box-shadow: 
+                6px 6px 14px rgba(0, 255, 136, 0.4), 
+                -4px -4px 10px #FFFFFF,
+                inset 4px 4px 8px rgba(255,255,255,0.5),
+                inset -4px -4px 8px rgba(0,0,0,0.1);
+            transform: scale(1.02);
+        }
+        .correct .option-marker { background: rgba(255,255,255,0.3); }
+        
+        .wrong { 
+            background: #FF3366 !important; /* Red Background */
+            box-shadow: 
+                6px 6px 14px rgba(255, 51, 102, 0.4), 
+                -4px -4px 10px #FFFFFF,
+                inset 4px 4px 8px rgba(255,255,255,0.4),
+                inset -4px -4px 8px rgba(0,0,0,0.1);
+        }
+        .wrong .option-marker { background: rgba(255,255,255,0.3); }
+        
+        .explanation-box { 
+            margin-top: 25px; padding: 20px; 
+            background: var(--clay-bg); 
+            border-left: 6px solid var(--accent); 
+            border-radius: 20px; 
+            font-size: 1.05rem; 
+            color: #1E293B;
+            font-weight: 600;
+            display: none; 
+            animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: var(--clay-shadow-pressed);
+        }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .score-circle { 
+            width: 200px; height: 200px; 
+            border-radius: 50%; 
+            background: var(--clay-bg);
+            margin: 0 auto 30px auto; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            /* Huge puffy clay ring */
+            box-shadow: 
+                15px 15px 30px rgba(166, 180, 200, 0.7), 
+                -15px -15px 30px #FFFFFF,
+                inset 8px 8px 16px rgba(255,255,255,0.9),
+                inset -8px -8px 16px rgba(166, 180, 200, 0.4); 
+        }
+        .score-val { font-size: 4.5rem; font-weight: 800; color: #FF3366; line-height: 1; }
+        .hidden { display: none !important; }
+        #opts-list { max-height: 55vh; overflow-y: auto; padding-right: 12px; padding-bottom: 10px; padding-top: 5px; margin-left: -5px; padding-left: 5px;}
+        
+        /* Custom Scrollbar */
+        #opts-list::-webkit-scrollbar { width: 8px; }
+        #opts-list::-webkit-scrollbar-track { background: var(--clay-bg); border-radius: 10px; box-shadow: var(--clay-shadow-pressed); }
+        #opts-list::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        
+        #auth-msg { text-align: center; margin-top: 20px; font-weight: 700; color: #FF3366; background: var(--clay-bg); padding: 15px; border-radius: 16px; display: none; box-shadow: var(--clay-shadow-pressed); }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="app">
+    <div id="view-login">
+        <div style="text-align: center; margin-bottom: 35px;">
+            <h1 id="title-display">Koshi 4th Smart Mock Test 02</h1>
+            <p>New Edition | Civil Engineering</p>
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Full Name</span>
+            <input type="text" id="inp-name" class="glass-input" placeholder="Enter your name">
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Qualification</span>
+            <select id="inp-qual" class="glass-input">
+                <option value="Engineer">Engineer</option>
+                <option value="Sub-Engineer">Sub-Engineer</option>
+                <option value="Asst. Sub-Engineer">Asst. Sub-Engineer</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <span class="label">Unique Code</span>
+            <input type="tel" id="inp-code" class="glass-input" placeholder="Enter 5-digit code">
+        </div>
+
+        <div class="input-group">
+            <span class="label">Password (Auto-Fill)</span>
+            <input type="password" id="inp-pass" class="glass-input" placeholder="Verifying..." readonly>
+        </div>
+
+        <button class="btn" id="btn-verify" onclick="App.verifyAndLogin()">Verify & Login</button>
+        <p id="auth-msg"></p>
+    </div>
+
+    <div id="view-dash" class="hidden">
+        <div style="text-align: center; margin-bottom: 35px;">
+            <h2 id="greet-msg" style="color: #FF3366; font-size: 2.2rem;">Welcome!</h2>
+            <div style="background: var(--clay-bg); padding: 30px; border-radius: 24px; margin-bottom: 25px; box-shadow: var(--clay-shadow-pressed);">
+                <p style="text-transform: uppercase; font-size: 0.9rem; color: #94A3B8; font-weight: 800; letter-spacing: 1px;">Active Session</p>
+                <h3 id="dash-topic-display" style="font-size: 1.8rem; margin: 15px 0; color: #1E293B;"></h3>
+                <p style="font-weight: 700; color: #64748B;">50 Questions • 45 Minutes</p>
+            </div>
+        </div>
+        <button class="btn" id="btn-start" onclick="App.start(false)">Start Exam</button>
+        <p id="submitted-msg" style="color: #00C853; text-align: center; margin-top: 20px; display: none; font-weight: 800;">✅ Score Submitted Successfully</p>
+        <button class="btn btn-outline" id="btn-review" onclick="App.start(true)" style="display: none;">Review Mistakes</button>
+    </div>
+
+    <div id="view-quiz" class="hidden">
+        <div class="personal-header">
+            <div id="praise-txt" style="font-size: 1.5rem; font-weight: 800; color: #1E293B;">Good Luck!</div>
+        </div>
+
+        <div class="info-bar">
+            <span>Q: <span id="q-idx">1</span> / <span id="q-total">50</span></span>
+            <span class="timer-badge" id="timer">45:00</span>
+        </div>
+
+        <div id="q-container">
+            <div class="question-text" id="q-text">Loading...</div>
+            <div id="opts-list"></div>
+            <div class="explanation-box" id="exp-box"></div>
+        </div>
+
+        <button class="btn hidden" id="btn-next" onclick="App.next()">Next Question</button>
+    </div>
+
+    <div id="view-result" class="hidden" style="text-align: center;">
+        <h2 style="font-size: 2.2rem; margin-bottom: 30px;">Quiz Completed!</h2>
+        <div class="score-circle">
+            <span class="score-val" id="res-score">0</span>
+            <span style="font-size: 1rem; font-weight: 800; text-transform: uppercase; color: #64748B; margin-top: 10px;">Correct</span>
+        </div>
+        <div style="margin-bottom: 40px;">
+            <h3 id="res-pct" style="color: #FF3366; font-size: 2rem; font-weight: 800;">0% Accuracy</h3>
+            <p id="sync-status" style="font-size: 1.1rem; font-weight: 700; margin-top: 15px; color: #64748B;">Syncing score...</p>
+        </div>
+        <button class="btn" onclick="App.dash()">Back to Dashboard</button>
+    </div>
+</div>
+
+<script>
+/**
+ * --- UPDATED AUDIO HELPER SYSTEM ---
+ * Uses Free Google Audio API + Browser Synthesis fallback
+ */
+const AudioHelper = {
+    ctx: null,
+    init: function() {
+        if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if(this.ctx.state === 'suspended') this.ctx.resume();
+        
+        // Mobile warm-up
+        if ('speechSynthesis' in window) {
+            let warmupMsg = new SpeechSynthesisUtterance('');
+            warmupMsg.volume = 0; 
+            window.speechSynthesis.speak(warmupMsg);
+        }
+    },
+    playTing: function() {
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.type = 'sine'; 
+        osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1500, this.ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.5);
+    },
+    playFush: function() {
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.type = 'square'; 
+        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.3);
+    },
+    speak: function(text) {
+        // Free Google Translate TTS API (Human Sounding)
+        const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=${encodeURIComponent(text)}`;
+        const audio = new Audio(url);
+        audio.play().catch(() => {
+            // Fallback to robotic browser voice if blocked
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const msg = new SpeechSynthesisUtterance(text);
+                msg.lang = 'en-US';
+                window.speechSynthesis.speak(msg);
+            }
+        });
+    }
+};
+
+/**
+ * ----------------------------------------------------
+ * CONFIGURATION - CHANGE ONLY THIS SECTION FOR NEW APPS
+ * ----------------------------------------------------
+ */
+const CFG = {
+    topic: "Koshi 4th Smart Mock Test 02", 
+    scoreScript: "https://script.google.com/macros/s/AKfycbwlARXNg2vbAH3-xPgt4Mt_MlPydwuZOtA7dkjyD0LVQlYX2IBDUKULT8rlZVIy034H/exec",
+    authScript: "https://script.google.com/macros/s/AKfycbzMzOG0rG6JUEsDUJymyOGevOjt750FgRD9UNdxeEmDbeHukwRZTvjwd8UyDbD5icR6/exec"
+};
+
+const _tid = CFG.topic.replace(/[^a-zA-Z0-9]/g, "_");
+const KEYS = {
+    user: "Nepalis",
+    mistakes: `v2_mistakes_${_tid}`,
+    sent: `v2_sent_status_${_tid}`,
+    pending: `v2_pending_${_tid}`
+};
+  const DB = [
+  
+  {
+    "id": 1,
+    "q": "राष्ट्रपतिको पदावधि कति बर्सको हुनेछ?",
+    "o": [
+      "४ वर्ष",
+      "६ वर्ष",
+      "५ वर्ष",
+      "७ वर्ष"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 2,
+    "q": "राष्ट्रपति र उपराष्ट्रपति हुनको लागि कति बर्स उमेर पुरा भएको हुनुपर्छ?",
+    "o": [
+      "३५ बर्स",
+      "४० बर्स",
+      "कम्तिमा ४५ बर्स पुरा भएको",
+      "५० बर्स"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 3,
+    "q": "प्रदेश निजामती सेवा ऐन, २०७९ (कोशी प्रदेश) को दफा ८ अनुसार 'चौथो तह' को पदपूर्ति खुला प्रतियोगिताद्वारा कति प्रतिशत गरिने व्यवस्था छ?",
+    "o": [
+      "५०%",
+      "६०%",
+      "७०%",
+      "१००%"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 4,
+    "q": "प्रदेश सरकारले तोकेको निर्धारित समयभन्दा कति मिनेटसम्म ढिला गरी आउने कर्मचारीलाई महिनाको तीन पटकसम्म कार्यालय प्रमुखले हाजिर गर्न दिन सक्ने व्यवस्था छ?",
+    "o": [
+      "१० मिनेटसम्म",
+      "१५ मिनेटसम्म",
+      "२० मिनेटसम्म",
+      "३० मिनेटसम्म"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 5,
+    "q": "अधिकृतस्तर सातौ तह वा सो भन्दा माथिको पदमा उम्मेदवार हुन कम्तीमा कति उमेर पुरा भएको हुनुपर्दछ?",
+    "o": [
+      "१८ वर्ष",
+      "२१ वर्ष",
+      "२५ वर्ष",
+      "३५ वर्ष"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 6,
+    "q": "प्रदेश लोकसेवा आयोगको अध्यक्ष र सदस्यको पदावधि नियुक्ति भएको मितिले कति वर्षको हुनेछ?",
+    "o": [
+      "४ वर्ष",
+      "५ वर्ष",
+      "६ वर्ष",
+      "७ वर्ष"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 7,
+    "q": "कोशी प्रदेशको दोस्रो आवधिक योजना अनुसार आ.व. २०८५/८६ सम्ममा मानव विकास सूचकाङ्क (HDI) कति पुर्‍याउने लक्ष्य छ?",
+    "o": [
+      "०.५८",
+      "०.५९",
+      "०.६२",
+      "०.६५"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 8,
+    "q": "१६ औं योजनाले योजना अवधिको अन्तिम वर्ष सम्म विद्युतीय सरकार विकास सूचकाङ्क कति पुर्याउने लक्ष्य राखेको छ?",
+    "o": [
+      "०.६००",
+      "०.६२१",
+      "०.६५४",
+      "०.७११"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 9,
+    "q": "१६ औं योजनाले योजना अवधिको अन्तिम वर्ष सम्म निर्वाचनमा मतदाताको सहभागिताको प्रतिशत कति पुर्याउने लक्ष्य राखेको छ?",
+    "o": [
+      "८५",
+      "७२",
+      "९१",
+      "६२"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 10,
+    "q": "नेपाल सरकारको अर्थमन्त्रीले आय-व्यय (budget) को विवरण कहिले पेश गर्नुपर्छ?",
+    "o": [
+      "प्रत्येक वर्ष असार १५",
+      "प्रत्येक वर्ष जेठ १५",
+      "प्रत्येक वर्ष बैशाख १",
+      "प्रत्येक वर्ष साउन १"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 11,
+    "q": "What is the standard specific gravity of Ordinary Portland Cement (OPC)?",
+    "o": [
+      "2.65",
+      "3.15",
+      "3.50",
+      "4.15"
+    ],
+    "a": 1,
+    "e": "Standard engineering codes specify 3.15 as the specific gravity of OPC, which is a required value for concrete mix design calculations."
+  },
+  {
+    "id": 12,
+    "q": "Which of the following ingredients in brick earth is responsible for providing the red color to the finished brick?",
+    "o": [
+      "Alumina",
+      "Silica",
+      "Iron Oxide",
+      "Magnesia"
+    ],
+    "a": 2,
+    "e": "Iron oxide acts as a flux during burning and imparts the characteristic red color to the bricks."
+  },
+  {
+    "id": 13,
+    "q": "An aggregate is classified as \"elongated\" if its greatest dimension is more than how many times its mean dimension?",
+    "o": [
+      "1.2 times",
+      "1.5 times",
+      "1.8 times",
+      "2.0 times"
+    ],
+    "a": 2,
+    "e": "As per standard sieve analysis codes, a particle is elongated if its length is greater than 1.8 times the average sieve size it passed through."
+  },
+  {
+    "id": 14,
+    "q": "Which type of mortar is specifically recommended for use in structures subjected to heavy structural loads and damp environments?",
+    "o": [
+      "Mud mortar",
+      "Lime mortar",
+      "Cement mortar",
+      "Gauged mortar"
+    ],
+    "a": 2,
+    "e": "Cement mortar provides high compressive strength and exhibits superior resistance to water penetration compared to mud or lime-based mortars."
+  },
+  {
+    "id": 15,
+    "q": "What is the maximum allowable moisture content for structural timber used in doors and windows?",
+    "o": [
+      "5% to 8%",
+      "10% to 12%",
+      "15% to 20%",
+      "25% to 30%"
+    ],
+    "a": 1,
+    "e": "Timber must be seasoned to a moisture content of 10–12% to match atmospheric equilibrium and prevent future warping or shrinkage."
+  },
+  {
+    "id": 16,
+    "q": "For mass concrete work in thick foundations, which slump value is standardly recommended?",
+    "o": [
+      "10 to 25 mm",
+      "25 to 50 mm",
+      "75 to 100 mm",
+      "125 to 150 mm"
+    ],
+    "a": 1,
+    "e": "Mass concrete requires low workability (low slump) to minimize water usage and reduce the heat of hydration, preventing thermal cracks."
+  },
+  {
+    "id": 17,
+    "q": "In an earthquake-resistant masonry building, which seismic band is placed at the level of the window openings' upper edges?",
+    "o": [
+      "Plinth band",
+      "Sill band",
+      "Lintel band",
+      "Roof band"
+    ],
+    "a": 2,
+    "e": "The lintel band is a continuous horizontal RC band provided above all doors and windows to tie walls together and resist seismic forces."
+  },
+  {
+    "id": 18,
+    "q": "What is the standard minimum stripping time (removal of formwork) for the vertical faces of columns and walls?",
+    "o": [
+      "16 to 24 hours",
+      "3 days",
+      "7 days",
+      "14 days"
+    ],
+    "a": 0,
+    "e": "Vertical formwork does not support the weight of the structure; once the concrete has initially set (16-24 hours), the forms can be safely removed."
+  },
+  {
+    "id": 19,
+    "q": "In brick masonry, the process of filling the mortar joints with high-quality mortar to a depth of 12-20 mm for protection and aesthetics is called:",
+    "o": [
+      "Plastering",
+      "Pointing",
+      "Punning",
+      "Skirting"
+    ],
+    "a": 1,
+    "e": "Pointing is the finishing of mortar joints with a richer mix to protect the wall from weather and enhance its appearance."
+  },
+  {
+    "id": 20,
+    "q": "Which curing method is most effective for preventing moisture loss in vertical RCC columns?",
+    "o": [
+      "Ponding",
+      "Steam curing",
+      "Wrapping with wet gunny bags",
+      "Sprinkling dry sand"
+    ],
+    "a": 2,
+    "e": "Ponding is only for flat surfaces. Vertical members are wrapped in jute bags (gunny bags) and kept continuously wet to ensure proper hydration."
+  },
+  {
+    "id": 21,
+    "q": "In a residential plumbing system, what is the standard diameter of a \"Soil Pipe\" carrying human waste?",
+    "o": [
+      "50 mm",
+      "75 mm",
+      "100 mm",
+      "150 mm"
+    ],
+    "a": 2,
+    "e": "Standard sanitary codes mandate a minimum internal diameter of 100 mm (4 inches) for soil pipes to prevent blockages from solid waste."
+  },
+  {
+    "id": 22,
+    "q": "For the effective settlement of sewage in a septic tank, what is the generally adopted detention period?",
+    "o": [
+      "1 to 2 hours",
+      "6 to 12 hours",
+      "24 to 48 hours",
+      "7 to 10 days"
+    ],
+    "a": 2,
+    "e": "A period of 24–48 hours is required to allow solids to settle as sludge and for anaerobic bacteria to decompose the organic matter."
+  },
+  {
+    "id": 23,
+    "q": "In a domestic electrical distribution system, which wire is exclusively connected to the control switch?",
+    "o": [
+      "Neutral wire",
+      "Earth wire",
+      "Live (Phase) wire",
+      "Loop wire"
+    ],
+    "a": 2,
+    "e": "Safety codes mandate that switches must break the Live wire. This ensures that the appliance is not \"live\" when the switch is turned off."
+  },
+  {
+    "id": 24,
+    "q": "According to the Nepal National Building Code, what is the minimum required size for a reinforced concrete (RCC) column in a residential building?",
+    "o": [
+      "150 mm × 150 mm",
+      "200 mm × 200 mm",
+      "230 mm × 230 mm",
+      "300 mm × 300 mm"
+    ],
+    "a": 2,
+    "e": "NBC 205 specifies 230 mm × 230 mm (9\" × 9\") as the minimum cross-section for columns to ensure seismic stability in Nepal."
+  },
+  {
+    "id": 25,
+    "q": "What is the water from urinals called?",
+    "o": [
+      "Black water",
+      "Yellow water",
+      "Grey water",
+      "Brown water"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 26,
+    "q": "The minimum clearance distance between septic tank and underground water storage tank should be",
+    "o": [
+      "1 m",
+      "3 m",
+      "5 m",
+      "8 m"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 27,
+    "q": "A residential building may be provided with",
+    "o": [
+      "Overhead tank only",
+      "Underground tank only",
+      "Both (A) and (B)",
+      "Surface tank only"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 28,
+    "q": "To prevent any stagnation of water on the top of the storage tank it should be provided with",
+    "o": [
+      "Leveled surface",
+      "Undulated surface",
+      "CGI roofing",
+      "None of these"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 29,
+    "q": "Disinfection of water with ozone is not good because",
+    "o": [
+      "It vanishes before water reaches the consumers",
+      "It removes the colour, taste and odour from water as bacteria",
+      "It adds taste to the water",
+      "It is more efficient than chlorine in killing bacteria"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 30,
+    "q": "The coefficient of uniformity for slow sand filters is .............",
+    "o": [
+      "1.35",
+      "1.55",
+      "1.75",
+      "2.05"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 31,
+    "q": "In the process of screening, the screens should be inclined at an angle of .............",
+    "o": [
+      "10° to 20°",
+      "30° to 40°",
+      "45° to 60°",
+      "70° to 85°"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 32,
+    "q": "Which of the following soils has the least permeability ...............",
+    "o": [
+      "clay",
+      "silt",
+      "gravel",
+      "sand"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 33,
+    "q": "Crop rotation means ...............",
+    "o": [
+      "not growing any crop during alternate year",
+      "growing simultaneously two different crops in alternate rows",
+      "growing different crops in successive seasons",
+      "none of the above"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 34,
+    "q": "If no super elevation is provided on a road along curves, pot holes may develop at .............",
+    "o": [
+      "inner edge of the road",
+      "outer edge of the road",
+      "centre of the road",
+      "nowhere on the road"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 35,
+    "q": "Any gradient on a road is said to be an exceptional gradient, if it is .............",
+    "o": [
+      "more than ruling gradient",
+      "less than average gradient",
+      "more than floating gradient",
+      "less than minimum gradient or more than maximum gradient"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 36,
+    "q": "पहिलो निर्वाचन भएको कति समयभित्र गाउँसभा वा नगरसभाको बहुमतबाट प्रस्ताव पारित गरी वडाको सिमाना हेरफेर गर्न सकिने विशेष व्यवस्था छ?",
+    "o": [
+      "३ महिनाभित्र",
+      "६ महिनाभित्र",
+      "१ वर्षभित्र",
+      "२ वर्षभित्र"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 37,
+    "q": "बजेट तथा कार्यक्रम तर्जुमा समिति' को संयोजक को रहने व्यवस्था छ?",
+    "o": [
+      "अध्यक्ष वा प्रमुख",
+      "उपाध्यक्ष वा उपप्रमुख",
+      "प्रमुख प्रशासकीय अधिकृत",
+      "आर्थिक प्रशासन शाखा प्रमुख"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 38,
+    "q": "पास भएको नक्सामा स्वीकृति बेगर हेरफेर गरी भवन बनाएको भए कति रकमसम्म जरिबाना हुने व्यवस्था छ?",
+    "o": [
+      "५० हजार रुपैयाँसम्म",
+      "१ लाख रुपैयाँसम्म",
+      "२ लाख रुपैयाँसम्म",
+      "५ लाख रुपैयाँसम्म"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 39,
+    "q": "कार्यविभाजन तथा कार्य सम्पादन नियमावली स्वीकृत वा संशोधन भएको कति दिनभित्र प्रदेश र नेपाल सरकारमा पठाउनु पर्नेछ?",
+    "o": [
+      "७ दिनभित्र",
+      "१५ दिनभित्र",
+      "२१ दिनभित्र",
+      "३५ दिनभित्र"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 40,
+    "q": "In a retrograde vernier, the smallest division of a vernier is ........the smallest division of main scale.",
+    "o": [
+      "equal to",
+      "shorter than",
+      "longer than",
+      "None of these"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 41,
+    "q": "The curvature of the earth is taken into account if the area (km²) to be surveyed is more than",
+    "o": [
+      "50",
+      "300",
+      "100",
+      "260"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 42,
+    "q": "A base line in a chain survey",
+    "o": [
+      "checks the accuracy of the framework",
+      "enables the surveyor to locate the interior details which are far away from the main chain lines",
+      "fixes up the directions of all other lines",
+      "all of the above"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 43,
+    "q": "What is the natural surface distance measured from the chain to object?",
+    "o": [
+      "offset",
+      "long offset",
+      "short offset",
+      "oblique offset"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 44,
+    "q": "Preliminary estimate is also called as",
+    "o": [
+      "Ordinary estimate",
+      "Primary estimate",
+      "Approximate estimate",
+      "None of these"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 45,
+    "q": "Which of the following estimate is used for estimating building works only?",
+    "o": [
+      "Preliminary estimate",
+      "Plinth area estimate",
+      "Item rate estimate",
+      "Detailed estimate"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 46,
+    "q": "The detention period in a septic tank is assumed",
+    "o": [
+      "20 minutes",
+      "25 minutes",
+      "30 minutes",
+      "40 minutes"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 47,
+    "q": "Brick walls are measured in sq. m if the thickness of the wall is",
+    "o": [
+      "20 cm",
+      "50 cm",
+      "10 cm",
+      "None of these"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 48,
+    "q": "During drawing the stoke of T-square is placed",
+    "o": [
+      "Adjoining the working edge of the drawing board",
+      "Adjoining the sliding edge of the drawing board",
+      "Surface of the drawing board",
+      "None of above"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 49,
+    "q": "Working edge of T-square is helps",
+    "o": [
+      "Draw inclined line",
+      "Base of the set square",
+      "Draw parallel line with horizontal surface",
+      "Both [B] &[C]"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 50,
+    "q": "The section view drawing in which one fourth of an object has been marked for removal is known as a .....Section.",
+    "o": [
+      "full",
+      "half",
+      "quarter",
+      "none of the above"
+    ],
+    "a": 1,
+    "e": ""
+  }
+];
+
+// --- 10 + 10 DYNAMIC COMPLIMENTS ---
+const PRAISE = {
+    good: [
+        "Awesome, {name}!", "Wow {name}, you are a Genius!", "Fantastic job, {name}!", 
+        "Excellent work, {name}!", "You nailed it, {name}!", "Brilliant answer, {name}!", 
+        "You are on fire, {name}!", "Perfect, {name}!", "Spot on, {name}!", "Great job, {name}!"
+    ],
+    bad: [
+        "Don't give up, {name}!", "You can do this, {name}!", "Nice try {name}, keep going!", 
+        "Learn from this, {name}!", "Almost there, {name}!", "Keep pushing, {name}!", 
+        "Stay focused, {name}!", "You will get the next one, {name}!", "Mistakes help you grow, {name}!", 
+        "Shake it off {name}, try again!"
+    ]
+};
+
+const App = {
+    state: { user: null, quiz: [], curr: 0, score: 0, mistakes: [], timer: null, submitted: false },
+
+    save: (k, v) => { try { localStorage.setItem(k, v) } catch(e) {} },
+    load: (k) => { try { return localStorage.getItem(k) } catch(e) { return null } },
+
+    verifyAndLogin: () => {
+        const n = document.getElementById('inp-name').value.trim();
+        const q = document.getElementById('inp-qual').value;
+        const c = document.getElementById('inp-code').value.trim();
+        const msg = document.getElementById('auth-msg');
+        const btn = document.getElementById('btn-verify');
+
+        if(!n || !c) {
+            msg.innerText = "Code Changed, Contact admin  and Renew Subscription";
+            msg.style.display = 'block'; return;
+        }
+
+        AudioHelper.init(); // Warm up audio
+
+        btn.disabled = true; btn.innerText = "Verifying..."; msg.style.display = 'none';
+
+        fetch(`${CFG.authScript}?code=${c}&name=${n}&qual=${q}`)
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === 'success') {
+                document.getElementById('inp-pass').value = data.password;
+                App.state.user = { name: n, qual: q, code: c };
+                App.save(KEYS.user, JSON.stringify(App.state.user));
+                setTimeout(() => App.dash(), 800);
+            } else {
+                btn.disabled = false; btn.innerText = "Verify & Login";
+                msg.style.display = 'block'; msg.style.color = "#FF3366";
+                msg.innerHTML = data.message.includes("used") ? "Code already used or expired." : "Invalid Code";
+            }
+        })
+        .catch(() => {
+            btn.disabled = false; btn.innerText = "Verify & Login";
+            msg.style.display = 'block'; msg.innerText = "Connection Error";
+        });
+    },
+
+    dash: () => {
+        document.getElementById('title-display').innerText = CFG.topic;
+        document.getElementById('dash-topic-display').innerText = CFG.topic;
+        const stored = App.load(KEYS.user);
+        if(!stored) return;
+        App.state.user = JSON.parse(stored);
+        document.getElementById('greet-msg').innerText = `Namaste, ${App.state.user.name.split(' ')[0]}!`;
+        document.getElementById('view-login').classList.add('hidden');
+        document.getElementById('view-result').classList.add('hidden');
+        document.getElementById('view-dash').classList.remove('hidden');
+        
+        if(App.load(KEYS.sent)) {
+            document.getElementById('btn-start').innerText = "Retake (Practice Mode)";
+            document.getElementById('submitted-msg').style.display = 'block';
+            document.getElementById('submitted-msg').innerText = "✅ Previous Score Submitted";
+        } else {
+            document.getElementById('btn-start').innerText = "Start Exam";
+            document.getElementById('submitted-msg').style.display = 'none';
+        }
+        const m = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        document.getElementById('btn-review').style.display = m.length > 0 ? 'inline-block' : 'none';
+    },
+
+    start: (review) => {
+        AudioHelper.init(); // Warm up audio
+        App.state.curr = 0; App.state.score = 0; App.state.mistakes = []; App.state.submitted = false;
+        const prevM = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        const flatDB = DB.flat ? DB.flat() : DB;
+        let source = review ? flatDB.filter(q => prevM.includes(q.id)) : [...flatDB];
+        if(!source.length) return alert("No questions available.");
+
+        App.state.quiz = source.map(q => {
+            let opts = q.o.map((txt, i) => ({ t: txt, c: i === q.a }));
+            return { ...q, shuffledOpts: opts.sort(() => Math.random() - 0.5) };
+        }).sort(() => Math.random() - 0.5);
+
+        document.getElementById('view-dash').classList.add('hidden');
+        document.getElementById('view-quiz').classList.remove('hidden');
+        document.getElementById('q-total').innerText = App.state.quiz.length;
+        App.timer(45*60);
+        App.render();
+    },
+
+    render: () => {
+        const q = App.state.quiz[App.state.curr];
+        document.getElementById('q-idx').innerText = App.state.curr + 1;
+        document.getElementById('q-text').innerText = q.q;
+        document.getElementById('exp-box').style.display = 'none';
+        document.getElementById('btn-next').classList.add('hidden');
+        const list = document.getElementById('opts-list');
+        list.innerHTML = '';
+        q.shuffledOpts.forEach((opt, i) => {
+            const btn = document.createElement('div');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<div class="option-marker">${String.fromCharCode(65+i)}</div>${opt.t}`;
+            btn.onclick = () => App.check(btn, opt, q);
+            list.appendChild(btn);
+        });
+    },
+
+    check: (btn, opt, q) => {
+        const all = document.querySelectorAll('.option-btn');
+        all.forEach(b => { b.onclick = null; b.style.opacity = '0.7'; b.style.transform = 'scale(0.98)'; b.style.boxShadow = 'var(--clay-shadow-pressed)'; });
+        btn.style.opacity = '1';
+        btn.style.transform = 'scale(1.02)';
+        
+        const praise = document.getElementById('praise-txt');
+        praise.classList.remove('animate-praise');
+        void praise.offsetWidth; praise.classList.add('animate-praise');
+        const userName = App.state.user ? App.state.user.name.split(' ')[0] : 'Student';
+
+        if(opt.c) {
+            btn.classList.add('correct');
+            App.state.score++;
+            let rawTxt = PRAISE.good[Math.floor(Math.random()*PRAISE.good.length)];
+            let finalTxt = rawTxt.replace('{name}', userName);
+            praise.innerText = finalTxt;
+            praise.style.color = "#00C853";
+            AudioHelper.playTing();
+            AudioHelper.speak(finalTxt);
+            let m = JSON.parse(App.load(KEYS.mistakes) || "[]").filter(id => id !== q.id);
+            App.save(KEYS.mistakes, JSON.stringify(m));
+        } else {
+            btn.classList.add('wrong');
+            all.forEach((b, i) => { if(q.shuffledOpts[i].c) b.classList.add('correct'); });
+            App.state.mistakes.push(q.id);
+            let rawTxt = PRAISE.bad[Math.floor(Math.random()*PRAISE.bad.length)];
+            let finalTxt = rawTxt.replace('{name}', userName);
+            praise.innerText = finalTxt;
+            praise.style.color = "#FF3366";
+            AudioHelper.playFush();
+            AudioHelper.speak(finalTxt);
+        }
+
+        if(q.e) {
+            document.getElementById('exp-box').innerHTML = `<strong>Explanation:</strong> ${q.e}`;
+            document.getElementById('exp-box').style.display = 'block';
+        }
+        document.getElementById('btn-next').classList.remove('hidden');
+    },
+
+    next: () => {
+        App.state.curr++;
+        if(App.state.curr < App.state.quiz.length) App.render();
+        else App.finish();
+    },
+
+    timer: (sec) => {
+        if(App.state.timer) clearInterval(App.state.timer);
+        App.state.timer = setInterval(() => {
+            sec--;
+            let m = Math.floor(sec/60), s = sec%60;
+            document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
+            if(sec<=0) App.finish();
+        }, 1000);
+    },
+
+    finish: () => {
+        clearInterval(App.state.timer);
+        document.getElementById('view-quiz').classList.add('hidden');
+        document.getElementById('view-result').classList.remove('hidden');
+        let m = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        m = [...new Set([...m, ...App.state.mistakes])];
+        App.save(KEYS.mistakes, JSON.stringify(m));
+        const pct = Math.round((App.state.score / App.state.quiz.length) * 100);
+        document.getElementById('res-score').innerText = App.state.score;
+        document.getElementById('res-pct').innerText = `${pct}% Accuracy`;
+        App.sync();
+    },
+
+    sync: () => {
+        if(App.state.submitted || App.load(KEYS.sent)) return;
+        App.state.submitted = true;
+        const formData = new FormData();
+        formData.append("name", App.state.user.name);
+        formData.append("qualification", App.state.user.qual);
+        formData.append("examTitle", CFG.topic);
+        formData.append("score", App.state.score);
+        if(navigator.onLine) {
+            fetch(CFG.scoreScript, { method: 'POST', mode: 'no-cors', body: formData })
+            .then(() => {
+                App.save(KEYS.sent, "true");
+                document.getElementById('sync-status').innerText = "✅ Score Saved!";
+                document.getElementById('sync-status').style.color = "#00C853";
+            }).catch(() => App.offline(formData));
+        } else App.offline(formData);
+    },
+
+    offline: (d) => {
+        let p = JSON.parse(App.load(KEYS.pending) || "[]");
+        p.push(Object.fromEntries(d));
+        App.save(KEYS.pending, JSON.stringify(p));
+        document.getElementById('sync-status').innerText = "Saved offline.";
+    }
+};
+
+window.onload = () => { if(App.load(KEYS.user)) App.dash(); };
+</script>
+</body>
+</html>
