@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Koshi 4th Smart Mock Test last</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* [100% CLAYMORPHISM PALETTE & SHADOWS] */
+        :root { 
+            --primary: #FF3366; 
+            --secondary: #FF9933; 
+            --accent: #00E5FF; 
+            
+            /* Clay Base Color */
+            --clay-bg: #E8F0F8; 
+            
+            /* Clay Outer Shadows */
+            --clay-shadow-out: 12px 12px 24px rgba(166, 180, 200, 0.7), -12px -12px 24px #FFFFFF;
+            
+            /* Clay Inner Shadows (Puffy Effect) */
+            --clay-shadow-in: inset 6px 6px 12px rgba(255, 255, 255, 0.9), inset -6px -6px 12px rgba(166, 180, 200, 0.4);
+            
+            /* Clay Pressed/Inset Shadows (For Inputs) */
+            --clay-shadow-pressed: inset 6px 6px 12px rgba(166, 180, 200, 0.6), inset -6px -6px 12px #FFFFFF;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            /* Soft pastel gradient to complement the 3D clay */
+            background: linear-gradient(-45deg, #FFDEE9, #B5FFFC, #C2E9FB, #EAE5C9);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 15px; 
+            overflow-x: hidden; 
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 100% Clay Container */
+        .app-container { 
+            width: 100%; 
+            max-width: 650px; 
+            background: var(--clay-bg); 
+            border-radius: 40px; 
+            padding: 2.5rem 2rem; 
+            /* Double shadow system for 3D clay look */
+            box-shadow: var(--clay-shadow-out), var(--clay-shadow-in);
+            position: relative; 
+            overflow: hidden; 
+            transition: all 0.4s ease; 
+        }
+        
+        h1 { font-size: 2.2rem; font-weight: 800; color: #1E293B; margin-bottom: 10px; }
+        h2 { font-size: 1.6rem; margin-bottom: 20px; color: #334155; font-weight: 800; }
+        p { color: #64748B; font-size: 1rem; line-height: 1.6; font-weight: 500; }
+        
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 10px; color: #64748B; text-transform: uppercase; letter-spacing: 1.5px; }
+        
+        /* Clay Inset Inputs */
+        .glass-input { 
+            width: 100%; 
+            padding: 18px; 
+            background: var(--clay-bg); 
+            border: none; 
+            border-radius: 20px; 
+            color: #1E293B; 
+            font-size: 1.05rem; 
+            font-weight: 600;
+            outline: none; 
+            transition: 0.3s;
+            box-shadow: var(--clay-shadow-pressed);
+        }
+        .glass-input:focus { 
+            box-shadow: inset 8px 8px 16px rgba(166, 180, 200, 0.7), inset -8px -8px 16px #FFFFFF, 0 0 0 4px rgba(0, 229, 255, 0.3);
+        }
+        .glass-input::placeholder { color: #94A3B8; }
+        .glass-input:read-only { background: #DFE7F0; color: #64748B; cursor: not-allowed; }
+        select.glass-input option { background: #FFFFFF; color: #1E293B; }
+        
+        /* Clay Puffy Button */
+        .btn { 
+            background: var(--primary); 
+            border: none; 
+            color: white; 
+            padding: 18px; 
+            width: 100%; 
+            border-radius: 24px; 
+            font-size: 1.15rem; 
+            font-weight: 800; 
+            cursor: pointer; 
+            margin-top: 25px; 
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            min-height: 55px; 
+            box-shadow: 
+                8px 8px 16px rgba(255, 51, 102, 0.3), 
+                -4px -4px 10px #FFFFFF,
+                inset 4px 4px 8px rgba(255,255,255,0.4),
+                inset -4px -4px 8px rgba(0,0,0,0.1);
+        }
+        .btn:active { 
+            transform: scale(0.95); 
+            box-shadow: 
+                2px 2px 5px rgba(255, 51, 102, 0.4), 
+                inset 6px 6px 12px rgba(0,0,0,0.2),
+                inset -2px -2px 6px rgba(255,255,255,0.2);
+        }
+        .btn:disabled { filter: grayscale(1); cursor: wait; opacity: 0.7; }
+        
+        .btn-outline { 
+            background: var(--clay-bg); 
+            color: #1E293B;
+            box-shadow: var(--clay-shadow-out), var(--clay-shadow-in); 
+            margin-top: 15px; 
+        }
+        
+        .personal-header { text-align: center; margin-bottom: 25px; padding-bottom: 15px; min-height: 50px; display: flex; align-items: center; justify-content: center; }
+        .animate-praise { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        .info-bar { 
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; 
+            background: var(--clay-bg); 
+            padding: 15px 20px; 
+            border-radius: 20px; 
+            box-shadow: var(--clay-shadow-pressed);
+            font-weight: 700;
+            color: #64748B;
+        }
+        .timer-badge { font-family: monospace; font-weight: 800; color: #FF3366; font-size: 1.3rem; }
+        
+        /* [REQUIRED] Question Text is ALWAYS Black */
+        .question-text { 
+            font-size: 1.35rem; 
+            font-weight: 800; 
+            margin-bottom: 25px; 
+            line-height: 1.5; 
+            color: #000000 !important; 
+            padding: 10px 0;
+        }
+        
+        /* [REQUIRED] Options with ALWAYS Blue Text and Clay Styling */
+        .option-btn { 
+            width: 100%; 
+            padding: 18px 20px; 
+            margin-bottom: 18px; 
+            background: var(--clay-bg); 
+            border: none; 
+            border-radius: 24px; 
+            text-align: left; 
+            color: #0000FF !important; 
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            display: flex; 
+            align-items: center; 
+            -webkit-user-select: none; user-select: none;
+            
+            /* Puffy Clay Shadow for Options */
+            box-shadow: 
+                6px 6px 14px rgba(166, 180, 200, 0.6), 
+                -6px -6px 14px #FFFFFF,
+                inset 3px 3px 6px rgba(255,255,255,0.9),
+                inset -3px -3px 6px rgba(166, 180, 200, 0.3);
+        }
+        .option-btn:hover { transform: translateY(-3px); }
+        .option-btn:active { transform: scale(0.96); box-shadow: var(--clay-shadow-pressed); }
+        
+        .option-marker { 
+            width: 40px; height: 40px; 
+            background: var(--clay-bg); 
+            border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            margin-right: 18px; 
+            font-weight: 800; 
+            color: #0000FF !important; 
+            flex-shrink: 0; 
+            /* Pressed marker inside puffy button */
+            box-shadow: var(--clay-shadow-pressed);
+        }
+        
+        /* Correct/Wrong States - Only Background Changes, text remains Blue! */
+        .correct { 
+            background: #00FF88 !important; /* Green Background */
+            box-shadow: 
+                6px 6px 14px rgba(0, 255, 136, 0.4), 
+                -4px -4px 10px #FFFFFF,
+                inset 4px 4px 8px rgba(255,255,255,0.5),
+                inset -4px -4px 8px rgba(0,0,0,0.1);
+            transform: scale(1.02);
+        }
+        .correct .option-marker { background: rgba(255,255,255,0.3); }
+        
+        .wrong { 
+            background: #FF3366 !important; /* Red Background */
+            box-shadow: 
+                6px 6px 14px rgba(255, 51, 102, 0.4), 
+                -4px -4px 10px #FFFFFF,
+                inset 4px 4px 8px rgba(255,255,255,0.4),
+                inset -4px -4px 8px rgba(0,0,0,0.1);
+        }
+        .wrong .option-marker { background: rgba(255,255,255,0.3); }
+        
+        .explanation-box { 
+            margin-top: 25px; padding: 20px; 
+            background: var(--clay-bg); 
+            border-left: 6px solid var(--accent); 
+            border-radius: 20px; 
+            font-size: 1.05rem; 
+            color: #1E293B;
+            font-weight: 600;
+            display: none; 
+            animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: var(--clay-shadow-pressed);
+        }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .score-circle { 
+            width: 200px; height: 200px; 
+            border-radius: 50%; 
+            background: var(--clay-bg);
+            margin: 0 auto 30px auto; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            /* Huge puffy clay ring */
+            box-shadow: 
+                15px 15px 30px rgba(166, 180, 200, 0.7), 
+                -15px -15px 30px #FFFFFF,
+                inset 8px 8px 16px rgba(255,255,255,0.9),
+                inset -8px -8px 16px rgba(166, 180, 200, 0.4); 
+        }
+        .score-val { font-size: 4.5rem; font-weight: 800; color: #FF3366; line-height: 1; }
+        .hidden { display: none !important; }
+        #opts-list { max-height: 55vh; overflow-y: auto; padding-right: 12px; padding-bottom: 10px; padding-top: 5px; margin-left: -5px; padding-left: 5px;}
+        
+        /* Custom Scrollbar */
+        #opts-list::-webkit-scrollbar { width: 8px; }
+        #opts-list::-webkit-scrollbar-track { background: var(--clay-bg); border-radius: 10px; box-shadow: var(--clay-shadow-pressed); }
+        #opts-list::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        
+        #auth-msg { text-align: center; margin-top: 20px; font-weight: 700; color: #FF3366; background: var(--clay-bg); padding: 15px; border-radius: 16px; display: none; box-shadow: var(--clay-shadow-pressed); }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="app">
+    <div id="view-login">
+        <div style="text-align: center; margin-bottom: 35px;">
+            <h1 id="title-display">Koshi 4th Smart Mock Test last</h1>
+            <p>New Edition | Civil Engineering</p>
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Full Name</span>
+            <input type="text" id="inp-name" class="glass-input" placeholder="Enter your name">
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Qualification</span>
+            <select id="inp-qual" class="glass-input">
+                <option value="Engineer">Engineer</option>
+                <option value="Sub-Engineer">Sub-Engineer</option>
+                <option value="Asst. Sub-Engineer">Asst. Sub-Engineer</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <span class="label">Unique Code</span>
+            <input type="tel" id="inp-code" class="glass-input" placeholder="Enter 5-digit code">
+        </div>
+
+        <div class="input-group">
+            <span class="label">Password (Auto-Fill)</span>
+            <input type="password" id="inp-pass" class="glass-input" placeholder="Verifying..." readonly>
+        </div>
+
+        <button class="btn" id="btn-verify" onclick="App.verifyAndLogin()">Verify & Login</button>
+        <p id="auth-msg"></p>
+    </div>
+
+    <div id="view-dash" class="hidden">
+        <div style="text-align: center; margin-bottom: 35px;">
+            <h2 id="greet-msg" style="color: #FF3366; font-size: 2.2rem;">Welcome!</h2>
+            <div style="background: var(--clay-bg); padding: 30px; border-radius: 24px; margin-bottom: 25px; box-shadow: var(--clay-shadow-pressed);">
+                <p style="text-transform: uppercase; font-size: 0.9rem; color: #94A3B8; font-weight: 800; letter-spacing: 1px;">Active Session</p>
+                <h3 id="dash-topic-display" style="font-size: 1.8rem; margin: 15px 0; color: #1E293B;"></h3>
+                <p style="font-weight: 700; color: #64748B;">50 Questions • 45 Minutes</p>
+            </div>
+        </div>
+        <button class="btn" id="btn-start" onclick="App.start(false)">Start Exam</button>
+        <p id="submitted-msg" style="color: #00C853; text-align: center; margin-top: 20px; display: none; font-weight: 800;">✅ Score Submitted Successfully</p>
+        <button class="btn btn-outline" id="btn-review" onclick="App.start(true)" style="display: none;">Review Mistakes</button>
+    </div>
+
+    <div id="view-quiz" class="hidden">
+        <div class="personal-header">
+            <div id="praise-txt" style="font-size: 1.5rem; font-weight: 800; color: #1E293B;">Good Luck!</div>
+        </div>
+
+        <div class="info-bar">
+            <span>Q: <span id="q-idx">1</span> / <span id="q-total">50</span></span>
+            <span class="timer-badge" id="timer">45:00</span>
+        </div>
+
+        <div id="q-container">
+            <div class="question-text" id="q-text">Loading...</div>
+            <div id="opts-list"></div>
+            <div class="explanation-box" id="exp-box"></div>
+        </div>
+
+        <button class="btn hidden" id="btn-next" onclick="App.next()">Next Question</button>
+    </div>
+
+    <div id="view-result" class="hidden" style="text-align: center;">
+        <h2 style="font-size: 2.2rem; margin-bottom: 30px;">Quiz Completed!</h2>
+        <div class="score-circle">
+            <span class="score-val" id="res-score">0</span>
+            <span style="font-size: 1rem; font-weight: 800; text-transform: uppercase; color: #64748B; margin-top: 10px;">Correct</span>
+        </div>
+        <div style="margin-bottom: 40px;">
+            <h3 id="res-pct" style="color: #FF3366; font-size: 2rem; font-weight: 800;">0% Accuracy</h3>
+            <p id="sync-status" style="font-size: 1.1rem; font-weight: 700; margin-top: 15px; color: #64748B;">Syncing score...</p>
+        </div>
+        <button class="btn" onclick="App.dash()">Back to Dashboard</button>
+    </div>
+</div>
+
+<script>
+/**
+ * --- UPDATED AUDIO HELPER SYSTEM ---
+ * Uses Free Google Audio API + Browser Synthesis fallback
+ */
+const AudioHelper = {
+    ctx: null,
+    init: function() {
+        if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if(this.ctx.state === 'suspended') this.ctx.resume();
+        
+        // Mobile warm-up
+        if ('speechSynthesis' in window) {
+            let warmupMsg = new SpeechSynthesisUtterance('');
+            warmupMsg.volume = 0; 
+            window.speechSynthesis.speak(warmupMsg);
+        }
+    },
+    playTing: function() {
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.type = 'sine'; 
+        osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1500, this.ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.5);
+    },
+    playFush: function() {
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.type = 'square'; 
+        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.3);
+    },
+    speak: function(text) {
+        // Free Google Translate TTS API (Human Sounding)
+        const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=${encodeURIComponent(text)}`;
+        const audio = new Audio(url);
+        audio.play().catch(() => {
+            // Fallback to robotic browser voice if blocked
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const msg = new SpeechSynthesisUtterance(text);
+                msg.lang = 'en-US';
+                window.speechSynthesis.speak(msg);
+            }
+        });
+    }
+};
+
+/**
+ * ----------------------------------------------------
+ * CONFIGURATION - CHANGE ONLY THIS SECTION FOR NEW APPS
+ * ----------------------------------------------------
+ */
+const CFG = {
+    topic: "Koshi 4th Smart Mock Test last", 
+    scoreScript: "https://script.google.com/macros/s/AKfycbwlARXNg2vbAH3-xPgt4Mt_MlPydwuZOtA7dkjyD0LVQlYX2IBDUKULT8rlZVIy034H/exec",
+    authScript: "https://script.google.com/macros/s/AKfycbzMzOG0rG6JUEsDUJymyOGevOjt750FgRD9UNdxeEmDbeHukwRZTvjwd8UyDbD5icR6/exec"
+};
+
+const _tid = CFG.topic.replace(/[^a-zA-Z0-9]/g, "_");
+const KEYS = {
+    user: "Nepalis", // <-- THIS MUST BE IDENTICAL IN EVERY FILE
+    mistakes: `v2_mistakes_${_tid}`,
+    sent: `v2_sent_status_${_tid}`,
+    pending: `v2_pending_${_tid}`
+};
+
+  const DB = [
+  
+  {
+    "id": 1,
+    "q": "The Le Chatelier apparatus in a cement testing laboratory is specifically used to determine which property?",
+    "o": [
+      "Initial setting time",
+      "Soundness",
+      "Fineness",
+      "Compressive strength"
+    ],
+    "a": 1,
+    "e": "The Le Chatelier apparatus is universally used to test the soundness of cement by measuring its expansion due to the presence of uncombined free lime."
+  },
+  {
+    "id": 2,
+    "q": "Which method of timber seasoning is considered the most rapid, effective, and allows for exact moisture control?",
+    "o": [
+      "Air seasoning",
+      "Water seasoning",
+      "Kiln seasoning",
+      "Natural seasoning"
+    ],
+    "a": 2,
+    "e": "Kiln seasoning places the timber in a large, heated oven (kiln) where temperature and humidity are strictly controlled, drying the wood completely in just a few days."
+  },
+  {
+    "id": 3,
+    "q": "In the composition of standard oil paints, which of the following materials is commonly used as a \"base\"?",
+    "o": [
+      "White lead",
+      "Linseed oil",
+      "Turpentine",
+      "Copal"
+    ],
+    "a": 0,
+    "e": "White lead (or zinc oxide) is a solid pigment that forms the principal bulk (the base) of the paint, making the paint film opaque, hard, and durable."
+  },
+  {
+    "id": 4,
+    "q": "The specific gravity of pure bitumen generally lies in the precise range of:",
+    "o": [
+      "0.80 to 0.90",
+      "0.97 to 1.02",
+      "1.15 to 1.25",
+      "1.50 to 1.60"
+    ],
+    "a": 1,
+    "e": "According to standard tests, the specific gravity of pure road-grade bitumen typically falls between 0.97 and 1.02, making its density very close to that of water."
+  },
+  {
+    "id": 5,
+    "q": "According to IS 456, what is the minimum stripping time for formwork directly under an RCC slab (provided the props are refixed immediately)?",
+    "o": [
+      "3 days",
+      "7 days",
+      "14 days",
+      "21 days"
+    ],
+    "a": 0,
+    "e": "Formwork directly under the soffit of a slab can be removed after 3 days, but the vertical props must be placed back immediately to support the slab until it cures fully."
+  },
+  {
+    "id": 6,
+    "q": "What is the standard minimum bearing length provided on the masonry wall for a lintel beam?",
+    "o": [
+      "5 cm",
+      "10 cm",
+      "15 cm",
+      "30 cm"
+    ],
+    "a": 2,
+    "e": "Standard building codes specify that a lintel must rest on the supporting wall by a minimum bearing distance of 15 cm (or the depth of the lintel, whichever is greater)."
+  },
+  {
+    "id": 7,
+    "q": "In brick masonry, the strictly vertical joints that separate the bricks along their length or cross-direction are known as:",
+    "o": [
+      "Bed joints",
+      "Perpends",
+      "Closers",
+      "Quoins"
+    ],
+    "a": 1,
+    "e": "A perpend is the imaginary vertical line formed by the mortar joints in a wall. For good bonding and strength, perpends in alternate courses must align perfectly."
+  },
+  {
+    "id": 8,
+    "q": "What is the standard recommended thickness of cement plaster applied to the smooth internal faces of a brick wall?",
+    "o": [
+      "6 mm",
+      "12 mm",
+      "20 mm",
+      "25 mm"
+    ],
+    "a": 1,
+    "e": "For interior walls where the brickwork surface is relatively even, a 12 mm thick single-coat cement plaster is standard. Exterior or rough surfaces generally require 20 mm."
+  },
+  {
+    "id": 9,
+    "q": "According to WHO guidelines and standard environmental codes, the acceptable pH value for public drinking water supplies should range between:",
+    "o": [
+      "4.5 to 5.5",
+      "6.5 to 8.5",
+      "8.5 to 10.5",
+      "10.5 to 11.5"
+    ],
+    "a": 1,
+    "e": "Drinking water should be relatively neutral. A pH between 6.5 and 8.5 ensures the water is neither excessively acidic (which corrodes pipes) nor highly alkaline."
+  },
+  {
+    "id": 10,
+    "q": "Which specific instrument is used by electricians to safely measure the high-voltage insulation resistance of a building's wiring?",
+    "o": [
+      "Voltmeter",
+      "Ammeter",
+      "Megger",
+      "Multimeter"
+    ],
+    "a": 2,
+    "e": "A Megger (Megohmmeter) generates a high direct current (DC) voltage to specifically test if the rubber insulation around wires is intact and has high resistance against leakages."
+  },
+  {
+    "id": 11,
+    "q": "According to the standard IS 2470 code for septic tanks, the inside width of a domestic septic tank must not be less than:",
+    "o": [
+      "60 cm",
+      "75 cm",
+      "100 cm",
+      "120 cm"
+    ],
+    "a": 1,
+    "e": "The code strictly mandates a minimum absolute width of 75 cm (750 mm) for any septic tank to allow sufficient volume for the settling of solids without causing blockage."
+  },
+  {
+    "id": 12,
+    "q": "In illumination and lighting design, what is the standard SI unit used to measure \"luminous flux\" (the total amount of visible light emitted by a source)?",
+    "o": [
+      "Candela",
+      "Lux",
+      "Lumen",
+      "Watt"
+    ],
+    "a": 2,
+    "e": "Lumen is the exact unit of luminous flux. It measures the total quantity of visible light energy actively leaving the bulb in all directions."
+  },
+  {
+    "id": 13,
+    "q": "संविधानको धारा ५१ मा राज्यका नीतिहरु कतिवटा उल्लेख छन्?",
+    "o": [
+      "१० वटा क्षेत्रगत नीति",
+      "१३ वटा क्षेत्रगत नीति",
+      "१५ वटा क्षेत्रगत नीति",
+      "११ वटा क्षेत्रगत नीति"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 14,
+    "q": "संविधान जारि भएपश्चात संविधानसभाबाट रुपान्तरित व्यवस्थापिका संसदको कार्यकाल कहिले सकिएको हो?",
+    "o": [
+      "२०७४ मंसिर १०",
+      "२०७४ असोज २८",
+      "२०७४ माघ ७",
+      "२०७३ फागुन १४"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 15,
+    "q": "नेपालको शासकीय स्वरुप कस्तो रहेको छ?",
+    "o": [
+      "प्रत्यक्ष निर्वाचित राष्ट्रपतीय प्रणाली",
+      "निर्दलीय शासन प्रणाली",
+      "बहुलवादमा आधारित बहुदलीय प्रतिस्पर्धात्मक संघीय लोकतान्त्रिक गणतन्त्रात्मक संसदीय शासन प्रणाली हुनेछ (धारा ७४)",
+      "संवैधानिक राजतन्त्र"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 16,
+    "q": "कोशी प्रदेश निजामती सेवा ऐन अनुसार कर्मचारीले वर्षमा कति दिन भैपरी आउने र पर्व बिदा पाउनेछन्?",
+    "o": [
+      "६/६ दिन",
+      "१२/१२ दिन",
+      "१५/१५ दिन",
+      "३० दिन"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 17,
+    "q": "पुरुष कर्मचारीको पत्नी सुत्केरी हुनु अघि वा पछि गरी कति दिन प्रसूती स्याहार बिदा पाउँछन्?",
+    "o": [
+      "१० दिन",
+      "१२ दिन",
+      "१५ दिन",
+      "३० दिन"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 18,
+    "q": "प्रदेश निजामती सेवाको पदमा शुरु नियुक्ति गर्दा कर्मचारीलाई कति समय परीक्षणकालमा राखिने छ?",
+    "o": [
+      "महिलालाई ३ महिना, पुरुषलाई ६ महिना",
+      "महिला कर्मचारीको हकमा ६ महिना र पुरुष कर्मचारीको हकमा १ वर्ष",
+      "महिला र पुरुष दुवैलाई १ वर्ष",
+      "महिला र पुरुष दुवैलाई ६ महिना"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 19,
+    "q": "निजामती कर्मचारीले अनिवार्य पोशाक लगाउनु पर्ने व्यवस्था नियम कतिमा गरिएको छ?",
+    "o": [
+      "नियम १०५",
+      "नियम १०७",
+      "नियम ११०",
+      "नियम ११२"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 20,
+    "q": "अध्ययन बिदा लिने कर्मचारीले कति वर्ष सेवा अवधि पुरा नगरी बिदा लिन पाउँदैनन्?",
+    "o": [
+      "१ वर्ष",
+      "२ वर्ष",
+      "३ वर्ष",
+      "५ वर्ष"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 21,
+    "q": "स्थानीय सरकारी सेवाका कर्मचारीले ५ वर्षदेखि १० वर्षसम्म सेवा गरेर अवकाश पाएमा उपदान (Gratuity) बापत कति रकम पाउने व्यवस्था छ?",
+    "o": [
+      "प्रत्येक वर्षको निमित्त आखिरी एक महिनाको तलब",
+      "प्रत्येक वर्षको निमित्त आखिरी आधा महिनाको तलब",
+      "प्रत्येक वर्षको निमित्त आखिरी डेढ महिनाको तलब",
+      "एकमुष्ट रु. १ लाख"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 22,
+    "q": "कुनै फौजदारी अभियोगमा कति अवधि कैदमा बस्नु पर्ने ठहरि अदालतबाट फैसला अन्तिम भएमा कर्मचारी सेवाबाट बर्खास्त हुनेछ?",
+    "o": [
+      "६ महिना वा सोभन्दा बढी",
+      "१ वर्ष वा सोभन्दा बढी",
+      "२ वर्ष वा सोभन्दा बढी",
+      "३ वर्ष वा सोभन्दा बढी"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 23,
+    "q": "Before starting the drawing",
+    "o": [
+      "Paper should be cleaned by erasing",
+      "The layout should be drawn",
+      "Paper must be soaked in turpentine",
+      "None of these"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 24,
+    "q": "Which angle cannot be made with either a 45 or 30/60 triangle or a combination of the two?",
+    "o": [
+      "90",
+      "70",
+      "30",
+      "15"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 25,
+    "q": "Which statement is true about the precedence of lines?",
+    "o": [
+      "A hidden line has precedence over a center line",
+      "A center line has precedence over a Visible line",
+      "A visible line has precedence over center line",
+      "All of the above"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 26,
+    "q": "An engineering drawing, which type of line indicates that there is a change of plane?",
+    "o": [
+      "Continuous thin wavy",
+      "Long chain thin",
+      "Continuous thick",
+      "Medium thick short dashes"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 27,
+    "q": "The solid which is generated by the revolution of a semi-circle about its diameter which remains fixed is called",
+    "o": [
+      "cone",
+      "sphere",
+      "cylinder",
+      "none of these"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 28,
+    "q": "the main purpose of making drawing board with seasoned and soft wood is",
+    "o": [
+      "easy to carry",
+      "for fixing of drawing paper with the help of drawing pin",
+      "to match with T-square",
+      "all of the above"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 29,
+    "q": "Soak pit shall not be less than",
+    "o": [
+      "45 cm",
+      "90 cm",
+      "50 cm",
+      "100 cm"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 30,
+    "q": "Reinforcement in cement concrete slab of road pavements, is placed",
+    "o": [
+      "Longitudinally",
+      "Longitudinally and transversely",
+      "In the form of welded wire mesh",
+      "Transversely"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 31,
+    "q": "The actual amount incurred in producing a commodity is called",
+    "o": [
+      "Cost",
+      "Price",
+      "Value",
+      "None of these"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 32,
+    "q": "Which of the following is type excavation?",
+    "o": [
+      "Bottom soil Excavation",
+      "Sub-soil Excavation",
+      "Topsoil Excavation",
+      "Surface soil Excavation"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 33,
+    "q": "A series of drawing sheet has length to width ratio of",
+    "o": [
+      "3:2",
+      "√3:1",
+      "√2:1",
+      "5:7"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 34,
+    "q": "How many types of cross staff are available?",
+    "o": [
+      "2",
+      "5",
+      "3",
+      "4"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 35,
+    "q": "What is the limit of error for 30 m chain as IS?",
+    "o": [
+      "±2mm",
+      "±4mm",
+      "±6mm",
+      "±8mm"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 36,
+    "q": "For house drainage, minimum gradient is",
+    "o": [
+      "1 in 60",
+      "1 in 80",
+      "1 in 100",
+      "1 in 150"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 37,
+    "q": "The ratio of total capacity and dead storage is kept",
+    "o": [
+      "4",
+      "3",
+      "7",
+      "2"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 38,
+    "q": "For residential houses, which of the following latrines is the cheapest one?",
+    "o": [
+      "Pour-flush latrines",
+      "Twin pit latrine",
+      "VIP latrine",
+      "Sanplat"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 39,
+    "q": "Under national highway, water mains should be buried up to",
+    "o": [
+      "1.0 m from the top of the pipe to the ground surface",
+      "1.2 m from the top of the pipe to the ground surface",
+      "1.5 m from the top of the pipe to the ground surface",
+      "1.8 m from the top of the pipe to the ground surface"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 40,
+    "q": "Hard water may cause",
+    "o": [
+      "Scaling of pipe",
+      "Less lather formation",
+      "Scaling of home appliances",
+      "All of the above"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 41,
+    "q": "स्रोत अनुमान तथा बजेट सीमा निर्धारण समिति' को संयोजक को रहने व्यवस्था छ?",
+    "o": [
+      "अध्यक्ष वा प्रमुख",
+      "उपाध्यक्ष वा उपप्रमुख",
+      "प्रमुख प्रशासकीय अधिकृत",
+      "योजना शाखा प्रमुख"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 42,
+    "q": "कार्यपालिकाको बैठक कम्तीमा कति समयमा बस्ने व्यवस्था छ?",
+    "o": [
+      "हप्ताको एक पटक",
+      "महिनाको एक पटक",
+      "दुई महिनाको एक पटक",
+      "तीन महिनाको एक पटक"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 43,
+    "q": "महानगरपालिका घोषणा हुनका लागि कम्तीमा कति स्थायी बासिन्दा हुनुपर्दछ?",
+    "o": [
+      "३ लाख",
+      "४ लाख",
+      "५ लाख",
+      "१० लाख"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 44,
+    "q": "गाउँपालिका तथा नगरपालिकाको सङ्ख्या र चारकिल्ला खुलेको सीमानाको निर्धारण संविधानको कुन धारा बमोजिम हुने व्यवस्था छ?",
+    "o": [
+      "धारा ५६ (५)",
+      "धारा २९५ (३)",
+      "धारा २९६ (१)",
+      "धारा ३०२ (२)"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 45,
+    "q": "In rapid sand filter .............",
+    "o": [
+      "raw water from the sources is supplied",
+      "disinfected raw water is supplied",
+      "raw water passed through coagulation tank is supplied",
+      "any one of the above"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 46,
+    "q": "The method adopted for removing bushes, branches, debris etc., from water is known as .............",
+    "o": [
+      "sedimentation",
+      "coagulation",
+      "screening",
+      "filtration"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 47,
+    "q": "Raising of outer edge of a road with respect to inner edges, is known .............",
+    "o": [
+      "super elevation",
+      "cant",
+      "banking",
+      "all of the above"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 48,
+    "q": "The pavement width of a road depends upon .............",
+    "o": [
+      "terrain",
+      "type of traffic",
+      "number of lanes",
+      "all of the above"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 49,
+    "q": "Fluming of a canal in the cross-drainage work will ...............",
+    "o": [
+      "increase the duty",
+      "avoid uplift pressure",
+      "reduce the cost of cross drainage work",
+      "enable the canal to draw water from drain"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 50,
+    "q": "A triangular channel section has side slopes of 1 vertical : z horizontal. If the depth of flow is y, what is the hydraulic depth?",
+    "o": [
+      "y",
+      "y/3",
+      "y/4",
+      "y/2"
+    ],
+    "a": 3,
+    "e": ""
+  }
+];
+
+// --- 10 + 10 DYNAMIC COMPLIMENTS ---
+const PRAISE = {
+    good: [
+        "Awesome, {name}!", "Wow {name}, you are a Genius!", "Fantastic job, {name}!", 
+        "Excellent work, {name}!", "You nailed it, {name}!", "Brilliant answer, {name}!", 
+        "You are on fire, {name}!", "Perfect, {name}!", "Spot on, {name}!", "Great job, {name}!"
+    ],
+    bad: [
+        "Don't give up, {name}!", "You can do this, {name}!", "Nice try {name}, keep going!", 
+        "Learn from this, {name}!", "Almost there, {name}!", "Keep pushing, {name}!", 
+        "Stay focused, {name}!", "You will get the next one, {name}!", "Mistakes help you grow, {name}!", 
+        "Shake it off {name}, try again!"
+    ]
+};
+
+const App = {
+    state: { user: null, quiz: [], curr: 0, score: 0, mistakes: [], timer: null, submitted: false },
+
+    save: (k, v) => { try { localStorage.setItem(k, v) } catch(e) {} },
+    load: (k) => { try { return localStorage.getItem(k) } catch(e) { return null } },
+
+    verifyAndLogin: () => {
+        const n = document.getElementById('inp-name').value.trim();
+        const q = document.getElementById('inp-qual').value;
+        const c = document.getElementById('inp-code').value.trim();
+        const msg = document.getElementById('auth-msg');
+        const btn = document.getElementById('btn-verify');
+
+        if(!n || !c) {
+            msg.innerText = "Code Changed, Contact admin  and Renew Subscription";
+            msg.style.display = 'block'; return;
+        }
+
+        AudioHelper.init(); // Warm up audio
+
+        btn.disabled = true; btn.innerText = "Verifying..."; msg.style.display = 'none';
+
+        fetch(`${CFG.authScript}?code=${c}&name=${n}&qual=${q}`)
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === 'success') {
+                document.getElementById('inp-pass').value = data.password;
+                App.state.user = { name: n, qual: q, code: c };
+                App.save(KEYS.user, JSON.stringify(App.state.user));
+                setTimeout(() => App.dash(), 800);
+            } else {
+                btn.disabled = false; btn.innerText = "Verify & Login";
+                msg.style.display = 'block'; msg.style.color = "#FF3366";
+                msg.innerHTML = data.message.includes("used") ? "Code already used or expired." : "Invalid Code";
+            }
+        })
+        .catch(() => {
+            btn.disabled = false; btn.innerText = "Verify & Login";
+            msg.style.display = 'block'; msg.innerText = "Connection Error";
+        });
+    },
+
+    dash: () => {
+        document.getElementById('title-display').innerText = CFG.topic;
+        document.getElementById('dash-topic-display').innerText = CFG.topic;
+        const stored = App.load(KEYS.user);
+        if(!stored) return;
+        App.state.user = JSON.parse(stored);
+        document.getElementById('greet-msg').innerText = `Namaste, ${App.state.user.name.split(' ')[0]}!`;
+        document.getElementById('view-login').classList.add('hidden');
+        document.getElementById('view-result').classList.add('hidden');
+        document.getElementById('view-dash').classList.remove('hidden');
+        
+        if(App.load(KEYS.sent)) {
+            document.getElementById('btn-start').innerText = "Retake (Practice Mode)";
+            document.getElementById('submitted-msg').style.display = 'block';
+            document.getElementById('submitted-msg').innerText = "✅ Previous Score Submitted";
+        } else {
+            document.getElementById('btn-start').innerText = "Start Exam";
+            document.getElementById('submitted-msg').style.display = 'none';
+        }
+        const m = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        document.getElementById('btn-review').style.display = m.length > 0 ? 'inline-block' : 'none';
+    },
+
+    start: (review) => {
+        AudioHelper.init(); // Warm up audio
+        App.state.curr = 0; App.state.score = 0; App.state.mistakes = []; App.state.submitted = false;
+        const prevM = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        const flatDB = DB.flat ? DB.flat() : DB;
+        let source = review ? flatDB.filter(q => prevM.includes(q.id)) : [...flatDB];
+        if(!source.length) return alert("No questions available.");
+
+        App.state.quiz = source.map(q => {
+            let opts = q.o.map((txt, i) => ({ t: txt, c: i === q.a }));
+            return { ...q, shuffledOpts: opts.sort(() => Math.random() - 0.5) };
+        }).sort(() => Math.random() - 0.5);
+
+        document.getElementById('view-dash').classList.add('hidden');
+        document.getElementById('view-quiz').classList.remove('hidden');
+        document.getElementById('q-total').innerText = App.state.quiz.length;
+        App.timer(45*60);
+        App.render();
+    },
+
+    render: () => {
+        const q = App.state.quiz[App.state.curr];
+        document.getElementById('q-idx').innerText = App.state.curr + 1;
+        document.getElementById('q-text').innerText = q.q;
+        document.getElementById('exp-box').style.display = 'none';
+        document.getElementById('btn-next').classList.add('hidden');
+        const list = document.getElementById('opts-list');
+        list.innerHTML = '';
+        q.shuffledOpts.forEach((opt, i) => {
+            const btn = document.createElement('div');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<div class="option-marker">${String.fromCharCode(65+i)}</div>${opt.t}`;
+            btn.onclick = () => App.check(btn, opt, q);
+            list.appendChild(btn);
+        });
+    },
+
+    check: (btn, opt, q) => {
+        const all = document.querySelectorAll('.option-btn');
+        all.forEach(b => { b.onclick = null; b.style.opacity = '0.7'; b.style.transform = 'scale(0.98)'; b.style.boxShadow = 'var(--clay-shadow-pressed)'; });
+        btn.style.opacity = '1';
+        btn.style.transform = 'scale(1.02)';
+        
+        const praise = document.getElementById('praise-txt');
+        praise.classList.remove('animate-praise');
+        void praise.offsetWidth; praise.classList.add('animate-praise');
+        const userName = App.state.user ? App.state.user.name.split(' ')[0] : 'Student';
+
+        if(opt.c) {
+            btn.classList.add('correct');
+            App.state.score++;
+            let rawTxt = PRAISE.good[Math.floor(Math.random()*PRAISE.good.length)];
+            let finalTxt = rawTxt.replace('{name}', userName);
+            praise.innerText = finalTxt;
+            praise.style.color = "#00C853";
+            AudioHelper.playTing();
+            AudioHelper.speak(finalTxt);
+            let m = JSON.parse(App.load(KEYS.mistakes) || "[]").filter(id => id !== q.id);
+            App.save(KEYS.mistakes, JSON.stringify(m));
+        } else {
+            btn.classList.add('wrong');
+            all.forEach((b, i) => { if(q.shuffledOpts[i].c) b.classList.add('correct'); });
+            App.state.mistakes.push(q.id);
+            let rawTxt = PRAISE.bad[Math.floor(Math.random()*PRAISE.bad.length)];
+            let finalTxt = rawTxt.replace('{name}', userName);
+            praise.innerText = finalTxt;
+            praise.style.color = "#FF3366";
+            AudioHelper.playFush();
+            AudioHelper.speak(finalTxt);
+        }
+
+        if(q.e) {
+            document.getElementById('exp-box').innerHTML = `<strong>Explanation:</strong> ${q.e}`;
+            document.getElementById('exp-box').style.display = 'block';
+        }
+        document.getElementById('btn-next').classList.remove('hidden');
+    },
+
+    next: () => {
+        App.state.curr++;
+        if(App.state.curr < App.state.quiz.length) App.render();
+        else App.finish();
+    },
+
+    timer: (sec) => {
+        if(App.state.timer) clearInterval(App.state.timer);
+        App.state.timer = setInterval(() => {
+            sec--;
+            let m = Math.floor(sec/60), s = sec%60;
+            document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
+            if(sec<=0) App.finish();
+        }, 1000);
+    },
+
+    finish: () => {
+        clearInterval(App.state.timer);
+        document.getElementById('view-quiz').classList.add('hidden');
+        document.getElementById('view-result').classList.remove('hidden');
+        let m = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        m = [...new Set([...m, ...App.state.mistakes])];
+        App.save(KEYS.mistakes, JSON.stringify(m));
+        const pct = Math.round((App.state.score / App.state.quiz.length) * 100);
+        document.getElementById('res-score').innerText = App.state.score;
+        document.getElementById('res-pct').innerText = `${pct}% Accuracy`;
+        App.sync();
+    },
+
+    sync: () => {
+        if(App.state.submitted || App.load(KEYS.sent)) return;
+        App.state.submitted = true;
+        const formData = new FormData();
+        formData.append("name", App.state.user.name);
+        formData.append("qualification", App.state.user.qual);
+        formData.append("examTitle", CFG.topic);
+        formData.append("score", App.state.score);
+        if(navigator.onLine) {
+            fetch(CFG.scoreScript, { method: 'POST', mode: 'no-cors', body: formData })
+            .then(() => {
+                App.save(KEYS.sent, "true");
+                document.getElementById('sync-status').innerText = "✅ Score Saved!";
+                document.getElementById('sync-status').style.color = "#00C853";
+            }).catch(() => App.offline(formData));
+        } else App.offline(formData);
+    },
+
+    offline: (d) => {
+        let p = JSON.parse(App.load(KEYS.pending) || "[]");
+        p.push(Object.fromEntries(d));
+        App.save(KEYS.pending, JSON.stringify(p));
+        document.getElementById('sync-status').innerText = "Saved offline.";
+    }
+};
+
+window.onload = () => { if(App.load(KEYS.user)) App.dash(); };
+</script>
+</body>
+</html>
