@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title> (HARD + SMART) ² </title>
+    <style>
+        :root {
+            /* iOS Dark Mode System Colors */
+            --ios-blue: #0A84FF;
+            --ios-green: #30D158;
+            --ios-red: #FF453A;
+            --ios-gray: #1C1C1E;
+            --ios-gray-light: #2C2C2E;
+            
+            /* Glassmorphism Variables */
+            --glass-bg: rgba(40, 40, 40, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-highlight: rgba(255, 255, 255, 0.2);
+            --text-primary: #FFFFFF;
+            --text-secondary: rgba(235, 235, 245, 0.6);
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            /* Native iOS Font Stack */
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+
+        body {
+            /* Vibrant background to show off the glass blur */
+            background-color: #000000;
+            background-image: 
+                radial-gradient(circle at 15% 20%, rgba(10, 132, 255, 0.35) 0%, transparent 40%),
+                radial-gradient(circle at 85% 80%, rgba(88, 86, 214, 0.35) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(48, 209, 88, 0.15) 0%, transparent 50%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* Smooth iOS-like entrance animation */
+        @keyframes springUp { 
+            0% { opacity: 0; transform: translateY(40px) scale(0.95); } 
+            100% { opacity: 1; transform: translateY(0) scale(1); } 
+        }
+        .animate { animation: springUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards; }
+
+        .app-container {
+            width: 100%;
+            max-width: 440px;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Apple Style Frosted Glass Card */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-top: 1px solid var(--glass-highlight);
+            border-left: 1px solid var(--glass-highlight);
+            border-radius: 32px; /* iOS standard squircle feel */
+            padding: 35px 25px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4), 0 0 0 1px inset rgba(255,255,255,0.05);
+        }
+
+        .input-group { margin-bottom: 22px; }
+        .input-group label { 
+            display: block; 
+            font-size: 0.85rem; 
+            font-weight: 500; 
+            color: var(--text-secondary); 
+            margin-bottom: 8px; 
+            margin-left: 4px;
+        }
+        
+        .glass-input, .glass-select {
+            width: 100%;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid transparent;
+            border-radius: 18px;
+            color: var(--text-primary);
+            font-size: 1.05rem;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+        }
+        
+        .glass-input:focus, .glass-select:focus {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid var(--ios-blue);
+            box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.15);
+        }
+        
+        .glass-input::placeholder { color: rgba(235, 235, 245, 0.3); }
+        .glass-select option { background: #1C1C1E; color: white; }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            margin-top: 10px;
+            border-radius: 20px;
+            border: none;
+            font-weight: 600;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn:active { transform: scale(0.96); opacity: 0.8; }
+
+        .btn-primary { 
+            background: var(--ios-blue); 
+            color: #fff; 
+            box-shadow: 0 8px 20px rgba(10, 132, 255, 0.3); 
+        }
+        .btn-mistake { 
+            background: rgba(255, 255, 255, 0.1); 
+            color: #fff; 
+            border: 1px solid var(--glass-border); 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        .btn-group { 
+            background: var(--ios-green); 
+            color: #fff; 
+            text-decoration: none; 
+            box-shadow: 0 8px 20px rgba(48, 209, 88, 0.2);
+        }
+
+        .q-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            margin-bottom: 20px; 
+            font-size: 0.95rem; 
+            font-weight: 600; 
+            color: var(--text-secondary);
+        }
+        
+        .timer { 
+            color: var(--text-primary); 
+            background: rgba(255, 255, 255, 0.1); 
+            padding: 6px 14px; 
+            border-radius: 20px; 
+            font-variant-numeric: tabular-nums; /* Prevents text jumping */
+        }
+        
+        .question-text { 
+            font-size: 1.25rem; 
+            font-weight: 500; 
+            line-height: 1.4; 
+            margin-bottom: 25px; 
+            letter-spacing: -0.02em;
+        }
+        
+        .option {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 18px;
+            border-radius: 20px;
+            margin-bottom: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            gap: 15px;
+            font-weight: 400;
+            font-size: 1.05rem;
+        }
+        .option:active { transform: scale(0.98); background: rgba(255, 255, 255, 0.1); }
+        
+        /* iOS style correct/wrong states */
+        .option.correct { 
+            background: rgba(48, 209, 88, 0.15) !important; 
+            border-color: var(--ios-green) !important; 
+            color: var(--ios-green); 
+        }
+        .option.wrong { 
+            background: rgba(255, 69, 58, 0.15) !important; 
+            border-color: var(--ios-red) !important; 
+            color: var(--ios-red); 
+        }
+
+        .feedback-text {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            display: none;
+            text-align: center;
+        }
+
+        .explanation {
+            margin-top: 20px;
+            padding: 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 18px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text-secondary);
+            display: none;
+            animation: springUp 0.4s ease forwards;
+        }
+        .explanation strong { color: var(--text-primary); display: block; margin-bottom: 5px;}
+
+        .hidden { display: none !important; }
+
+        .progress-bar { 
+            width: 100%; 
+            height: 8px; 
+            background: rgba(255, 255, 255, 0.1); 
+            border-radius: 10px; 
+            margin-bottom: 25px; 
+            overflow: hidden; 
+        }
+        .progress-fill { 
+            height: 100%; 
+            background: var(--ios-blue); 
+            transition: width 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.1); 
+            border-radius: 10px;
+        }
+
+        /* Result View */
+        #res-score {
+            font-size: 4.5rem; 
+            font-weight: 700; 
+            color: var(--ios-blue); 
+            margin-bottom: 5px;
+            letter-spacing: -0.04em;
+        }
+        .res-stat { 
+            font-size: 1rem; 
+            color: var(--text-secondary); 
+            margin-top: 5px; 
+            font-weight: 500;
+        }
+        .advice-box { 
+            margin-top: 30px; 
+            padding: 22px; 
+            background: rgba(255, 255, 255, 0.05); 
+            border-radius: 24px; 
+            line-height: 1.5; 
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <div id="view-login" class="glass-card animate">
+            <div style="text-align: center; margin-bottom: 35px;">
+                <h1 style="font-size: 1.6rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 5px;">(HARD + SMART) ²</h1>
+                <p style="color: var(--text-secondary); font-size: 0.95rem;"> Bagmati Sub Engineer Series</p>
+            </div>
+            
+            <div class="input-group">
+                <label>Full Name</label>
+                <input type="text" id="in-name" class="glass-input" placeholder="Enter your name">
+            </div>
+            <div class="input-group">
+                <label>Qualification</label>
+                <select id="in-qual" class="glass-select">
+                    <option value="" disabled selected>Select Qualification</option>
+                    <option value="Engineer">Engineer</option>
+                    <option value="Sub Engineer">Sub Engineer</option>
+                    <option value="Assistant Sub Engineer">Assistant Sub Engineer</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Password : 7134</label>
+                <input type="password" id="in-pass" class="glass-input" placeholder="••••">
+            </div>
+            
+            <button class="btn btn-primary" style="margin-top: 30px;" onclick="engine.login()">Pass: 7134 & Start  </button>
+        </div>
+
+        <div id="view-dash" class="glass-card animate hidden">
+            <h2 id="dash-welcome" style="font-size: 1.8rem; letter-spacing: -0.02em;">Namaste!</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 35px; margin-top: 5px;">Technical Knowledge Hub</p>
+            
+            <button class="btn btn-primary" onclick="engine.startTest(false)">Start Test</button>
+            <button class="btn btn-mistake" onclick="engine.startTest(true)">Review Mistakes <span id="mistake-count">(0)</span></button>
+            <a href="https://chat.whatsapp.com/GpMpVmBo71RBZqLOf1l4PM?mode=gi_t" class="btn btn-group" target="_blank" style="margin-top: 25px;">Join Study Group</a>
+        </div>
+
+        <div id="view-quiz" class="glass-card animate hidden">
+            <div class="q-header">
+                <span>Question <span id="q-idx">1</span> of <span id="q-total">0</span></span>
+                <span id="timer" class="timer">45:00</span>
+            </div>
+            <div class="progress-bar"><div id="p-bar" class="progress-fill"></div></div>
+            
+            <div id="question-area">
+                <div id="feedback-msg" class="feedback-text"></div>
+                <p class="question-text" id="q-text">Loading...</p>
+                <div id="options-area"></div>
+                <div id="explanation-box" class="explanation"></div>
+            </div>
+
+            <button id="next-btn" class="btn btn-primary hidden" style="margin-top: 25px;" onclick="engine.next()">Continue</button>
+        </div>
+
+        <div id="view-result" class="glass-card animate hidden" style="text-align:center;">
+            <h1 id="res-score">0/0</h1>
+            <p id="res-name-display" style="font-weight: 600; font-size: 1.3rem; margin-top: 10px;"></p>
+            <div id="res-accuracy" class="res-stat">Accuracy: 0%</div>
+            
+            <div class="advice-box">
+                <p id="res-advice">Hard work is the key to success!</p>
+            </div>
+
+            <button class="btn btn-primary" style="margin-top: 35px;" onclick="location.reload()">Retake Test</button>
+        </div>
+
+    </div>
+
+<script>
+    // Unchanged Core JavaScript Engine
+    const CONFIG = {
+        password: "7134",
+        timer: 45 * 60
+    };
+
+    const QUESTIONS_DATA = 
+    [
+  {
+    "id": 1,
+    "q": "श्रेणीक्रम पूरा गर्नुहोस्: ५, १०, १५, २०, ?",
+    "o": [
+      "२५",
+      "३०",
+      "३५",
+      "४०"
+    ],
+    "a": 0,
+    "e": "हरेक पटक ५ जोडिएको छ (५ को गुणन)।"
+  },
+  {
+    "id": 2,
+    "q": "'A' को मान १ र 'B' को मान २ भए, 'D' को मान कति हुन्छ ?",
+    "o": [
+      "३",
+      "४",
+      "५",
+      "६"
+    ],
+    "a": 1,
+    "e": "अंग्रेजी वर्णमालामा D चौथो स्थानमा पर्छ।"
+  },
+  {
+    "id": 3,
+    "q": "सूर्य उदाउने दिशातिर फर्केर उभिएको मानिस दायाँ फर्कियो भने कुन दिशामा फर्कन्छ ?",
+    "o": [
+      "पूर्व",
+      "पश्चिम",
+      "उत्तर",
+      "दक्षिण"
+    ],
+    "a": 3,
+    "e": "पूर्वबाट ९० डिग्री दायाँ घुम्दा दक्षिण हुन्छ।"
+  },
+  {
+    "id": 4,
+    "q": "चरा : उड्नु :: माछा : ?",
+    "o": [
+      "दौडनु",
+      "पौडिनु",
+      "हिँड्नु",
+      "उफ्रिनु"
+    ],
+    "a": 1,
+    "e": "चरा उड्छ, माछा पौडिन्छ।"
+  },
+  {
+    "id": 5,
+    "q": "२०० को १०% कति हुन्छ ?",
+    "o": [
+      "१०",
+      "२०",
+      "३०",
+      "४०"
+    ],
+    "a": 1,
+    "e": "(10/100) * 200 = 20."
+  },
+  {
+    "id": 6,
+    "q": "BODMAS नियम अनुसार: २ + २ × २ = ?",
+    "o": [
+      "८",
+      "६",
+      "४",
+      "१०"
+    ],
+    "a": 1,
+    "e": "पहिले गुणन (२×२=४), अनि जोड (२+४=६)।"
+  },
+  {
+    "id": 7,
+    "q": "समूहमा नमिल्ने कुन हो ?",
+    "o": [
+      "कार",
+      "बस",
+      "मोटरसाइकल",
+      "स्याउ"
+    ],
+    "a": 3,
+    "e": "स्याउ फलफूल हो, अरू सबै यातायातका साधन हुन्।"
+  },
+  {
+    "id": 8,
+    "q": "हिजो आइतबार थियो भने भोलि कुन वार होला ?",
+    "o": [
+      "सोमबार",
+      "मंगलबार",
+      "बुधबार",
+      "शनिबार"
+    ],
+    "a": 1,
+    "e": "हिजो आइतबार = आज सोमबार = भोलि मंगलबार।"
+  },
+  {
+    "id": 9,
+    "q": "आमाको दाजु/भाइलाई के भनिन्छ ?",
+    "o": [
+      "काका",
+      "मामा",
+      "फुपाजु",
+      "दाजु"
+    ],
+    "a": 1,
+    "e": "आमाको दाजु वा भाइलाई मामा भनिन्छ।"
+  },
+  {
+    "id": 10,
+    "q": "B, D, F, ?",
+    "o": [
+      "G",
+      "H",
+      "I",
+      "J"
+    ],
+    "a": 1,
+    "e": "एउटा अक्षर छोड्दै (C, E छोडेर F पछि G छोडेर H)।"
+  },
+  {
+    "id": 11,
+    "q": "१०० रुपैयाँमा किनेको सामान १२० मा बेच्दा कति प्रतिशत नाफा हुन्छ ?",
+    "o": [
+      "१०%",
+      "१५%",
+      "२०%",
+      "२५%"
+    ],
+    "a": 2,
+    "e": "नाफा = २०, प्रतिशत = (२०/१००) × १०० = २०%।"
+  },
+  {
+    "id": 12,
+    "q": "१० जना कामदारले एउटा पर्खाल ५ दिनमा लाउँछन् भने, ५ जनाले कति दिनमा लाउलान् ?",
+    "o": [
+      "१० दिन",
+      "१५ दिन",
+      "२.५ दिन",
+      "५ दिन"
+    ],
+    "a": 0,
+    "e": "मान्छे आधा भएपछि समय दोब्बर लाग्छ (५×२=१०)।"
+  },
+  {
+    "id": 13,
+    "q": "श्रेणीक्रम पूरा गर्नुहोस्: २, ६, १२, २०, ३०, ?",
+    "o": [
+      "३६",
+      "४०",
+      "४२",
+      "४८"
+    ],
+    "a": 2,
+    "e": "भिन्नता क्रमशः ४, ६, ८, १०, १२ छ। ३०+१२ = ४२।"
+  },
+  {
+    "id": 14,
+    "q": "यदि CAT=24 र DOG=26 हुन्छ भने BIRD= ?",
+    "o": [
+      "३४",
+      "३५",
+      "३८",
+      "४०"
+    ],
+    "a": 2,
+    "e": "अक्षरको मान जोड्दा: B(2)+I(9)+R(18)+D(4) = 33। (माफ गर्नुहोला, C मा 33 हुनुपर्ने, नजिकको वा लजिक फरक हुन सक्छ। यहाँ 33 नै सही हो)। (Note: 2+9+18+4=33)।"
+  },
+  {
+    "id": 15,
+    "q": "एउटा सर्भेयर ३ कि.मी. उत्तर जान्छ र ४ कि.मी. पूर्व जान्छ। उ सुरुको विन्दुबाट कति टाढा छ ?",
+    "o": [
+      "५ कि.मी.",
+      "७ कि.मी.",
+      "१ कि.मी.",
+      "१२ कि.मी."
+    ],
+    "a": 0,
+    "e": "पाइथागोरस साध्य: √(३² + ४²) = √(९+१६) = √२५ = ५ कि.मी.।"
+  },
+  {
+    "id": 16,
+    "q": "A र B ले कुनै काम क्रमशः १० र १५ दिनमा गर्छन्। दुवै मिलेर कति दिनमा गर्लान् ?",
+    "o": [
+      "५ दिन",
+      "६ दिन",
+      "८ दिन",
+      "१२ दिन"
+    ],
+    "a": 1,
+    "e": "(10×15)/(10+15) = 150/25 = 6 दिन।"
+  },
+  {
+    "id": 17,
+    "q": "४० कि.मी./घन्टाको गतिमा गएर ६० कि.मी./घन्टामा फर्कंदा औसत गति कति हुन्छ ?",
+    "o": [
+      "५०",
+      "४८",
+      "५२",
+      "५५"
+    ],
+    "a": 1,
+    "e": "(2xy)/(x+y) = (2×40×60)/(100) = 48 km/hr।"
+  },
+  {
+    "id": 18,
+    "q": "घडीमा ३:३० बज्दा घण्टा र मिनेट सुईबीच कति डिग्रीको कोण बन्छ ?",
+    "o": [
+      "९०°",
+      "७५°",
+      "६०°",
+      "४५°"
+    ],
+    "a": 1,
+    "e": "|11M - 60H|/2 = |11×30 - 60×3|/2 = |330-180|/2 = 75°।"
+  },
+  {
+    "id": 19,
+    "q": "एउटा लाइनमा सिता बायाँबाट १५ औं र दायाँबाट पनि १५ औं स्थानमा छिन्। जम्मा कति जना छन् ?",
+    "o": [
+      "३०",
+      "२९",
+      "३१",
+      "२८"
+    ],
+    "a": 1,
+    "e": "(15 + 15) - 1 = 29।"
+  },
+  {
+    "id": 20,
+    "q": "'CIVIL' शब्दका अक्षरहरू कति तरिकाले मिलाउन सकिन्छ ?",
+    "o": [
+      "१२०",
+      "६०",
+      "२४",
+      "३०"
+    ],
+    "a": 1,
+    "e": "5 अक्षर, I दुई पटक छ। 5! / 2! = 120 / 2 = 60।"
+  },
+  {
+    "id": 21,
+    "q": "दुईवटा पासा (Dice) सँगै फ्याँक्दा योगफल ७ आउने सम्भाव्यता कति हुन्छ ?",
+    "o": [
+      "१/६",
+      "१/१२",
+      "१/३",
+      "२/७"
+    ],
+    "a": 0,
+    "e": "अनुकूल परिणाम ६ वटा (1,6; 2,5; 3,4; 4,3; 5,2; 6,1)। जम्मा ३६। ६/३६ = १/६।"
+  },
+  {
+    "id": 22,
+    "q": "एउटा सामानमा २०% र १०% को क्रमिक छुट (Successive discount) दिँदा वास्तविक एकमुष्ट छुट कति हुन्छ ?",
+    "o": [
+      "३०%",
+      "२८%",
+      "३२%",
+      "२५%"
+    ],
+    "a": 1,
+    "e": "x + y - (xy/100) = 20 + 10 - (200/100) = 28%।"
+  },
+  {
+    "id": 23,
+    "q": "यदि ५x = ३y र २y = ४z छ भने, x:z कति होला ?",
+    "o": [
+      "६:५",
+      "५:६",
+      "३:४",
+      "२:३"
+    ],
+    "a": 0,
+    "e": "x/y = 3/5 र y/z = 4/2 = 2/1। x/z = (x/y) × (y/z) = (3/5) × (2/1) = 6/5।"
+  },
+  {
+    "id": 24,
+    "q": "कुनै गाउँको जनसंख्या बर्सेनि १०% ले बढ्छ। अहिले १००० छ भने २ वर्षपछि कति होला ?",
+    "o": [
+      "१२००",
+      "१२१०",
+      "१२२०",
+      "१२५०"
+    ],
+    "a": 1,
+    "e": "1000 × 1.1 × 1.1 = 1210।"
+  },
+  {
+    "id": 25,
+    "q": "२७ वटा साना घनहरू मिलेर बनेको ठूलो घनलाई बाहिरबाट रङ्ग लगाउँदा, कतिवटा सानो घनको एउटा पनि सतहमा रङ्ग लाग्दैन ?",
+    "o": [
+      "१",
+      "२",
+      "४",
+      "८"
+    ],
+    "a": 0,
+    "e": "भित्री घनको संख्या = (n-2)³ = (3-2)³ = 1³ = 1।"
+  },
+  {
+    "id": 26,
+    "q": "I have ______ umbrella.",
+    "o": [
+      "a",
+      "an",
+      "the",
+      "no article"
+    ],
+    "a": 1,
+    "e": "'Umbrella' starts with a vowel sound."
+  },
+  {
+    "id": 27,
+    "q": "She goes to school ______ bus.",
+    "o": [
+      "in",
+      "on",
+      "by",
+      "with"
+    ],
+    "a": 2,
+    "e": "'By' is used for general means of transportation."
+  },
+  {
+    "id": 28,
+    "q": "The plural of 'Child' is ______ .",
+    "o": [
+      "Childs",
+      "Childrens",
+      "Children",
+      "Childes"
+    ],
+    "a": 2,
+    "e": "Irregular plural form."
+  },
+  {
+    "id": 29,
+    "q": "They ______ playing football now.",
+    "o": [
+      "is",
+      "am",
+      "are",
+      "was"
+    ],
+    "a": 2,
+    "e": "'They' takes the plural verb 'are' in present continuous tense."
+  },
+  {
+    "id": 30,
+    "q": "Synonym of 'Beautiful' is ______ .",
+    "o": [
+      "Ugly",
+      "Pretty",
+      "Bad",
+      "Dark"
+    ],
+    "a": 1,
+    "e": "Pretty has the same meaning as beautiful."
+  },
+  {
+    "id": 31,
+    "q": "Antonym of 'Hard' is ______ .",
+    "o": [
+      "Soft",
+      "Difficult",
+      "Solid",
+      "Heavy"
+    ],
+    "a": 0,
+    "e": "Soft is the exact opposite of hard."
+  },
+  {
+    "id": 32,
+    "q": "I was born ______ Monday.",
+    "o": [
+      "in",
+      "on",
+      "at",
+      "to"
+    ],
+    "a": 1,
+    "e": "'On' is used before days of the week."
+  },
+  {
+    "id": 33,
+    "q": "The jury ______ divided in their opinions.",
+    "o": [
+      "is",
+      "are",
+      "has",
+      "have"
+    ],
+    "a": 1,
+    "e": "When the jury acts as individuals (divided), the plural verb 'are' is used."
+  },
+  {
+    "id": 34,
+    "q": "If I had studied hard, I ______ the exam.",
+    "o": [
+      "will pass",
+      "would pass",
+      "would have passed",
+      "passed"
+    ],
+    "a": 2,
+    "e": "Type 3 Conditional: past perfect (had studied) pairs with 'would have + V3'."
+  },
+  {
+    "id": 35,
+    "q": "He was accused ______ theft.",
+    "o": [
+      "of",
+      "for",
+      "with",
+      "to"
+    ],
+    "a": 0,
+    "e": "The verb 'accuse' always takes the preposition 'of'."
+  },
+  {
+    "id": 36,
+    "q": "I am right, ______ ?",
+    "o": [
+      "amn't I",
+      "don't I",
+      "aren't I",
+      "isn't I"
+    ],
+    "a": 2,
+    "e": "The negative question tag for 'I am' is always 'aren't I?'."
+  },
+  {
+    "id": 37,
+    "q": "I had my car ______ yesterday.",
+    "o": [
+      "wash",
+      "to wash",
+      "washed",
+      "washing"
+    ],
+    "a": 2,
+    "e": "Causative verb structure: have + object (thing) + V3 (past participle)."
+  },
+  {
+    "id": 38,
+    "q": "Meaning of 'Ubiquitous' is ______ .",
+    "o": [
+      "Rare",
+      "Found everywhere",
+      "Expensive",
+      "Dangerous"
+    ],
+    "a": 1,
+    "e": "Ubiquitous means present, appearing, or found everywhere."
+  },
+  {
+    "id": 39,
+    "q": "'आमा' को पर्यायवाची शब्द कुन हो ?",
+    "o": [
+      "पिता",
+      "माता",
+      "दिदी",
+      "छोरी"
+    ],
+    "a": 1,
+    "e": "माता भनेको आमा हो।"
+  },
+  {
+    "id": 40,
+    "q": "'उज्यालो' को विपरीतार्थी शब्द कुन हो ?",
+    "o": [
+      "दिन",
+      "अँध्यारो",
+      "राति",
+      "घाम"
+    ],
+    "a": 1,
+    "e": "उज्यालोको ठीक उल्टो अँध्यारो हुन्छ।"
+  },
+  {
+    "id": 41,
+    "q": "'मामा' को स्त्रीलिङ्गी रूप के हुन्छ ?",
+    "o": [
+      "काकी",
+      "फुपू",
+      "माइजू",
+      "सानिमा"
+    ],
+    "a": 2,
+    "e": "मामाको श्रीमती वा स्त्रीलिङ्गी रूप माइजू हो।"
+  },
+  {
+    "id": 42,
+    "q": "\"म घर जान्छु।\" यो कुन काल हो ?",
+    "o": [
+      "भूत काल",
+      "भविष्यत् काल",
+      "वर्तमान काल",
+      "पूर्ण भूत"
+    ],
+    "a": 2,
+    "e": "अहिले भइरहेको वा सधैं हुने काम जनाउने भएकाले वर्तमान काल हो।"
+  },
+  {
+    "id": 43,
+    "q": "तलका मध्ये कुन शब्द 'नाम' (Noun) हो ?",
+    "o": [
+      "राम्रो",
+      "ऊ",
+      "काठमाडौं",
+      "खानु"
+    ],
+    "a": 2,
+    "e": "काठमाडौं ठाउँको नाम हो।"
+  },
+  {
+    "id": 44,
+    "q": "शुद्ध शब्द छान्नुहोस्:",
+    "o": [
+      "विध्यर्थी",
+      "बिद्यार्थी",
+      "विद्यार्थी",
+      "बिध्यर्थि"
+    ],
+    "a": 2,
+    "e": "सही हिज्जे 'विद्यार्थी' हो।"
+  },
+  {
+    "id": 45,
+    "q": "'त्रिफला' शब्दमा कुन समास छ ?",
+    "o": [
+      "द्विगु समास",
+      "द्वन्द्व समास",
+      "तत्पुरुष समास",
+      "बहुव्रीहि समास"
+    ],
+    "a": 0,
+    "e": "अगाडि संख्या बुझाउने शब्द (त्रि) भएकोले यो द्विगु समास हो।"
+  },
+  {
+    "id": 46,
+    "q": "'बाँदरको हातमा नरिवल' उखानको अर्थ के हो ?",
+    "o": [
+      "बाँदरले नरिवल खानु",
+      "अयोग्य व्यक्तिले बहुमूल्य वस्तु पाउनु",
+      "काम गर्न नजान्नु",
+      "धेरै बाठो हुनु"
+    ],
+    "a": 1,
+    "e": "महत्त्व नबुझ्ने वा अयोग्यको हातमा राम्रो चिज पर्नु।"
+  },
+  {
+    "id": 47,
+    "q": "\"रामले रावणलाई वाणले हाने।\" यहाँ 'वाणले' कुन कारक हो ?",
+    "o": [
+      "कर्ता कारक",
+      "कर्म कारक",
+      "करण कारक",
+      "सम्प्रदान कारक"
+    ],
+    "a": 2,
+    "e": "साधन वा हतियार बुझाउने शब्द (वाण) मा लाग्ने 'ले' करण कारक हो।"
+  },
+  {
+    "id": 48,
+    "q": "'नदी+ईश' को सन्धि के हुन्छ ?",
+    "o": [
+      "नदिईश",
+      "नदीश",
+      "नदेश",
+      "नदिश"
+    ],
+    "a": 1,
+    "e": "ई + ई मिलेर दीर्घ 'ई' (नदीश) बन्छ।"
+  },
+  {
+    "id": 49,
+    "q": "तलका मध्ये 'निपात' कुन हो ?",
+    "o": [
+      "र",
+      "पनि",
+      "पो",
+      "तर"
+    ],
+    "a": 2,
+    "e": "वाक्यमा मिठास भर्ने तर आफ्नै अर्थ नहुने शब्द (पो, नि, त, रे) निपात हुन्।"
+  },
+  {
+    "id": 50,
+    "q": "'पढाइ' शब्द कुन प्रत्यय लागेर बनेको हो ?",
+    "o": [
+      "आइ",
+      "इ",
+      "पढ्",
+      "अइ"
+    ],
+    "a": 0,
+    "e": "पढ् (धातु) + आइ (प्रत्यय) = पढाइ (कृदन्त शब्द)।"
+  }
+ 
+];
+
+    let state = {
+        user: "",
+        firstName: "",
+        score: 0,
+        idx: 0,
+        time: CONFIG.timer,
+        mistakes: JSON.parse(localStorage.getItem('mistakeBank')) || [],
+        currentSet: [],
+        timerInt: null
+    };
+
+    const engine = {
+        login: () => {
+            const user = document.getElementById('in-name').value;
+            const pass = document.getElementById('in-pass').value;
+            const qual = document.getElementById('in-qual').value;
+
+            if(pass !== CONFIG.password) return alert("Incorrect Password!");
+            if(!user || !qual) return alert("Please complete your profile!");
+            
+            state.user = user;
+            state.firstName = user.split(' ')[0];
+            document.getElementById('view-login').classList.add('hidden');
+            document.getElementById('view-dash').classList.remove('hidden');
+            document.getElementById('dash-welcome').innerText = `Namaste, ${state.firstName}!`;
+            document.getElementById('mistake-count').innerText = `(${state.mistakes.length})`;
+        },
+
+        startTest: (reviewMode) => {
+            if(QUESTIONS_DATA.length === 0 && !reviewMode) return alert("Question bank is empty!");
+            
+            state.score = 0;
+            state.idx = 0;
+            state.time = CONFIG.timer;
+            
+            if(reviewMode) {
+                if(state.mistakes.length === 0) return alert("No mistakes to review!");
+                state.currentSet = QUESTIONS_DATA.filter(q => state.mistakes.includes(q.id));
+            } else {
+                state.currentSet = [...QUESTIONS_DATA].sort(() => 0.5 - Math.random());
+            }
+
+            document.getElementById('q-total').innerText = state.currentSet.length;
+            document.getElementById('view-dash').classList.add('hidden');
+            document.getElementById('view-quiz').classList.remove('hidden');
+            engine.render();
+            engine.timer();
+        },
+
+        render: () => {
+            const q = state.currentSet[state.idx];
+            document.getElementById('q-idx').innerText = state.idx + 1;
+            document.getElementById('q-text').innerText = q.q;
+            document.getElementById('next-btn').classList.add('hidden');
+            document.getElementById('explanation-box').style.display = 'none';
+            document.getElementById('feedback-msg').style.display = 'none';
+            
+            const optArea = document.getElementById('options-area');
+            optArea.innerHTML = "";
+            
+            q.o.forEach((opt, i) => {
+                const div = document.createElement('div');
+                div.className = 'option animate';
+                div.innerHTML = `<span>${String.fromCharCode(65+i)}.</span> ${opt}`;
+                div.onclick = () => engine.check(i, div);
+                optArea.appendChild(div);
+            });
+
+            document.getElementById('p-bar').style.width = `${((state.idx+1)/state.currentSet.length)*100}%`;
+        },
+
+        check: (choice, el) => {
+            const q = state.currentSet[state.idx];
+            const opts = document.querySelectorAll('.option');
+            const feedback = document.getElementById('feedback-msg');
+            opts.forEach(o => o.style.pointerEvents = 'none');
+
+            const compliments = ["Amazing", "Wow", "Fantastic", "Well Done", "Lovely", "Superb", "Brilliant"];
+            const motivation = ["Don't give up", "Keep trying", "You've got this", "Stay focused", "Almost there", "Keep going"];
+
+            feedback.style.display = 'block';
+
+            if(choice === q.a) {
+                el.classList.add('correct');
+                state.score++;
+                state.mistakes = state.mistakes.filter(id => id !== q.id);
+                
+                const randomComp = compliments[Math.floor(Math.random() * compliments.length)];
+                feedback.innerText = `${randomComp}, ${state.firstName}!`;
+                feedback.style.color = "var(--ios-green)";
+            } else {
+                el.classList.add('wrong');
+                opts[q.a].classList.add('correct');
+                if(!state.mistakes.includes(q.id)) state.mistakes.push(q.id);
+                
+                const randomMot = motivation[Math.floor(Math.random() * motivation.length)];
+                feedback.innerText = `${randomMot}, ${state.firstName}!`;
+                feedback.style.color = "var(--ios-red)";
+            }
+            
+            if(q.e) {
+                const exp = document.getElementById('explanation-box');
+                exp.innerHTML = "<strong>Explanation</strong>" + q.e;
+                exp.style.display = 'block';
+            }
+
+            localStorage.setItem('mistakeBank', JSON.stringify(state.mistakes));
+            document.getElementById('mistake-count').innerText = `(${state.mistakes.length})`;
+            document.getElementById('next-btn').classList.remove('hidden');
+        },
+
+        next: () => {
+            state.idx++;
+            if(state.idx < state.currentSet.length) engine.render();
+            else engine.end();
+        },
+
+        timer: () => {
+            clearInterval(state.timerInt);
+            state.timerInt = setInterval(() => {
+                state.time--;
+                let m = Math.floor(state.time / 60);
+                let s = state.time % 60;
+                document.getElementById('timer').innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+                if(state.time <= 0) engine.end();
+            }, 1000);
+        },
+
+        end: () => {
+            clearInterval(state.timerInt);
+            document.getElementById('view-quiz').classList.add('hidden');
+            document.getElementById('view-result').classList.remove('hidden');
+            
+            const total = state.currentSet.length;
+            const accuracy = Math.round((state.score / total) * 100);
+            
+            const normalizedScore = (state.score / total) * 50;
+            
+            document.getElementById('res-score').innerText = `${state.score}/${total}`;
+            document.getElementById('res-name-display').innerText = state.user;
+            document.getElementById('res-accuracy').innerText = `Accuracy Percentage: ${accuracy}%`;
+
+            let advice = "";
+            if(normalizedScore <= 25) {
+                advice = `You need to work much harder in your preparation, ${state.firstName}. Consistency is the bridge between goals and accomplishment.`;
+            } else if (normalizedScore > 25 && normalizedScore <= 35) {
+                advice = `That is a good score, ${state.firstName}, but aim for more to secure your position in the top ranks!`;
+            } else {
+                advice = `Excellent work, ${state.firstName}! Your technical grasp is superb. Maintain this momentum for the final exams.`;
+            }
+            
+            document.getElementById('res-advice').innerText = advice;
+        }
+    };
+</script>
+</body>
+</html>
