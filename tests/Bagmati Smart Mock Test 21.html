@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bagmati 5th Smart Test 06</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* [100% CLAYMORPHISM PALETTE & SHADOWS] */
+        :root { 
+            --primary: #FF3366; 
+            --secondary: #FF9933; 
+            --accent: #00E5FF; 
+            
+            /* Clay Base Color */
+            --clay-bg: #E8F0F8; 
+            
+            /* Clay Outer Shadows */
+            --clay-shadow-out: 12px 12px 24px rgba(166, 180, 200, 0.7), -12px -12px 24px #FFFFFF;
+            
+            /* Clay Inner Shadows (Puffy Effect) */
+            --clay-shadow-in: inset 6px 6px 12px rgba(255, 255, 255, 0.9), inset -6px -6px 12px rgba(166, 180, 200, 0.4);
+            
+            /* Clay Pressed/Inset Shadows (For Inputs) */
+            --clay-shadow-pressed: inset 6px 6px 12px rgba(166, 180, 200, 0.6), inset -6px -6px 12px #FFFFFF;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            /* Soft pastel gradient to complement the 3D clay */
+            background: linear-gradient(-45deg, #FFDEE9, #B5FFFC, #C2E9FB, #EAE5C9);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 15px; 
+            overflow-x: hidden; 
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 100% Clay Container */
+        .app-container { 
+            width: 100%; 
+            max-width: 650px; 
+            background: var(--clay-bg); 
+            border-radius: 40px; 
+            padding: 2.5rem 2rem; 
+            /* Double shadow system for 3D clay look */
+            box-shadow: var(--clay-shadow-out), var(--clay-shadow-in);
+            position: relative; 
+            overflow: hidden; 
+            transition: all 0.4s ease; 
+        }
+        
+        h1 { font-size: 2.2rem; font-weight: 800; color: #1E293B; margin-bottom: 10px; }
+        h2 { font-size: 1.6rem; margin-bottom: 20px; color: #334155; font-weight: 800; }
+        p { color: #64748B; font-size: 1rem; line-height: 1.6; font-weight: 500; }
+        
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 10px; color: #64748B; text-transform: uppercase; letter-spacing: 1.5px; }
+        
+        /* Clay Inset Inputs */
+        .glass-input { 
+            width: 100%; 
+            padding: 18px; 
+            background: var(--clay-bg); 
+            border: none; 
+            border-radius: 20px; 
+            color: #1E293B; 
+            font-size: 1.05rem; 
+            font-weight: 600;
+            outline: none; 
+            transition: 0.3s;
+            box-shadow: var(--clay-shadow-pressed);
+        }
+        .glass-input:focus { 
+            box-shadow: inset 8px 8px 16px rgba(166, 180, 200, 0.7), inset -8px -8px 16px #FFFFFF, 0 0 0 4px rgba(0, 229, 255, 0.3);
+        }
+        .glass-input::placeholder { color: #94A3B8; }
+        .glass-input:read-only { background: #DFE7F0; color: #64748B; cursor: not-allowed; }
+        select.glass-input option { background: #FFFFFF; color: #1E293B; }
+        
+        /* Clay Puffy Button */
+        .btn { 
+            background: var(--primary); 
+            border: none; 
+            color: white; 
+            padding: 18px; 
+            width: 100%; 
+            border-radius: 24px; 
+            font-size: 1.15rem; 
+            font-weight: 800; 
+            cursor: pointer; 
+            margin-top: 25px; 
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            min-height: 55px; 
+            box-shadow: 
+                8px 8px 16px rgba(255, 51, 102, 0.3), 
+                -4px -4px 10px #FFFFFF,
+                inset 4px 4px 8px rgba(255,255,255,0.4),
+                inset -4px -4px 8px rgba(0,0,0,0.1);
+        }
+        .btn:active { 
+            transform: scale(0.95); 
+            box-shadow: 
+                2px 2px 5px rgba(255, 51, 102, 0.4), 
+                inset 6px 6px 12px rgba(0,0,0,0.2),
+                inset -2px -2px 6px rgba(255,255,255,0.2);
+        }
+        .btn:disabled { filter: grayscale(1); cursor: wait; opacity: 0.7; }
+        
+        .btn-outline { 
+            background: var(--clay-bg); 
+            color: #1E293B;
+            box-shadow: var(--clay-shadow-out), var(--clay-shadow-in); 
+            margin-top: 15px; 
+        }
+        
+        .personal-header { text-align: center; margin-bottom: 25px; padding-bottom: 15px; min-height: 50px; display: flex; align-items: center; justify-content: center; }
+        .animate-praise { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        .info-bar { 
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; 
+            background: var(--clay-bg); 
+            padding: 15px 20px; 
+            border-radius: 20px; 
+            box-shadow: var(--clay-shadow-pressed);
+            font-weight: 700;
+            color: #64748B;
+        }
+        .timer-badge { font-family: monospace; font-weight: 800; color: #FF3366; font-size: 1.3rem; }
+        
+        /* [REQUIRED] Question Text is ALWAYS Black */
+        .question-text { 
+            font-size: 1.35rem; 
+            font-weight: 800; 
+            margin-bottom: 25px; 
+            line-height: 1.5; 
+            color: #000000 !important; 
+            padding: 10px 0;
+        }
+        
+        /* [REQUIRED] Options with ALWAYS Blue Text and Clay Styling */
+        .option-btn { 
+            width: 100%; 
+            padding: 18px 20px; 
+            margin-bottom: 18px; 
+            background: var(--clay-bg); 
+            border: none; 
+            border-radius: 24px; 
+            text-align: left; 
+            color: #0000FF !important; 
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            display: flex; 
+            align-items: center; 
+            -webkit-user-select: none; user-select: none;
+            
+            /* Puffy Clay Shadow for Options */
+            box-shadow: 
+                6px 6px 14px rgba(166, 180, 200, 0.6), 
+                -6px -6px 14px #FFFFFF,
+                inset 3px 3px 6px rgba(255,255,255,0.9),
+                inset -3px -3px 6px rgba(166, 180, 200, 0.3);
+        }
+        .option-btn:hover { transform: translateY(-3px); }
+        .option-btn:active { transform: scale(0.96); box-shadow: var(--clay-shadow-pressed); }
+        
+        .option-marker { 
+            width: 40px; height: 40px; 
+            background: var(--clay-bg); 
+            border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            margin-right: 18px; 
+            font-weight: 800; 
+            color: #0000FF !important; 
+            flex-shrink: 0; 
+            /* Pressed marker inside puffy button */
+            box-shadow: var(--clay-shadow-pressed);
+        }
+        
+        /* Correct/Wrong States - Only Background Changes, text remains Blue! */
+        .correct { 
+            background: #00FF88 !important; /* Green Background */
+            box-shadow: 
+                6px 6px 14px rgba(0, 255, 136, 0.4), 
+                -4px -4px 10px #FFFFFF,
+                inset 4px 4px 8px rgba(255,255,255,0.5),
+                inset -4px -4px 8px rgba(0,0,0,0.1);
+            transform: scale(1.02);
+        }
+        .correct .option-marker { background: rgba(255,255,255,0.3); }
+        
+        .wrong { 
+            background: #FF3366 !important; /* Red Background */
+            box-shadow: 
+                6px 6px 14px rgba(255, 51, 102, 0.4), 
+                -4px -4px 10px #FFFFFF,
+                inset 4px 4px 8px rgba(255,255,255,0.4),
+                inset -4px -4px 8px rgba(0,0,0,0.1);
+        }
+        .wrong .option-marker { background: rgba(255,255,255,0.3); }
+        
+        .explanation-box { 
+            margin-top: 25px; padding: 20px; 
+            background: var(--clay-bg); 
+            border-left: 6px solid var(--accent); 
+            border-radius: 20px; 
+            font-size: 1.05rem; 
+            color: #1E293B;
+            font-weight: 600;
+            display: none; 
+            animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: var(--clay-shadow-pressed);
+        }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .score-circle { 
+            width: 200px; height: 200px; 
+            border-radius: 50%; 
+            background: var(--clay-bg);
+            margin: 0 auto 30px auto; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            /* Huge puffy clay ring */
+            box-shadow: 
+                15px 15px 30px rgba(166, 180, 200, 0.7), 
+                -15px -15px 30px #FFFFFF,
+                inset 8px 8px 16px rgba(255,255,255,0.9),
+                inset -8px -8px 16px rgba(166, 180, 200, 0.4); 
+        }
+        .score-val { font-size: 4.5rem; font-weight: 800; color: #FF3366; line-height: 1; }
+        .hidden { display: none !important; }
+        #opts-list { max-height: 55vh; overflow-y: auto; padding-right: 12px; padding-bottom: 10px; padding-top: 5px; margin-left: -5px; padding-left: 5px;}
+        
+        /* Custom Scrollbar */
+        #opts-list::-webkit-scrollbar { width: 8px; }
+        #opts-list::-webkit-scrollbar-track { background: var(--clay-bg); border-radius: 10px; box-shadow: var(--clay-shadow-pressed); }
+        #opts-list::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        
+        #auth-msg { text-align: center; margin-top: 20px; font-weight: 700; color: #FF3366; background: var(--clay-bg); padding: 15px; border-radius: 16px; display: none; box-shadow: var(--clay-shadow-pressed); }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="app">
+    <div id="view-login">
+        <div style="text-align: center; margin-bottom: 35px;">
+            <h1 id="title-display">Bagmati 5th Smart Test 06</h1>
+            <p>New Edition | Civil Engineering</p>
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Full Name</span>
+            <input type="text" id="inp-name" class="glass-input" placeholder="Enter your name">
+        </div>
+        
+        <div class="input-group">
+            <span class="label">Qualification</span>
+            <select id="inp-qual" class="glass-input">
+                <option value="Engineer">Engineer</option>
+                <option value="Sub-Engineer">Sub-Engineer</option>
+                <option value="Asst. Sub-Engineer">Asst. Sub-Engineer</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <span class="label">Unique Code</span>
+            <input type="tel" id="inp-code" class="glass-input" placeholder="Enter 5-digit code">
+        </div>
+
+        <div class="input-group">
+            <span class="label">Password (Auto-Fill)</span>
+            <input type="password" id="inp-pass" class="glass-input" placeholder="Verifying..." readonly>
+        </div>
+
+        <button class="btn" id="btn-verify" onclick="App.verifyAndLogin()">Verify & Login</button>
+        <p id="auth-msg"></p>
+    </div>
+
+    <div id="view-dash" class="hidden">
+        <div style="text-align: center; margin-bottom: 35px;">
+            <h2 id="greet-msg" style="color: #FF3366; font-size: 2.2rem;">Welcome!</h2>
+            <div style="background: var(--clay-bg); padding: 30px; border-radius: 24px; margin-bottom: 25px; box-shadow: var(--clay-shadow-pressed);">
+                <p style="text-transform: uppercase; font-size: 0.9rem; color: #94A3B8; font-weight: 800; letter-spacing: 1px;">Active Session</p>
+                <h3 id="dash-topic-display" style="font-size: 1.8rem; margin: 15px 0; color: #1E293B;"></h3>
+                <p style="font-weight: 700; color: #64748B;">50 Questions • 45 Minutes</p>
+            </div>
+        </div>
+        <button class="btn" id="btn-start" onclick="App.start(false)">Start Exam</button>
+        <p id="submitted-msg" style="color: #00C853; text-align: center; margin-top: 20px; display: none; font-weight: 800;">✅ Score Submitted Successfully</p>
+        <button class="btn btn-outline" id="btn-review" onclick="App.start(true)" style="display: none;">Review Mistakes</button>
+    </div>
+
+    <div id="view-quiz" class="hidden">
+        <div class="personal-header">
+            <div id="praise-txt" style="font-size: 1.5rem; font-weight: 800; color: #1E293B;">Good Luck!</div>
+        </div>
+
+        <div class="info-bar">
+            <span>Q: <span id="q-idx">1</span> / <span id="q-total">50</span></span>
+            <span class="timer-badge" id="timer">45:00</span>
+        </div>
+
+        <div id="q-container">
+            <div class="question-text" id="q-text">Loading...</div>
+            <div id="opts-list"></div>
+            <div class="explanation-box" id="exp-box"></div>
+        </div>
+
+        <button class="btn hidden" id="btn-next" onclick="App.next()">Next Question</button>
+    </div>
+
+    <div id="view-result" class="hidden" style="text-align: center;">
+        <h2 style="font-size: 2.2rem; margin-bottom: 30px;">Quiz Completed!</h2>
+        <div class="score-circle">
+            <span class="score-val" id="res-score">0</span>
+            <span style="font-size: 1rem; font-weight: 800; text-transform: uppercase; color: #64748B; margin-top: 10px;">Correct</span>
+        </div>
+        <div style="margin-bottom: 40px;">
+            <h3 id="res-pct" style="color: #FF3366; font-size: 2rem; font-weight: 800;">0% Accuracy</h3>
+            <p id="sync-status" style="font-size: 1.1rem; font-weight: 700; margin-top: 15px; color: #64748B;">Syncing score...</p>
+        </div>
+        <button class="btn" onclick="App.dash()">Back to Dashboard</button>
+    </div>
+</div>
+
+<script>
+/**
+ * --- UPDATED AUDIO HELPER SYSTEM ---
+ * Uses Free Google Audio API + Browser Synthesis fallback
+ */
+const AudioHelper = {
+    ctx: null,
+    init: function() {
+        if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if(this.ctx.state === 'suspended') this.ctx.resume();
+        
+        // Mobile warm-up
+        if ('speechSynthesis' in window) {
+            let warmupMsg = new SpeechSynthesisUtterance('');
+            warmupMsg.volume = 0; 
+            window.speechSynthesis.speak(warmupMsg);
+        }
+    },
+    playTing: function() {
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.type = 'sine'; 
+        osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1500, this.ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.5);
+    },
+    playFush: function() {
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.type = 'square'; 
+        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.3);
+    },
+    speak: function(text) {
+        // Free Google Translate TTS API (Human Sounding)
+        const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=${encodeURIComponent(text)}`;
+        const audio = new Audio(url);
+        audio.play().catch(() => {
+            // Fallback to robotic browser voice if blocked
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const msg = new SpeechSynthesisUtterance(text);
+                msg.lang = 'en-US';
+                window.speechSynthesis.speak(msg);
+            }
+        });
+    }
+};
+
+/**
+ * ----------------------------------------------------
+ * CONFIGURATION - CHANGE ONLY THIS SECTION FOR NEW APPS
+ * ----------------------------------------------------
+ */
+const CFG = {
+    topic: "Bagmati 5th Smart Test 06", 
+    scoreScript: "https://script.google.com/macros/s/AKfycbwlARXNg2vbAH3-xPgt4Mt_MlPydwuZOtA7dkjyD0LVQlYX2IBDUKULT8rlZVIy034H/exec",
+    authScript: "https://script.google.com/macros/s/AKfycbzMzOG0rG6JUEsDUJymyOGevOjt750FgRD9UNdxeEmDbeHukwRZTvjwd8UyDbD5icR6/exec"
+};
+
+const _tid = CFG.topic.replace(/[^a-zA-Z0-9]/g, "_");
+const KEYS = {
+    user: "Nepalis", // <-- THIS MUST BE IDENTICAL IN EVERY FILE
+    mistakes: `v2_mistakes_${_tid}`,
+    sent: `v2_sent_status_${_tid}`,
+    pending: `v2_pending_${_tid}`
+};
+
+  const DB = [
+  {
+    "id": 1,
+    "q": "Reciprocating pumps are suitable for ..................",
+    "o": [
+      "low discharge and high head",
+      "high discharge and low head",
+      "high discharge and high head",
+      "low discharge and low head"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 2,
+    "q": "M10 grade of concrete approximates ..................",
+    "o": [
+      "1:3:6 mix",
+      "1:2:4 mix",
+      "1:1.5:3 mix",
+      "1:1:2 mix"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 3,
+    "q": "The main factor to be considered while preparing a detailed cost estimate is ..................",
+    "o": [
+      "quantity of materials",
+      "availability of materials",
+      "transportation of materials",
+      "all of the above"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 4,
+    "q": "Total length of CGI sheet in bundle is ..................",
+    "o": [
+      "60 feet",
+      "70 feet",
+      "62 feet",
+      "72 feet"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 5,
+    "q": "Which is not a part of rate analysis?",
+    "o": [
+      "Labour cost",
+      "Cost of material",
+      "Value of added tax",
+      "Contractor's overhead"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 6,
+    "q": "The sum of amount required to be deposited by a contractor while submitting a tender is known as ..................",
+    "o": [
+      "recurring deposit",
+      "fixed deposit",
+      "security deposit",
+      "earnest money deposit"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 7,
+    "q": "The slump test of two samples of concrete shows slump value of 50 mm and 100 mm. Choose the correct statement ..................",
+    "o": [
+      "concrete with slump value 50 mm is more workable",
+      "concrete with slump value 100 mm is more workable",
+      "slump test is not useful",
+      "both concrete samples are equally workable"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 8,
+    "q": "Isogonic lines are the lines having the same value of ..................",
+    "o": [
+      "elevation",
+      "bearing",
+      "dip",
+      "declination"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 9,
+    "q": "A total station measures vertical angle of 45° from a point on land to the top of a pole that lies 30 m far. The height of the pole is ..................",
+    "o": [
+      "20 m",
+      "51 m",
+      "15 m",
+      "30 m"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 10,
+    "q": "If the whole circle bearing of a line is 180° its reduced bearing is ..................",
+    "o": [
+      "S0°E",
+      "S0°W",
+      "S",
+      "N"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 11,
+    "q": "नेपालको संविधान बमोजिम विभिन्न संवैधानिक आयोग सम्बन्धी योग्यता, पारिश्रमिक, सेवाका शर्त, पद रिक्त हुने अवस्था, काम, कर्तव्य र अधिकार लगायतका अन्य व्यवस्था कुन कानून बमोजिम हुनेछ?",
+    "o": [
+      "प्रदेश कानून",
+      "स्थानीय कानून",
+      "संघीय कानून",
+      "नेपाल सरकारको निर्णय बमोजिम"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 12,
+    "q": "निजामती कर्मचारीले \"बेतलबी बिदा\" (Leave without pay) बढीमा कति अवधि लिन पाउँछन् (श्रीमान्/श्रीमती विदेशमा हुँदा)?",
+    "o": [
+      "३ वर्ष",
+      "५ वर्ष",
+      "७ वर्ष",
+      "१० वर्ष"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 13,
+    "q": "निजामती कर्मचारीको \"वैयक्तिक विवरण फाराम\" (सिटरोल) कति प्रति तयार गर्नुपर्छ?",
+    "o": [
+      "२ प्रति",
+      "३ प्रति",
+      "४ प्रति",
+      "५ प्रति"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 14,
+    "q": "सहायक कर्मचारी (Assistant Staff) को मुख्य कार्यगत जिम्मेवारी कुन हो?",
+    "o": [
+      "कार्यालयको अन्तिम नीतिगत निर्णयहरू आफै गर्ने",
+      "माथिल्लो तहका कर्मचारीलाई सहयोग गर्ने र तोकिएका दैनिक कार्यहरू सम्पादन गर्ने",
+      "कार्यालय प्रमुखको अनुपस्थितिमा सम्पूर्ण आर्थिक अधिकारको प्रयोग गर्ने",
+      "कार्यालयको अन्तिम लेखापरीक्षण प्रतिवेदन तयार गर्ने"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 15,
+    "q": "सरकारी लेखा प्रणाली (Accounting System) को प्राथमिक उद्देश्य के हो?",
+    "o": [
+      "आर्थिक कारोबारहरूको व्यवस्थित, यथार्थ र कानुनसम्मत अभिलेख राख्नु",
+      "देशको करको दर हरेक वर्ष वृद्धि गर्दै जानु",
+      "काम नगर्ने कर्मचारीहरूलाई सोझै विभागीय कारबाही गर्नु",
+      "निजी कम्पनीहरूलाई सरकारी बजेट सीधै वितरण गर्नु"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 16,
+    "q": "सार्वजनिक सेवा प्रवाहमा 'विकेन्द्रीकरण' (Decentralization) ले मुख्यतया के कुरालाई जनाउँछ?",
+    "o": [
+      "सबै प्रकारका सेवाहरू केन्द्रीय राजधानीबाट मात्र प्रदान गर्नु",
+      "अधिकार र सेवा प्रवाहको संयन्त्रलाई तल्लो वा स्थानीय तहसम्म पुर्याउनु",
+      "ग्रामीण क्षेत्रमा खर्चिलो हुने भएकाले सेवा दिन बन्द गर्नु",
+      "सरकारको सम्पूर्ण प्रशासनिक काम गैरसरकारी संस्थालाई जिम्मा लगाउनु"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 17,
+    "q": "सार्वजनिक व्यवस्थापनमा 'निर्देशन' (Direction) अन्तर्गत मुख्यतया कुन कार्य पर्दछ?",
+    "o": [
+      "केवल दीर्घकालीन योजना निर्माण गरेर छोडिदिनु",
+      "विगतका कार्यहरूको अन्तिम मूल्याङ्कन मात्र गर्ने",
+      "मातहतका कर्मचारीहरूलाई काम अह्राउने, मार्गदर्शन गर्ने र कार्यको प्रत्यक्ष अनुगमन गर्ने",
+      "नयाँ कर्मचारीहरूको दरबन्दी सिर्जना र भर्ना गर्ने"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 18,
+    "q": "कार्यालय कार्यविधिअन्तर्गत 'पत्र व्यवहार' (Correspondence) को मुख्य उपयोगिता के हो?",
+    "o": [
+      "कर्मचारीहरू बीच मौखिक आदेशहरू मात्र आदानप्रदान गर्नु",
+      "व्यक्ति वा निकायहरू बीच आधिकारिक र लिखित रूपमा सूचना, निर्णय तथा सन्देश आदानप्रदान गर्नु",
+      "पुराना अनावश्यक फाइलहरूलाई नष्ट गर्ने कानुनी प्रक्रिया तय गर्नु",
+      "कार्यालयको भौतिक सम्पत्तिको मर्मत सम्भार र खरिद गर्नु"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 19,
+    "q": "तलको श्रेणीक्रम पूरा गर्नुहोस्: 1, 4, 9, 16, 25, ?",
+    "o": [
+      "30",
+      "32",
+      "36",
+      "40"
+    ],
+    "a": 2,
+    "e": "यो प्राकृतिक संख्याहरूको वर्ग (Squares of natural numbers) को श्रेणी हो। 1^2 = 1, 2^2 = 4, 3^2 = 9, 4^2 = 16, 5^2 = 25। त्यसैले अब आउने संख्या 6^2 = 36 हुन्छ।"
+  },
+  {
+    "id": 20,
+    "q": "रामले एउटा झोला रु. २०० मा किनेर रु. २५० मा बेच्यो भने, उसलाई कति प्रतिशत नाफा भयो होला ?",
+    "o": [
+      "२०%",
+      "२५%",
+      "३०%",
+      "५०%"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 21,
+    "q": "यदि कुनै कोड भाषामा TIGER लाई UJHFS लेखिन्छ भने, सोही भाषामा LION लाई कसरी लेखिन्छ ?",
+    "o": [
+      "MJPO",
+      "MKPO",
+      "MHPN",
+      "NJPO"
+    ],
+    "a": 0,
+    "e": "यहाँ हरेक अक्षरलाई अंग्रेजी वर्णमालाको लगत्तै आउने अर्को अक्षर (Next letter) ले विस्थापन गरिएको छ (+१ नियम)। T(+1)=U, I(+1)=J, G(+1)=H, E(+1)=F, R(+1)=S। त्यसैगरी LION मा: L(+1)=M, I(+1)=J, O(+1)=P, N(+1)=O। सही उत्तर MJPO हो।"
+  },
+  {
+    "id": 22,
+    "q": "तल दिइएको शब्दसँग हुबहु (Exact match) मिल्ने विकल्प कुन हो ? \"Engineering\"",
+    "o": [
+      "Enginering",
+      "Engineering",
+      "Enginearing",
+      "Enginneering"
+    ],
+    "a": 1,
+    "e": "यो स्पेलिङ रुजु गर्ने परीक्षण हो। A मा एउटा 'e' छुटेको छ। C मा 'e' को ठाउँमा 'a' छ। D मा 'n' दुई पटक (nn) दोहोरिएको छ। त्यसैले विकल्प B मात्र माथिको मूल शब्दसँग हुबहु मिल्छ।"
+  },
+  {
+    "id": 23,
+    "q": "बाबु र छोराको उमेरको योगफल ४० वर्ष छ। यदि बाबु छोराभन्दा ३० वर्षले जेठो छ भने, छोराको उमेर कति होला ?",
+    "o": [
+      "१० वर्ष",
+      "५ वर्ष",
+      "१५ वर्ष",
+      "२० वर्ष"
+    ],
+    "a": 1,
+    "e": "मानौँ छोराको उमेर = x। बाबु ३० वर्ष जेठो भएकोले बाबुको उमेर = x + 30। दुवैको योगफल = ४०। x + (x + 30) = 40 => 2x + 30 = 40 => 2x = 10 => x = 5। त्यसैले छोराको उमेर ५ वर्ष हो। (बाबुको उमेर ३५ वर्ष हुन्छ, ३५+५=४०)।"
+  },
+  {
+    "id": 24,
+    "q": "Water ______ at 100 degrees Celsius.",
+    "o": [
+      "boil",
+      "boils",
+      "boiled",
+      "is boiling"
+    ],
+    "a": 1,
+    "e": "Facts, universal truths, and scientific principles are always expressed in the Simple Present Tense. Since \"Water\" is an uncountable singular noun, it takes a singular verb (\"boils\" with an 's')."
+  },
+  {
+    "id": 25,
+    "q": "The teacher asked the students to look ______ the blackboard.",
+    "o": [
+      "on",
+      "at",
+      "to",
+      "in"
+    ],
+    "a": 1,
+    "e": "When directing someone's gaze or attention to a specific point or object, we use the preposition \"at\". \"Look at\" is a fixed prepositional phrase. (Do not use \"look on\")."
+  },
+  {
+    "id": 26,
+    "q": "'उदय' शब्दको विपरीतार्थी (उल्टो अर्थ दिने) शब्द कुन हो ?",
+    "o": [
+      "बिहान",
+      "प्रकाश",
+      "अस्त",
+      "प्रगति"
+    ],
+    "a": 2,
+    "e": "'उदय' भनेको उदाउनु वा माथि उठ्नु हो (जस्तै: सूर्योदय)। यसको ठ्याक्कै उल्टो अर्थ 'अस्त' (अस्ताउनु/डुब्नु) हुन्छ।"
+  },
+  {
+    "id": 27,
+    "q": "तलका मध्ये कुन शब्दको हिज्जे (Spelling) शुद्ध छ ?",
+    "o": [
+      "परिस्थीति",
+      "परिस्थिती",
+      "परिस्थिति",
+      "परीस्थिति"
+    ],
+    "a": 2,
+    "e": "सही हिज्जे 'परिस्थिति' (Situation/Circumstance) हो। नेपाली व्याकरणको नियम अनुसार यस शब्दमा प्रयोग भएका तीनवटै इकारहरू (रि, स्थि, ति) ह्रस्व (ि) हुन्छन्।"
+  },
+  {
+    "id": 28,
+    "q": "The plinth area of a building not includes",
+    "o": [
+      "Area of the walls at the floor level",
+      "Internal shaft for sanitary installations up to 2 sq m. in area",
+      "Lift and wall including landing",
+      "Area of cantilevered porch"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 29,
+    "q": "The rate of payment is made for 100 cu m (per % cu m) in case of",
+    "o": [
+      "Earth work in excavation",
+      "Rock cutting",
+      "Excavation in trenches for foundation",
+      "All the above"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 30,
+    "q": "When the Mach number is between __________ the flow is called super-sonic flow.",
+    "o": [
+      "1 and 2.5",
+      "2.5 and 4",
+      "4 and 6",
+      "1 and 6"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 31,
+    "q": "The property by virtue of which a liquid opposes relative motion between its different layers is called",
+    "o": [
+      "Surface tension",
+      "Coefficient of viscosity",
+      "Viscosity",
+      "Osmosis"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 32,
+    "q": "When a body is placed over a liquid, it will sink down if",
+    "o": [
+      "Gravitational force is equal to the up-thrust of the liquid",
+      "Gravitational force is less than the up-thrust of the liquid",
+      "Gravitational force is more than the up-thrust of the liquid",
+      "None of the above"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 33,
+    "q": "The traffic island that segregates the left turning from the rest is .............",
+    "o": [
+      "channelization island",
+      "divisional island",
+      "pedestrian loading island",
+      "rotary island"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 34,
+    "q": "66.67% of the accidents take place because of .............",
+    "o": [
+      "traffic moving in opposite directions",
+      "traffic changing lanes",
+      "right turning traffic",
+      "left turning traffic"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 35,
+    "q": "Apron is used for loading/unloading of passenger while taxiway is ...",
+    "o": [
+      "to carry traffic",
+      "fueling of aircraft",
+      "maintenance of aircraft",
+      "none of the above"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 36,
+    "q": "The centre to centre spacing of heliport lighting along the periphery of landing and takeoff area should be ...",
+    "o": [
+      "2.5 m",
+      "5.0 m",
+      "7.5 m",
+      "10.0 m"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 37,
+    "q": "The C.P.M. network is updated ............",
+    "o": [
+      "at regular intervals",
+      "at fixed times",
+      "at any time",
+      "whenever the is difference in the planned and actual performance"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 38,
+    "q": "When the length of the body wall of the fall is less than the normal width of the canal, the fall is then called ...............",
+    "o": [
+      "Notch fall",
+      "flumed fall",
+      "Sarda fall",
+      "ogee fall"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 39,
+    "q": "The top of the capillary zone ...............",
+    "o": [
+      "lies above the piezometric surface at all points",
+      "lies below the piezometric surface at all points",
+      "coincides with the piezometric surface",
+      "none of the above"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 40,
+    "q": "The open well or dug wells .............",
+    "o": [
+      "act as a small storage reservoir",
+      "are suitable for a small discharge",
+      "are cheap in construction",
+      "all of these"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 41,
+    "q": "The earth's water circulatory system is known as .............",
+    "o": [
+      "water cycle",
+      "hydrological cycle",
+      "precipitation cycle",
+      "all of these"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 42,
+    "q": "The barchart technique is commonly used because it ............",
+    "o": [
+      "is simple to draw and easy to understand",
+      "indicates progress clearly",
+      "is useful for cost and quality control",
+      "all the above"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 43,
+    "q": "नेपालको सबैभन्दा गहिरो नदी गण्डकी हो भने यसको लम्बाई कति रहेको छ ?",
+    "o": [
+      "३३८ कि.मि..",
+      "३५० कि.मि..",
+      "५०७ कि.मि.",
+      "७२० कि.मि.."
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 44,
+    "q": "राणाकालमा नेपाललाई कति जिल्लामा विभाजन गरिएको थियो ?",
+    "o": [
+      "३५ जिल्लामा",
+      "३८ जिल्लामा",
+      "४२ जिल्लामा",
+      "७७ जिल्लामा"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 45,
+    "q": "बुद्धको झण्डामा प्रयोग गरिने निलो रंगले के जनाउँदछ ?",
+    "o": [
+      "बुद्धको रगत",
+      "बुद्धको दाँत",
+      "बुद्धको शरीर",
+      "बुद्धको अस्तुधातु"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 46,
+    "q": "पाटन विमानस्थल कुन जिल्लामा पर्दछ ?",
+    "o": [
+      "डोटी",
+      "कैलाली",
+      "ललितपुर",
+      "बैतडी"
+    ],
+    "a": 3,
+    "e": ""
+  },
+  {
+    "id": 47,
+    "q": "सर्पले जस्तै काचुँली फेर्ने जनावर कुन हो ?",
+    "o": [
+      "डल्फिन",
+      "कछुवा",
+      "सार्क",
+      "अक्टोपस"
+    ],
+    "a": 0,
+    "e": ""
+  },
+  {
+    "id": 48,
+    "q": "नेपालमा सूचना प्रविधि नीति पहिलोपल्ट कहिले ल्याइयो ?",
+    "o": [
+      "वि.सं. २०५५",
+      "वि.सं. २०५६",
+      "वि.सं. २०५७",
+      "वि.सं. २०५८"
+    ],
+    "a": 2,
+    "e": ""
+  },
+  {
+    "id": 49,
+    "q": "पोषणलाई कति भागमा विभाजन गरिन्छ ?",
+    "o": [
+      "४ भागमा",
+      "६ भागमा",
+      "८ भागमा",
+      "१० भागमा"
+    ],
+    "a": 1,
+    "e": ""
+  },
+  {
+    "id": 50,
+    "q": "'न्याय सम्बन्धी हक' नेपालको संविधानको कुन धारामा उल्लेख छ ?",
+    "o": [
+      "धारा १८",
+      "धारा १९",
+      "धारा २०",
+      "धारा २१"
+    ],
+    "a": 2,
+    "e": ""
+  }
+];
+
+// --- 10 + 10 DYNAMIC COMPLIMENTS ---
+const PRAISE = {
+    good: [
+        "Awesome, {name}!", "Wow {name}, you are a Genius!", "Fantastic job, {name}!", 
+        "Excellent work, {name}!", "You nailed it, {name}!", "Brilliant answer, {name}!", 
+        "You are on fire, {name}!", "Perfect, {name}!", "Spot on, {name}!", "Great job, {name}!"
+    ],
+    bad: [
+        "Don't give up, {name}!", "You can do this, {name}!", "Nice try {name}, keep going!", 
+        "Learn from this, {name}!", "Almost there, {name}!", "Keep pushing, {name}!", 
+        "Stay focused, {name}!", "You will get the next one, {name}!", "Mistakes help you grow, {name}!", 
+        "Shake it off {name}, try again!"
+    ]
+};
+
+const App = {
+    state: { user: null, quiz: [], curr: 0, score: 0, mistakes: [], timer: null, submitted: false },
+
+    save: (k, v) => { try { localStorage.setItem(k, v) } catch(e) {} },
+    load: (k) => { try { return localStorage.getItem(k) } catch(e) { return null } },
+
+    verifyAndLogin: () => {
+        const n = document.getElementById('inp-name').value.trim();
+        const q = document.getElementById('inp-qual').value;
+        const c = document.getElementById('inp-code').value.trim();
+        const msg = document.getElementById('auth-msg');
+        const btn = document.getElementById('btn-verify');
+
+        if(!n || !c) {
+            msg.innerText = "Code Changed, Contact admin  and Renew Subscription";
+            msg.style.display = 'block'; return;
+        }
+
+        AudioHelper.init(); // Warm up audio
+
+        btn.disabled = true; btn.innerText = "Verifying..."; msg.style.display = 'none';
+
+        fetch(`${CFG.authScript}?code=${c}&name=${n}&qual=${q}`)
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === 'success') {
+                document.getElementById('inp-pass').value = data.password;
+                App.state.user = { name: n, qual: q, code: c };
+                App.save(KEYS.user, JSON.stringify(App.state.user));
+                setTimeout(() => App.dash(), 800);
+            } else {
+                btn.disabled = false; btn.innerText = "Verify & Login";
+                msg.style.display = 'block'; msg.style.color = "#FF3366";
+                msg.innerHTML = data.message.includes("used") ? "Code already used or expired." : "Invalid Code";
+            }
+        })
+        .catch(() => {
+            btn.disabled = false; btn.innerText = "Verify & Login";
+            msg.style.display = 'block'; msg.innerText = "Connection Error";
+        });
+    },
+
+    dash: () => {
+        document.getElementById('title-display').innerText = CFG.topic;
+        document.getElementById('dash-topic-display').innerText = CFG.topic;
+        const stored = App.load(KEYS.user);
+        if(!stored) return;
+        App.state.user = JSON.parse(stored);
+        document.getElementById('greet-msg').innerText = `Namaste, ${App.state.user.name.split(' ')[0]}!`;
+        document.getElementById('view-login').classList.add('hidden');
+        document.getElementById('view-result').classList.add('hidden');
+        document.getElementById('view-dash').classList.remove('hidden');
+        
+        if(App.load(KEYS.sent)) {
+            document.getElementById('btn-start').innerText = "Retake (Practice Mode)";
+            document.getElementById('submitted-msg').style.display = 'block';
+            document.getElementById('submitted-msg').innerText = "✅ Previous Score Submitted";
+        } else {
+            document.getElementById('btn-start').innerText = "Start Exam";
+            document.getElementById('submitted-msg').style.display = 'none';
+        }
+        const m = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        document.getElementById('btn-review').style.display = m.length > 0 ? 'inline-block' : 'none';
+    },
+
+    start: (review) => {
+        AudioHelper.init(); // Warm up audio
+        App.state.curr = 0; App.state.score = 0; App.state.mistakes = []; App.state.submitted = false;
+        const prevM = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        const flatDB = DB.flat ? DB.flat() : DB;
+        let source = review ? flatDB.filter(q => prevM.includes(q.id)) : [...flatDB];
+        if(!source.length) return alert("No questions available.");
+
+        App.state.quiz = source.map(q => {
+            let opts = q.o.map((txt, i) => ({ t: txt, c: i === q.a }));
+            return { ...q, shuffledOpts: opts.sort(() => Math.random() - 0.5) };
+        }).sort(() => Math.random() - 0.5);
+
+        document.getElementById('view-dash').classList.add('hidden');
+        document.getElementById('view-quiz').classList.remove('hidden');
+        document.getElementById('q-total').innerText = App.state.quiz.length;
+        App.timer(45*60);
+        App.render();
+    },
+
+    render: () => {
+        const q = App.state.quiz[App.state.curr];
+        document.getElementById('q-idx').innerText = App.state.curr + 1;
+        document.getElementById('q-text').innerText = q.q;
+        document.getElementById('exp-box').style.display = 'none';
+        document.getElementById('btn-next').classList.add('hidden');
+        const list = document.getElementById('opts-list');
+        list.innerHTML = '';
+        q.shuffledOpts.forEach((opt, i) => {
+            const btn = document.createElement('div');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<div class="option-marker">${String.fromCharCode(65+i)}</div>${opt.t}`;
+            btn.onclick = () => App.check(btn, opt, q);
+            list.appendChild(btn);
+        });
+    },
+
+    check: (btn, opt, q) => {
+        const all = document.querySelectorAll('.option-btn');
+        all.forEach(b => { b.onclick = null; b.style.opacity = '0.7'; b.style.transform = 'scale(0.98)'; b.style.boxShadow = 'var(--clay-shadow-pressed)'; });
+        btn.style.opacity = '1';
+        btn.style.transform = 'scale(1.02)';
+        
+        const praise = document.getElementById('praise-txt');
+        praise.classList.remove('animate-praise');
+        void praise.offsetWidth; praise.classList.add('animate-praise');
+        const userName = App.state.user ? App.state.user.name.split(' ')[0] : 'Student';
+
+        if(opt.c) {
+            btn.classList.add('correct');
+            App.state.score++;
+            let rawTxt = PRAISE.good[Math.floor(Math.random()*PRAISE.good.length)];
+            let finalTxt = rawTxt.replace('{name}', userName);
+            praise.innerText = finalTxt;
+            praise.style.color = "#00C853";
+            AudioHelper.playTing();
+            AudioHelper.speak(finalTxt);
+            let m = JSON.parse(App.load(KEYS.mistakes) || "[]").filter(id => id !== q.id);
+            App.save(KEYS.mistakes, JSON.stringify(m));
+        } else {
+            btn.classList.add('wrong');
+            all.forEach((b, i) => { if(q.shuffledOpts[i].c) b.classList.add('correct'); });
+            App.state.mistakes.push(q.id);
+            let rawTxt = PRAISE.bad[Math.floor(Math.random()*PRAISE.bad.length)];
+            let finalTxt = rawTxt.replace('{name}', userName);
+            praise.innerText = finalTxt;
+            praise.style.color = "#FF3366";
+            AudioHelper.playFush();
+            AudioHelper.speak(finalTxt);
+        }
+
+        if(q.e) {
+            document.getElementById('exp-box').innerHTML = `<strong>Explanation:</strong> ${q.e}`;
+            document.getElementById('exp-box').style.display = 'block';
+        }
+        document.getElementById('btn-next').classList.remove('hidden');
+    },
+
+    next: () => {
+        App.state.curr++;
+        if(App.state.curr < App.state.quiz.length) App.render();
+        else App.finish();
+    },
+
+    timer: (sec) => {
+        if(App.state.timer) clearInterval(App.state.timer);
+        App.state.timer = setInterval(() => {
+            sec--;
+            let m = Math.floor(sec/60), s = sec%60;
+            document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
+            if(sec<=0) App.finish();
+        }, 1000);
+    },
+
+    finish: () => {
+        clearInterval(App.state.timer);
+        document.getElementById('view-quiz').classList.add('hidden');
+        document.getElementById('view-result').classList.remove('hidden');
+        let m = JSON.parse(App.load(KEYS.mistakes) || "[]");
+        m = [...new Set([...m, ...App.state.mistakes])];
+        App.save(KEYS.mistakes, JSON.stringify(m));
+        const pct = Math.round((App.state.score / App.state.quiz.length) * 100);
+        document.getElementById('res-score').innerText = App.state.score;
+        document.getElementById('res-pct').innerText = `${pct}% Accuracy`;
+        App.sync();
+    },
+
+    sync: () => {
+        if(App.state.submitted || App.load(KEYS.sent)) return;
+        App.state.submitted = true;
+        const formData = new FormData();
+        formData.append("name", App.state.user.name);
+        formData.append("qualification", App.state.user.qual);
+        formData.append("examTitle", CFG.topic);
+        formData.append("score", App.state.score);
+        if(navigator.onLine) {
+            fetch(CFG.scoreScript, { method: 'POST', mode: 'no-cors', body: formData })
+            .then(() => {
+                App.save(KEYS.sent, "true");
+                document.getElementById('sync-status').innerText = "✅ Score Saved!";
+                document.getElementById('sync-status').style.color = "#00C853";
+            }).catch(() => App.offline(formData));
+        } else App.offline(formData);
+    },
+
+    offline: (d) => {
+        let p = JSON.parse(App.load(KEYS.pending) || "[]");
+        p.push(Object.fromEntries(d));
+        App.save(KEYS.pending, JSON.stringify(p));
+        document.getElementById('sync-status').innerText = "Saved offline.";
+    }
+};
+
+window.onload = () => { if(App.load(KEYS.user)) App.dash(); };
+</script>
+</body>
+</html>
